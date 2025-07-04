@@ -24,15 +24,16 @@
 #include "DockAreaWidget.h"
 #include "DockManager.h"
 #include "DockWidget.h"
-#include "Channel/manager/channel_manager.h"
-#include "Config/config_manager.h"
-#include "CustomControls/display/manager/display_manager.h"
+#include "manager/channel_manager.h"
+#include "config_manager.h"
+#include "display/manager/display_manager.h"
 #include "point_type.h"
-#include "CustomControls/dashboard.h"
-#include "CustomControls/nav_goal_table_view.h"
-#include "CustomControls/set_pose_widget.h"
-#include "CustomControls/speed_ctrl.h"
-#include "CustomControls/ratio_layouted_frame.h"
+#include "dashboard.h"
+#include "nav_goal_table_view.h"
+#include "set_pose_widget.h"
+#include "speed_ctrl.h"
+#include "ratio_layouted_frame.h"
+
 QT_BEGIN_NAMESPACE
 namespace Ui {
 class MainWindow;

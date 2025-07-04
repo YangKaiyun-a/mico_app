@@ -1,4 +1,11 @@
-add_library(Basic INTERFACE)
+
+file(GLOB_RECURSE SOURCE_FILE  CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR} *.cpp *.cc)
+file(GLOB_RECURSE INCLUDE_FILE CONFIGURE_DEPENDS  ${CMAKE_CURRENT_SOURCE_DIR} *.h *.hpp)
+
+add_library(Basic INTERFACE
+    ${SOURCE_FILE}
+    ${INCLUDE_FILE}
+)
 
 target_link_libraries(Basic INTERFACE
     Eigen3::Eigen

@@ -4,8 +4,6 @@
 #include <QObject>
 #include <QApplication>
 
-#include "ros2thread.h"
-
 
 #define hApp (static_cast<Application *>(Application::instance()))
 
@@ -25,7 +23,7 @@ protected:
 
 private:
     static Application* m_singlenApplication;
-    Ros2Thread *m_rosThread = nullptr;
+
 };
 
 #endif // APPLICATION_H

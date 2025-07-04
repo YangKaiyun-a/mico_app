@@ -13,7 +13,8 @@ find_package(sensor_msgs REQUIRED)
 find_package(cv_bridge REQUIRED)
 find_package(Boost REQUIRED COMPONENTS thread)
 
-add_library(${TARGET_NAME} STATIC
+# 动态库会放入 lib/
+add_library(${TARGET_NAME} SHARED
     ${SOURCE_FILE} 
     ${INCLUDE_FILE}
 )

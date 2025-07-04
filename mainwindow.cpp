@@ -1,7 +1,9 @@
-#include "mainwindow.h"
 #include <QDebug>
 #include <iostream>
 #include <opencv2/opencv.hpp>
+
+#include "mainwindow.h"
+#include "ui_mainwindow.h"
 #include "AutoHideDockContainer.h"
 #include "DockAreaTabBar.h"
 #include "DockAreaTitleBar.h"
@@ -9,16 +11,17 @@
 #include "DockComponentsFactory.h"
 #include "Eigen/Dense"
 #include "FloatingDockContainer.h"
-#include "../Basic/algorithm/algorithm.h"
-#include "../Logger/logger.h"
-#include "ui_mainwindow.h"
+#include "algorithm/algorithm.h"
+#include "logger.h"
+#include "speed_ctrl.h"
 
-#include "CustomControls/speed_ctrl.h"
+
 using namespace ads;
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow)
 {
     Q_INIT_RESOURCE(images);
     Q_INIT_RESOURCE(media);
+
     LOG_INFO(" MainWindow init thread id" << QThread::currentThreadId());
     qRegisterMetaType<std::string>("std::string");
     qRegisterMetaType<RobotPose>("RobotPose");
