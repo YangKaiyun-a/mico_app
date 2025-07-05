@@ -1,4 +1,4 @@
-# ros2_app
+# mico_app
 可以使用命令行进行编译
 mkdir build && cd build
 cmake ..
