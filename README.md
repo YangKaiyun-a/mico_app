@@ -1,3 +1,6 @@
 # ros2_app
-1、新建一个工作区 ros2_ws，然后进入 ros2/src 执行 git clone
-2、在 ros2_ws/ 执行 colcon build --package-select ros2 app
+可以使用命令行进行编译
+mkdir build && cd build
+cmake ..
+make
+如果要使用 Qt Creator 进行构建，需要配置环境，比较麻烦，可以在项目目录中启动终端打开 Qt Creator 继承系统环境
