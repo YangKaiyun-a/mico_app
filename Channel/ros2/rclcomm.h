@@ -29,64 +29,57 @@
 #include "tf2_ros/buffer.h"
 #include "tf2_ros/transform_listener.h"
 #include "virtual_channel_node.h"
+
 class rclcomm : public VirtualChannelNode {
- public:
-  rclcomm();
-  ~rclcomm() override = default;
+public:
+    rclcomm();
+    ~rclcomm() override = default;
 
- private:
-  void recv_callback(const std_msgs::msg::Int32::SharedPtr msg);
-  void map_callback(const nav_msgs::msg::OccupancyGrid::SharedPtr msg);
-  void odom_callback(const nav_msgs::msg::Odometry::SharedPtr msg);
-  void localCostMapCallback(const nav_msgs::msg::OccupancyGrid::SharedPtr msg);
-  void globalCostMapCallback(const nav_msgs::msg::OccupancyGrid::SharedPtr msg);
-  void laser_callback(const sensor_msgs::msg::LaserScan::SharedPtr msg);
-  void path_callback(const nav_msgs::msg::Path::SharedPtr msg);
-  void BatteryCallback(const sensor_msgs::msg::BatteryState::SharedPtr msg);
-  void getRobotPose();
-  void local_path_callback(const nav_msgs::msg::Path::SharedPtr msg);
+private:
+    void recv_callback(const std_msgs::msg::Int32::SharedPtr msg);
+    void map_callback(const nav_msgs::msg::OccupancyGrid::SharedPtr msg);
+    void odom_callback(const nav_msgs::msg::Odometry::SharedPtr msg);
+    void localCostMapCallback(const nav_msgs::msg::OccupancyGrid::SharedPtr msg);
+    void globalCostMapCallback(const nav_msgs::msg::OccupancyGrid::SharedPtr msg);
+    void laser_callback(const sensor_msgs::msg::LaserScan::SharedPtr msg);
+    void path_callback(const nav_msgs::msg::Path::SharedPtr msg);
+    void BatteryCallback(const sensor_msgs::msg::BatteryState::SharedPtr msg);
+    void getRobotPose();
+    void local_path_callback(const nav_msgs::msg::Path::SharedPtr msg);
 
- public:
-  bool Start() override;
-  bool Stop() override;
-  void Process() override;
-  std::string Name() override { return "ROS2"; };
-  void PubRelocPose(const RobotPose &pose);
-  void PubNavGoal(const RobotPose &pose);
-  void PubRobotSpeed(const RobotSpeed &speed);
-  basic::RobotPose getTransform(std::string from, std::string to);
-  void SendMessage(const MsgId &msg_id, const std::any &msg) override;
+public:
+    bool Start() override;
+    bool Stop() override;
+    void Process() override;
+    std::string Name() override { return "ROS2"; };
+    void PubRelocPose(const RobotPose &pose);
+    void PubNavGoal(const RobotPose &pose);
+    void PubRobotSpeed(const RobotSpeed &speed);
+    basic::RobotPose getTransform(std::string from, std::string to);
+    void SendMessage(const MsgId &msg_id, const std::any &msg) override;
 
- private:
-  rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr speed_publisher_;
-  rclcpp::Publisher<geometry_msgs::msg::PoseWithCovarianceStamped>::SharedPtr
-      reloc_pose_publisher_;
-  rclcpp::Publisher<geometry_msgs::msg::PoseStamped>::SharedPtr
-      nav_goal_publisher_;
-  rclcpp::Subscription<nav_msgs::msg::OccupancyGrid>::SharedPtr map_subscriber_;
-  rclcpp::Subscription<nav_msgs::msg::OccupancyGrid>::SharedPtr
-      local_cost_map_subscriber_;
-  rclcpp::Subscription<nav_msgs::msg::OccupancyGrid>::SharedPtr
-      global_cost_map_subscriber_;
-  rclcpp::Subscription<sensor_msgs::msg::LaserScan>::SharedPtr
-      laser_scan_subscriber_;
-  rclcpp::Subscription<sensor_msgs::msg::BatteryState>::SharedPtr
-      battery_state_subscriber_;
-  rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr odometry_subscriber_;
-  rclcpp::Subscription<nav_msgs::msg::Path>::SharedPtr local_path_subscriber_;
-  rclcpp::Subscription<nav_msgs::msg::Path>::SharedPtr global_path_subscriber_;
-  std::vector<rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr> image_subscriber_list_;
-  std::unique_ptr<tf2_ros::Buffer> tf_buffer_;
-  std::shared_ptr<tf2_ros::TransformListener> transform_listener_;
-  std::shared_ptr<rclcpp::Node> node;
-  basic::OccupancyMap occ_map_;
-  basic::RobotPose m_currPose;
-  rclcpp::executors::MultiThreadedExecutor *m_executor;
-  rclcpp::CallbackGroup::SharedPtr callback_group_laser;
-  rclcpp::CallbackGroup::SharedPtr callback_group_other;
-  std::atomic_bool init_flag_{false};
-
- private:
+private:
+    rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr speed_publisher_;
+    rclcpp::Publisher<geometry_msgs::msg::PoseWithCovarianceStamped>::SharedPtr reloc_pose_publisher_;
+    rclcpp::Publisher<geometry_msgs::msg::PoseStamped>::SharedPtr nav_goal_publisher_;
+    rclcpp::Subscription<nav_msgs::msg::OccupancyGrid>::SharedPtr map_subscriber_;
+    rclcpp::Subscription<nav_msgs::msg::OccupancyGrid>::SharedPtr local_cost_map_subscriber_;
+    rclcpp::Subscription<nav_msgs::msg::OccupancyGrid>::SharedPtr global_cost_map_subscriber_;
+    rclcpp::Subscription<sensor_msgs::msg::LaserScan>::SharedPtr laser_scan_subscriber_;
+    rclcpp::Subscription<sensor_msgs::msg::BatteryState>::SharedPtr battery_state_subscriber_;
+    rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr odometry_subscriber_;
+    rclcpp::Subscription<nav_msgs ::msg::Path>::SharedPtr local_path_subscriber_;
+    rclcpp::Subscription<nav_msgs::msg::Path>::SharedPtr global_path_subscriber_;
+    std::vector<rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr> image_subscriber_list_;
+    std::unique_ptr<tf2_ros::Buffer> tf_buffer_;
+    std::shared_ptr<tf2_ros::TransformListener> transform_listener_;
+    std::shared_ptr<rclcpp::Node> node;
+    basic::OccupancyMap occ_map_;
+    basic::RobotPose m_currPose;
+    rclcpp::executors::MultiThreadedExecutor *m_executor;
+    rclcpp::CallbackGroup::SharedPtr callback_group_laser;
+    rclcpp::CallbackGroup::SharedPtr callback_group_other;
+    std::atomic_bool init_flag_{false};
 };
 
 #endif  // RCLCOMM_H

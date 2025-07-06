@@ -60,12 +60,12 @@ bool MainWindow::openChannel(const std::string &channel_name)
     return false;
 }
 
+// 注册回调函数，rclcomm 类中接收到消息后触发信号 OnRecvChannelData
 void MainWindow::registerChannel()
 {
-    channel_manager_.RegisterOnDataCallback(
-        std::move([this](const MsgId &id, const std::any &data) {
-            emit OnRecvChannelData(id, data);
-        }));
+    channel_manager_.RegisterOnDataCallback(std::move([this](const MsgId &id, const std::any &data) {
+        emit OnRecvChannelData(id, data);
+    }));
 }
 
 void MainWindow::RecvChannelMsg(const MsgId &id, const std::any &data)
@@ -78,11 +78,8 @@ void MainWindow::RecvChannelMsg(const MsgId &id, const std::any &data)
         nav_goal_table_view_->UpdateRobotPose(std::any_cast<RobotPose>(data));
     } break;
     case MsgId::kBatteryState: {
-        std::map<std::string, std::string> map =
-            std::any_cast<std::map<std::string, std::string>>(data);
-        this->SlotSetBatteryStatus(std::stod(map["percent"]),
-                                   std::stod(map["voltage"]));
-
+        std::map<std::string, std::string> map = std::any_cast<std::map<std::string, std::string>>(data);
+        this->SlotSetBatteryStatus(std::stod(map["percent"]), std::stod(map["voltage"]));
     } break;
     case MsgId::kImage: {
         auto location_to_mat = std::any_cast<std::pair<std::string, std::shared_ptr<cv::Mat>>>(data);
@@ -104,7 +101,8 @@ void MainWindow::SlotRecvImage(const std::string &location, std::shared_ptr<cv::
     }
 }
 
-void MainWindow::SendChannelMsg(const MsgId &id, const std::any &data) {
+void MainWindow::SendChannelMsg(const MsgId &id, const std::any &data)
+{
     channel_manager_.SendMessage(id, data);
 }
 
@@ -611,8 +609,7 @@ void MainWindow::setupUi()
 
     //////////////////////////////////////////////////////槽链接
 
-    connect(this, SIGNAL(OnRecvChannelData(const MsgId &, const std::any &)),
-            this, SLOT(RecvChannelMsg(const MsgId &, const std::any &)), Qt::BlockingQueuedConnection);
+    connect(this, SIGNAL(OnRecvChannelData(const MsgId &, const std::any &)), this, SLOT(RecvChannelMsg(const MsgId &, const std::any &)), Qt::BlockingQueuedConnection);
     connect(display_manager_, &Display::DisplayManager::signalPub2DPose,
             [this](const RobotPose &pose) {
                 SendChannelMsg(MsgId::kSetRelocPose, pose);

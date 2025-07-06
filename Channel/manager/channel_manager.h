@@ -14,37 +14,39 @@
 #include "msg/msg_info.h"
 #include "../virtual_channel_node.h"
 class ChannelManager {
- private:
-  VirtualChannelNode *channel_ptr_{nullptr};
-  boost::dll::shared_library *library_channel_;
+private:
+    VirtualChannelNode *channel_ptr_{nullptr};
+    boost::dll::shared_library *library_channel_;
 
- public:
-  explicit ChannelManager();
-  ~ChannelManager();
+public:
+    explicit ChannelManager();
+    ~ChannelManager();
 
-  /// @brief 传入channel so路径，打开对应的通信channel
-  /// @param name
-  /// @return
-  bool OpenChannel(const std::string &name);
+    /// @brief 传入channel so路径，打开对应的通信channel
+    /// @param name
+    /// @return
+    bool OpenChannel(const std::string &name);
 
-  /// @brief 自动查找当前可执行程序路径下的lib目录中的channel并打开
-  /// @return
-  bool OpenChannelAuto();
+    /// @brief 自动查找当前可执行程序路径下的lib目录中的channel并打开
+    /// @return
+    bool OpenChannelAuto();
 
-  /// @brief 查找lib路径下所有channel
-  /// @return channel list
-  std::vector<std::string> DiscoveryAllChannel();
+    /// @brief 查找lib路径下所有channel
+    /// @return channel list
+    std::vector<std::string> DiscoveryAllChannel();
 
-  VirtualChannelNode *GetChannel();
+    VirtualChannelNode *GetChannel();
 
-  // 接收到通道数据时调用 func
-  void RegisterOnDataCallback(
-      std::function<void(const MsgId &id, const std::any &data)> &&func) {
-    if (channel_ptr_ != nullptr) {
-      channel_ptr_->RegisterOnDataCallback(std::move(func));
+    // 接收到通道数据时调用 func
+    void RegisterOnDataCallback(std::function<void(const MsgId &id, const std::any &data)> &&func)
+    {
+        if (channel_ptr_ != nullptr)
+        {
+            channel_ptr_->RegisterOnDataCallback(std::move(func));
+        }
     }
-  }
-  void CloseChannel();
 
-  void SendMessage(const MsgId &msg_id, const std::any &msg);
+    void CloseChannel();
+
+    void SendMessage(const MsgId &msg_id, const std::any &msg);
 };

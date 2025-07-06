@@ -105,7 +105,9 @@ bool ChannelManager::OpenChannel(const std::string &path)
             return true;
         }
 
-    } catch (const boost::system::system_error &e) {
+    }
+    catch (const boost::system::system_error &e)
+    {
         std::cout << "Failed to load dynamic library: " << e.what() << std::endl;
         return false;
     }
@@ -117,12 +119,16 @@ void ChannelManager::CloseChannel() {
     delete channel_ptr_;
     channel_ptr_ = nullptr;
 }
-void ChannelManager::SendMessage(const MsgId &msg_id, const std::any &msg) {
+
+void ChannelManager::SendMessage(const MsgId &msg_id, const std::any &msg)
+{
     if (channel_ptr_ != nullptr) {
         channel_ptr_->SendMessage(msg_id, msg);
     }
 }
-VirtualChannelNode *ChannelManager::GetChannel() {
+
+VirtualChannelNode *ChannelManager::GetChannel()
+{
     [[unlikely]] if (channel_ptr_ == nullptr) {
         std::cout << "error channel is nullptr exit!" << std::endl;
         exit(1);
