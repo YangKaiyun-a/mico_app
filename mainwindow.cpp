@@ -146,16 +146,14 @@ void MainWindow::setupUi()
         "}");
 
     QIcon icon4;
-    icon4.addFile(QString::fromUtf8(":/images/reloc2.svg"),
-                  QSize(64, 64), QIcon::Normal, QIcon::Off);
+    icon4.addFile(QString::fromUtf8(":/images/reloc2.svg"), QSize(64, 64), QIcon::Normal, QIcon::Off);
     reloc_btn->setIcon(icon4);
     reloc_btn->setText("重定位");
     // reloc_btn->setMaximumSize(QSize(54, 54));
     reloc_btn->setIconSize(QSize(32, 32));
     horizontalLayout_tools->addWidget(reloc_btn);
     QIcon icon5;
-    icon5.addFile(QString::fromUtf8(":/images/edit.svg"),
-                  QSize(64, 64), QIcon::Normal, QIcon::Off);
+    icon5.addFile(QString::fromUtf8(":/images/edit.svg"), QSize(64, 64), QIcon::Normal, QIcon::Off);
     QToolButton *edit_map_btn = new QToolButton();
     edit_map_btn->setIcon(icon5);
     edit_map_btn->setText("编辑地图");
@@ -176,8 +174,7 @@ void MainWindow::setupUi()
     horizontalLayout_tools->addWidget(edit_map_btn);
 
     QIcon icon6;
-    icon6.addFile(QString::fromUtf8(":/images/open.svg"),
-                  QSize(64, 64), QIcon::Normal, QIcon::Off);
+    icon6.addFile(QString::fromUtf8(":/images/open.svg"), QSize(64, 64), QIcon::Normal, QIcon::Off);
     QToolButton *open_map_btn = new QToolButton();
     open_map_btn->setIcon(icon6);
     open_map_btn->setText("打开地图");
@@ -198,8 +195,7 @@ void MainWindow::setupUi()
     horizontalLayout_tools->addWidget(open_map_btn);
 
     QIcon icon7;
-    icon7.addFile(QString::fromUtf8(":/images/save.svg"),
-                  QSize(64, 64), QIcon::Normal, QIcon::Off);
+    icon7.addFile(QString::fromUtf8(":/images/save.svg"), QSize(64, 64), QIcon::Normal, QIcon::Off);
     QToolButton *save_map_btn = new QToolButton();
     save_map_btn->setIcon(icon7);
     save_map_btn->setText("保存地图");
@@ -218,8 +214,7 @@ void MainWindow::setupUi()
         "   background-color: lightblue;"
         "}");
     horizontalLayout_tools->addWidget(save_map_btn);
-    horizontalLayout_tools->addItem(
-        new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Minimum));
+    horizontalLayout_tools->addItem(new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Minimum));
     center_layout->addLayout(horizontalLayout_tools);
 
     ///////////////////////////////////////////////////////////////////电池电量
@@ -272,8 +267,7 @@ void MainWindow::setupUi()
     QVBoxLayout *layout_tools_edit_map = new QVBoxLayout();
     tools_edit_map_widget->setLayout(layout_tools_edit_map);
     layout_tools_edit_map->setSpacing(0);
-    layout_tools_edit_map->setObjectName(
-        QString::fromUtf8(" layout_tools_edit_map"));
+    layout_tools_edit_map->setObjectName(QString::fromUtf8(" layout_tools_edit_map"));
     //地图编辑 设置鼠标按钮
     QToolButton *normal_cursor_btn = new QToolButton();
     normal_cursor_btn->setStyleSheet(
@@ -289,8 +283,7 @@ void MainWindow::setupUi()
     normal_cursor_btn->setIconSize(QSize(32, 32));
 
     QIcon pose_tool_btn_icon;
-    pose_tool_btn_icon.addFile(QString::fromUtf8(":/images/cursor_point_btn.svg"),
-                               QSize(), QIcon::Normal, QIcon::Off);
+    pose_tool_btn_icon.addFile(QString::fromUtf8(":/images/cursor_point_btn.svg"), QSize(), QIcon::Normal, QIcon::Off);
     normal_cursor_btn->setIcon(pose_tool_btn_icon);
     layout_tools_edit_map->addWidget(normal_cursor_btn);
 
@@ -310,8 +303,7 @@ void MainWindow::setupUi()
     add_point_btn->setIconSize(QSize(32, 32));
 
     QIcon add_point_btn_icon;
-    add_point_btn_icon.addFile(QString::fromUtf8(":/images/point_btn.svg"),
-                               QSize(), QIcon::Normal, QIcon::Off);
+    add_point_btn_icon.addFile(QString::fromUtf8(":/images/point_btn.svg"), QSize(), QIcon::Normal, QIcon::Off);
     add_point_btn->setIcon(add_point_btn_icon);
     layout_tools_edit_map->addWidget(add_point_btn);
 
@@ -329,8 +321,7 @@ void MainWindow::setupUi()
     add_topology_path_btn->setIconSize(QSize(32, 32));
 
     QIcon add_topology_path_btn_icon;
-    add_topology_path_btn_icon.addFile(QString::fromUtf8(":/images/topo_link_btn.svg"),
-                                       QSize(), QIcon::Normal, QIcon::Off);
+    add_topology_path_btn_icon.addFile(QString::fromUtf8(":/images/topo_link_btn.svg"), QSize(), QIcon::Normal, QIcon::Off);
     add_topology_path_btn->setIcon(add_topology_path_btn_icon);
     layout_tools_edit_map->addWidget(add_topology_path_btn);
     //TODO 拓扑点连接
@@ -350,8 +341,7 @@ void MainWindow::setupUi()
     add_region_btn->setIconSize(QSize(32, 32));
 
     QIcon add_region_btn_icon;
-    add_region_btn_icon.addFile(QString::fromUtf8(":/images/region_btn.svg"),
-                                QSize(), QIcon::Normal, QIcon::Off);
+    add_region_btn_icon.addFile(QString::fromUtf8(":/images/region_btn.svg"), QSize(), QIcon::Normal, QIcon::Off);
     add_region_btn->setIcon(add_region_btn_icon);
     add_region_btn->setEnabled(false);
     layout_tools_edit_map->addWidget(add_region_btn);
@@ -380,8 +370,7 @@ void MainWindow::setupUi()
     erase_btn->setIconSize(QSize(32, 32));
 
     QIcon erase_btn_icon;
-    erase_btn_icon.addFile(QString::fromUtf8(":/images/erase_btn.svg"),
-                           QSize(), QIcon::Normal, QIcon::Off);
+    erase_btn_icon.addFile(QString::fromUtf8(":/images/erase_btn.svg"), QSize(), QIcon::Normal, QIcon::Off);
     erase_btn->setIcon(erase_btn_icon);
     layout_tools_edit_map->addWidget(erase_btn);
     //画笔按钮
@@ -399,8 +388,7 @@ void MainWindow::setupUi()
     draw_pen_btn->setIconSize(QSize(32, 32));
 
     QIcon draw_pen_btn_icon;
-    draw_pen_btn_icon.addFile(QString::fromUtf8(":/images/pen.svg"),
-                              QSize(), QIcon::Normal, QIcon::Off);
+    draw_pen_btn_icon.addFile(QString::fromUtf8(":/images/pen.svg"), QSize(), QIcon::Normal, QIcon::Off);
     draw_pen_btn->setIcon(draw_pen_btn_icon);
 
     layout_tools_edit_map->addWidget(draw_pen_btn);
@@ -420,14 +408,12 @@ void MainWindow::setupUi()
     draw_line_btn->setIconSize(QSize(32, 32));
 
     QIcon draw_line_btn_icon;
-    draw_line_btn_icon.addFile(QString::fromUtf8(":/images/line_btn.svg"),
-                               QSize(), QIcon::Normal, QIcon::Off);
+    draw_line_btn_icon.addFile(QString::fromUtf8(":/images/line_btn.svg"), QSize(), QIcon::Normal, QIcon::Off);
     draw_line_btn->setIcon(draw_line_btn_icon);
 
     layout_tools_edit_map->addWidget(draw_line_btn);
 
-    layout_tools_edit_map->addItem(
-        new QSpacerItem(1, 1, QSizePolicy::Minimum, QSizePolicy::Expanding));
+    layout_tools_edit_map->addItem(new QSpacerItem(1, 1, QSizePolicy::Minimum, QSizePolicy::Expanding));
     tools_edit_map_widget->hide();
     center_h_layout->addWidget(tools_edit_map_widget);
     center_layout->addLayout(center_h_layout);
@@ -464,8 +450,7 @@ void MainWindow::setupUi()
 
     horizontalLayout_12->addWidget(label_pos_scene_);
 
-    horizontalLayout_12->addItem(
-        new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum));
+    horizontalLayout_12->addItem(new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum));
 
     center_layout->addLayout(horizontalLayout_12);
 
@@ -484,22 +469,17 @@ void MainWindow::setupUi()
     // speed_dashboard_widget->setMinimumSize(QSize(300, 300));
     DashBoardDockWidget->setWidget(speed_dashboard_widget);
     speed_dash_board_ = new DashBoard(speed_dashboard_widget);
-    auto dashboard_area =
-        dock_manager_->addDockWidget(ads::DockWidgetArea::LeftDockWidgetArea,
-                                     DashBoardDockWidget, center_docker_area_);
+    auto dashboard_area = dock_manager_->addDockWidget(ads::DockWidgetArea::LeftDockWidgetArea, DashBoardDockWidget, center_docker_area_);
     ui->menuView->addAction(DashBoardDockWidget->toggleViewAction());
 
     ////////////////////////////////////////////////////////速度控制
     speed_ctrl_widget_ = new SpeedCtrlWidget();
-    connect(speed_ctrl_widget_, &SpeedCtrlWidget::signalControlSpeed,
-            [this](const RobotSpeed &speed) {
-                SendChannelMsg(MsgId::kSetRobotSpeed, speed);
-            });
+    connect(speed_ctrl_widget_, &SpeedCtrlWidget::signalControlSpeed, [this](const RobotSpeed &speed) {
+        SendChannelMsg(MsgId::kSetRobotSpeed, speed);
+    });
     ads::CDockWidget *SpeedCtrlDockWidget = new ads::CDockWidget("SpeedCtrl");
     SpeedCtrlDockWidget->setWidget(speed_ctrl_widget_);
-    auto speed_ctrl_area =
-        dock_manager_->addDockWidget(ads::DockWidgetArea::BottomDockWidgetArea,
-                                     SpeedCtrlDockWidget, dashboard_area);
+    auto speed_ctrl_area = dock_manager_->addDockWidget(ads::DockWidgetArea::BottomDockWidgetArea, SpeedCtrlDockWidget, dashboard_area);
     ui->menuView->addAction(SpeedCtrlDockWidget->toggleViewAction());
 
     /////////////////////////////////////////////////////////导航任务列表
@@ -528,35 +508,32 @@ void MainWindow::setupUi()
     horizontalLayout_13->addLayout(horizontalLayout_14);
     horizontalLayout_13->addLayout(horizontalLayout_16);
     nav_goal_list_dock_widget->setWidget(task_list_widget);
-    nav_goal_list_dock_widget->setMinimumSizeHintMode(
-        CDockWidget::MinimumSizeHintFromDockWidget);
+    nav_goal_list_dock_widget->setMinimumSizeHintMode(CDockWidget::MinimumSizeHintFromDockWidget);
     nav_goal_list_dock_widget->setMinimumSize(200, 150);
     nav_goal_list_dock_widget->setMaximumSize(480, 9999);
-    dock_manager_->addDockWidget(ads::DockWidgetArea::RightDockWidgetArea,
-                                 nav_goal_list_dock_widget, center_docker_area_);
+    dock_manager_->addDockWidget(ads::DockWidgetArea::RightDockWidgetArea, nav_goal_list_dock_widget, center_docker_area_);
     nav_goal_list_dock_widget->toggleView(false);
-    connect(nav_goal_table_view_, &NavGoalTableView::signalSendNavGoal,
-            [this](const RobotPose &pose) {
-                SendChannelMsg(MsgId::kSetNavGoalPose, pose);
-            });
+    connect(nav_goal_table_view_, &NavGoalTableView::signalSendNavGoal, [this](const RobotPose &pose) {
+        SendChannelMsg(MsgId::kSetNavGoalPose, pose);
+    });
     connect(btn_load_task_chain, &QPushButton::clicked, [this]() {
-        QString fileName = QFileDialog::getOpenFileName(nullptr, "Open JSON file",
-                                                        "", "JSON files (*.json)");
-
+        QString fileName = QFileDialog::getOpenFileName(nullptr, "Open JSON file", "", "JSON files (*.json)");
         // 如果用户选择了文件，则输出文件名
-        if (!fileName.isEmpty()) {
+        if (!fileName.isEmpty())
+        {
             qDebug() << "Selected file:" << fileName;
             nav_goal_table_view_->LoadTaskChain(fileName.toStdString());
         }
     });
     connect(btn_save_task_chain, &QPushButton::clicked, [this]() {
-        QString fileName = QFileDialog::getSaveFileName(nullptr, "Save JSON file",
-                                                        "", "JSON files (*.json)");
+        QString fileName = QFileDialog::getSaveFileName(nullptr, "Save JSON file", "", "JSON files (*.json)");
 
         // 如果用户选择了文件，则输出文件名
-        if (!fileName.isEmpty()) {
+        if (!fileName.isEmpty())
+        {
             qDebug() << "Selected file:" << fileName;
-            if (!fileName.endsWith(".json")) {
+            if (!fileName.endsWith(".json"))
+            {
                 fileName += ".json";
                 nav_goal_table_view_->SaveTaskChain(fileName.toStdString());
             }
@@ -565,44 +542,40 @@ void MainWindow::setupUi()
 
     // nav_goal_list_dock_widget->toggleView(false);
     ui->menuView->addAction(nav_goal_list_dock_widget->toggleViewAction());
-    connect(
-        btn_add_one_goal, &QPushButton::clicked,
-        [this, nav_goal_list_dock_widget]() { nav_goal_table_view_->AddItem(); });
-    connect(btn_start_task_chain, &QPushButton::clicked,
-            [this, btn_start_task_chain, loop_task_checkbox]() {
-                if (btn_start_task_chain->text() == "Start Task Chain") {
-                    btn_start_task_chain->setText("Stop Task Chain");
-                    nav_goal_table_view_->StartTaskChain(loop_task_checkbox->isChecked());
-                } else {
-                    btn_start_task_chain->setText("Start Task Chain");
-                    nav_goal_table_view_->StopTaskChain();
-                }
-            });
-    connect(nav_goal_table_view_, &NavGoalTableView::signalTaskFinish,
-            [this, btn_start_task_chain]() {
+    connect(btn_add_one_goal, &QPushButton::clicked, [this, nav_goal_list_dock_widget]() {
+        nav_goal_table_view_->AddItem();
+    });
+    connect(btn_start_task_chain, &QPushButton::clicked, [this, btn_start_task_chain, loop_task_checkbox]() {
+        if (btn_start_task_chain->text() == "Start Task Chain")
+        {
+            btn_start_task_chain->setText("Stop Task Chain");
+            nav_goal_table_view_->StartTaskChain(loop_task_checkbox->isChecked());
+        }
+        else
+        {
+            btn_start_task_chain->setText("Start Task Chain");
+            nav_goal_table_view_->StopTaskChain();
+        }
+    });
+    connect(nav_goal_table_view_, &NavGoalTableView::signalTaskFinish, [this, btn_start_task_chain]() {
                 LOG_INFO("task finish!");
                 btn_start_task_chain->setText("Start Task Chain");
-            });
-    connect(display_manager_,
-            SIGNAL(signalTopologyMapUpdate(const TopologyMap &)),
-            nav_goal_table_view_, SLOT(UpdateTopologyMap(const TopologyMap &)));
-    connect(
-        display_manager_,
-        SIGNAL(signalCurrentSelectPointChanged(const TopologyMap::PointInfo &)),
-        nav_goal_table_view_,
-        SLOT(UpdateSelectPoint(const TopologyMap::PointInfo &)));
+    });
+    connect(display_manager_, SIGNAL(signalTopologyMapUpdate(const TopologyMap &)), nav_goal_table_view_, SLOT(UpdateTopologyMap(const TopologyMap &)));
+    connect(display_manager_, SIGNAL(signalCurrentSelectPointChanged(const TopologyMap::PointInfo &)),
+            nav_goal_table_view_,
+            SLOT(UpdateSelectPoint(const TopologyMap::PointInfo &)));
 
     //////////////////////////////////////////////////////图片
 
-    for (auto one_image : Config::ConfigManager::Instacnce()->GetRootConfig().images) {
+    for (auto one_image : Config::ConfigManager::Instacnce()->GetRootConfig().images)
+    {
         LOG_INFO("init image window location:" << one_image.location << " topic:" << one_image.topic);
         image_frame_map_[one_image.location] = new RatioLayoutedFrame();
         ads::CDockWidget *dock_widget = new ads::CDockWidget(std::string("image/" + one_image.location).c_str());
         dock_widget->setWidget(image_frame_map_[one_image.location]);
 
-        dock_manager_->addDockWidget(ads::DockWidgetArea::RightDockWidgetArea,
-                                     dock_widget,
-                                     center_docker_area_);
+        dock_manager_->addDockWidget(ads::DockWidgetArea::RightDockWidgetArea, dock_widget, center_docker_area_);
         dock_widget->toggleView(true);
         ui->menuView->addAction(dock_widget->toggleViewAction());
     }

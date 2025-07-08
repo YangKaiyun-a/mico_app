@@ -29,36 +29,50 @@ bool ConfigManager::writeStringToFile(const std::string &filePath, const std::st
     }
 }
 
-ConfigManager *ConfigManager::Instacnce() {
+ConfigManager *ConfigManager::Instacnce()
+{
     static ConfigManager config;
     return &config;
 }
-// #define CHECK_DEFALUT
-ConfigManager::ConfigManager(/* args */) { Init(config_path_); }
-void ConfigManager::Init(const std::string &config_path) {
-    config_path_ = config_path;
-    // 配置不存在 写入默认配置
-    if (!boost::filesystem::exists(config_path_)) {
-        std::string pretty_json = JS::serializeStruct(config_root_);
 
+// #define CHECK_DEFALUT
+ConfigManager::ConfigManager(/* args */)
+{
+    Init(config_path_);
+}
+
+void ConfigManager::Init(const std::string &config_path)
+{
+    config_path_ = config_path;
+
+    // 配置不存在 写入默认配置
+    if (!boost::filesystem::exists(config_path_))
+    {
+        std::string pretty_json = JS::serializeStruct(config_root_);
         writeStringToFile(config_path_, pretty_json);
     }
+
     ReadRootConfig();
 }
-ConfigManager::~ConfigManager() {
+
+ConfigManager::~ConfigManager()
+{
     std::string pretty_json = JS::serializeStruct(config_root_);
     std::cout << "write json" << std::endl;
     writeStringToFile(config_path_, pretty_json);
 }
-bool ConfigManager::ReadRootConfig() {
+
+bool ConfigManager::ReadRootConfig()
+{
     std::lock_guard<std::mutex> lock(mutex_);
     std::ifstream file(config_path_);
-    std::string json((std::istreambuf_iterator<char>(file)),
-                     std::istreambuf_iterator<char>());
+    std::string json((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
     file.close();
     JS::ParseContext parseContext(json);
+
     // JS::ParseContext has the member
-    if (parseContext.parseTo(config_root_) != JS::Error::NoError) {
+    if (parseContext.parseTo(config_root_) != JS::Error::NoError)
+    {
         std::string errorStr = parseContext.makeErrorString();
         fprintf(stderr, "Error parsing config.json error: %s\n", errorStr.c_str());
         std::exit(1);
@@ -75,13 +89,14 @@ bool ConfigManager::StoreConfig()
     return true;
 }
 
-std::string ConfigManager::GetTopicName(const std::string &frame_name) {
-    auto iter = std::find_if(config_root_.display_config.begin(),
-                             config_root_.display_config.end(),
-                             [&frame_name](const auto &item) {
-                                 return item.display_name == frame_name;
-                             });
-    if (iter == config_root_.display_config.end()) {
+std::string ConfigManager::GetTopicName(const std::string &frame_name)
+{
+    auto iter = std::find_if(config_root_.display_config.begin(), config_root_.display_config.end(), [&frame_name](const auto &item) {
+        return item.display_name == frame_name;
+    });
+
+    if (iter == config_root_.display_config.end())
+    {
         return "";
     }
     return iter->topic;
@@ -92,8 +107,8 @@ void ConfigManager::SetDefaultTopicName(const std::string &frame_name, const std
 {
     //  查找是否已存在对应 frame 的配置
     auto iter = std::find_if(config_root_.display_config.begin(), config_root_.display_config.end(), [&frame_name](const auto &item) {
-                                 return item.display_name == frame_name;
-                             });
+        return item.display_name == frame_name;
+    });
 
     // 如果不存在就新增一项
     if (iter == config_root_.display_config.end())
@@ -107,13 +122,14 @@ void ConfigManager::SetDefaultTopicName(const std::string &frame_name, const std
     StoreConfig();
 }
 
-bool ConfigManager::ReadTopologyMap(const std::string &map_path,
-                                    TopologyMap &map) {
+bool ConfigManager::ReadTopologyMap(const std::string &map_path, TopologyMap &map)
+{
     std::lock_guard<std::mutex> lock(mutex_);
     std::string fullPath = map_path;
     boost::filesystem::path inputPathObj(map_path);
     // 判断路径是否为相对路径
-    if (inputPathObj.is_relative()) {
+    if (inputPathObj.is_relative())
+    {
         // 获取当前可执行程序的路径
         boost::filesystem::path executablePath = boost::dll::program_location();
 
@@ -125,12 +141,13 @@ bool ConfigManager::ReadTopologyMap(const std::string &map_path,
     }
 
     std::ifstream file(fullPath);
-    std::string json((std::istreambuf_iterator<char>(file)),
-                     std::istreambuf_iterator<char>());
+    std::string json((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
     file.close();
     JS::ParseContext parseContext(json);
+
     // JS::ParseContext has the member
-    if (parseContext.parseTo(map) != JS::Error::NoError) {
+    if (parseContext.parseTo(map) != JS::Error::NoError)
+    {
         std::string errorStr = parseContext.makeErrorString();
         fprintf(stderr, "Error parsing struct %s\n", errorStr.c_str());
         return false;
@@ -138,13 +155,15 @@ bool ConfigManager::ReadTopologyMap(const std::string &map_path,
     return true;
 }
 
-bool ConfigManager::WriteTopologyMap(const std::string &map_path,
-                                     const TopologyMap &topology_map) {
+bool ConfigManager::WriteTopologyMap(const std::string &map_path, const TopologyMap &topology_map)
+{
     std::lock_guard<std::mutex> lock(mutex_);
     std::string fullPath = map_path;
     boost::filesystem::path inputPathObj(map_path);
+
     // 判断路径是否为相对路径
-    if (inputPathObj.is_relative()) {
+    if (inputPathObj.is_relative())
+    {
         // 获取当前可执行程序的路径
         boost::filesystem::path executablePath = boost::dll::program_location();
 
