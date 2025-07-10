@@ -129,13 +129,18 @@ bool rclcomm::Start()
                 } catch (cv_bridge::Exception &e) {
                     try {
                         cv_bridge::CvImageConstPtr cv_ptr = cv_bridge::toCvShare(msg);
-                        if (msg->encoding == "CV_8UC3") {
+                        if (msg->encoding == "CV_8UC3")
+                        {
                             // assuming it is rgb
                             conversion_mat_ = cv_ptr->image;
-                        } else if (msg->encoding == "8UC1") {
+                        }
+                        else if (msg->encoding == "8UC1")
+                        {
                             // convert gray to rgb
                             cv::cvtColor(cv_ptr->image, conversion_mat_, CV_GRAY2RGB);
-                        } else if (msg->encoding == "16UC1" || msg->encoding == "32FC1") {
+                        }
+                        else if (msg->encoding == "16UC1" || msg->encoding == "32FC1")
+                        {
                             double min = 0;
                             double max = 10;
                             if (msg->encoding == "16UC1") max *= 1000;
@@ -151,18 +156,16 @@ bool rclcomm::Start()
                             cv::Mat img_scaled_8u;
                             cv::Mat(cv_ptr->image - min).convertTo(img_scaled_8u, CV_8UC1, 255. / (max - min));
                             cv::cvtColor(img_scaled_8u, conversion_mat_, CV_GRAY2RGB);
-                        } else {
+                        }
+                        else
+                        {
                             LOG_ERROR("image from " << msg->encoding
                                                     << " to 'rgb8' an exception was thrown (%s)"
                                                     << e.what());
                             return;
                         }
                     } catch (cv_bridge::Exception &e) {
-                        LOG_ERROR(
-                            "image from "
-                            << msg->encoding
-                            << " to 'rgb8' an exception was thrown (%s)" << e.what());
-
+                        LOG_ERROR("image from " << msg->encoding << " to 'rgb8' an exception was thrown (%s)" << e.what());
                         return;
                     }
                 }

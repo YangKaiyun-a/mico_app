@@ -83,9 +83,7 @@ bool ChannelManager::OpenChannel(const std::string &path)
         // 动态链接库加载成功
         // 在这里可以使用 QLibrary 提供的函数指针来访问动态链接库中的函数
         typedef VirtualChannelNode *(*GetChannelInstanceFunc)();
-        GetChannelInstanceFunc func_get =
-            (GetChannelInstanceFunc)library_channel_->get<VirtualChannelNode *()>(
-                "GetChannelInstance");  // 取出该符号
+        GetChannelInstanceFunc func_get = (GetChannelInstanceFunc)library_channel_->get<VirtualChannelNode *()>("GetChannelInstance");  // 取出该符号
 
         channel_ptr_ = func_get();
         if (channel_ptr_ == nullptr)
@@ -114,7 +112,8 @@ bool ChannelManager::OpenChannel(const std::string &path)
 
     return true;
 }
-void ChannelManager::CloseChannel() {
+void ChannelManager::CloseChannel()
+{
     channel_ptr_->ShutDown();
     delete channel_ptr_;
     channel_ptr_ = nullptr;
@@ -122,14 +121,16 @@ void ChannelManager::CloseChannel() {
 
 void ChannelManager::SendMessage(const MsgId &msg_id, const std::any &msg)
 {
-    if (channel_ptr_ != nullptr) {
+    if (channel_ptr_ != nullptr)
+    {
         channel_ptr_->SendMessage(msg_id, msg);
     }
 }
 
 VirtualChannelNode *ChannelManager::GetChannel()
 {
-    [[unlikely]] if (channel_ptr_ == nullptr) {
+    [[unlikely]] if (channel_ptr_ == nullptr)
+    {
         std::cout << "error channel is nullptr exit!" << std::endl;
         exit(1);
     }

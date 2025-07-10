@@ -558,13 +558,11 @@ void MainWindow::setupUi()
         }
     });
     connect(nav_goal_table_view_, &NavGoalTableView::signalTaskFinish, [this, btn_start_task_chain]() {
-                LOG_INFO("task finish!");
-                btn_start_task_chain->setText("Start Task Chain");
+        LOG_INFO("task finish!");
+        btn_start_task_chain->setText("Start Task Chain");
     });
     connect(display_manager_, SIGNAL(signalTopologyMapUpdate(const TopologyMap &)), nav_goal_table_view_, SLOT(UpdateTopologyMap(const TopologyMap &)));
-    connect(display_manager_, SIGNAL(signalCurrentSelectPointChanged(const TopologyMap::PointInfo &)),
-            nav_goal_table_view_,
-            SLOT(UpdateSelectPoint(const TopologyMap::PointInfo &)));
+    connect(display_manager_, SIGNAL(signalCurrentSelectPointChanged(const TopologyMap::PointInfo &)), nav_goal_table_view_, SLOT(UpdateSelectPoint(const TopologyMap::PointInfo &)));
 
     //////////////////////////////////////////////////////图片
 
@@ -583,52 +581,54 @@ void MainWindow::setupUi()
     //////////////////////////////////////////////////////槽链接
 
     connect(this, SIGNAL(OnRecvChannelData(const MsgId &, const std::any &)), this, SLOT(RecvChannelMsg(const MsgId &, const std::any &)), Qt::BlockingQueuedConnection);
-    connect(display_manager_, &Display::DisplayManager::signalPub2DPose,
-            [this](const RobotPose &pose) {
-                SendChannelMsg(MsgId::kSetRelocPose, pose);
-            });
-    connect(display_manager_, &Display::DisplayManager::signalPub2DGoal,
-            [this](const RobotPose &pose) {
-                SendChannelMsg(MsgId::kSetNavGoalPose, pose);
-            });
+    connect(display_manager_, &Display::DisplayManager::signalPub2DPose, [this](const RobotPose &pose) {
+        SendChannelMsg(MsgId::kSetRelocPose, pose);
+    });
+    connect(display_manager_, &Display::DisplayManager::signalPub2DGoal, [this](const RobotPose &pose) {
+        SendChannelMsg(MsgId::kSetNavGoalPose, pose);
+    });
     // ui相关
-    connect(reloc_btn, &QToolButton::clicked,
-            [this]() { display_manager_->StartReloc(); });
+    connect(reloc_btn, &QToolButton::clicked, [this]() { display_manager_->StartReloc(); });
     connect(save_map_btn, &QToolButton::clicked, [this]() {
-        QString fileName = QFileDialog::getSaveFileName(nullptr, "Save Map files",
-                                                        "", "Map files (*.yaml,*.pgm,*.pgm.json)");
-        if (!fileName.isEmpty()) {
+        QString fileName = QFileDialog::getSaveFileName(nullptr, "Save Map files", "", "Map files (*.yaml,*.pgm,*.pgm.json)");
+        if (!fileName.isEmpty())
+        {
             // 用户选择了文件夹，可以在这里进行相应的操作
             LOG_INFO("用户选择的保存地图路径：" << fileName.toStdString());
             display_manager_->SaveMap(fileName.toStdString());
-        } else {
+        }
+        else
+        {
             // 用户取消了选择
             LOG_INFO("取消保存地图");
         }
     });
     connect(open_map_btn, &QToolButton::clicked, [this]() {
         QStringList filters;
-        filters
-            << "地图(*.yaml)"
-            << "拓扑地图(*.topology)";
+        filters << "地图(*.yaml)" << "拓扑地图(*.topology)";
 
-        QString fileName = QFileDialog::getOpenFileName(nullptr, "OPen Map files",
-                                                        "", filters.join(";;"));
-        if (!fileName.isEmpty()) {
+        QString fileName = QFileDialog::getOpenFileName(nullptr, "OPen Map files", "", filters.join(";;"));
+        if (!fileName.isEmpty())
+        {
             // 用户选择了文件夹，可以在这里进行相应的操作
             LOG_INFO("用户选择的打开地图路径：" << fileName.toStdString());
             display_manager_->OpenMap(fileName.toStdString());
-        } else {
+        }
+        else
+        {
             // 用户取消了选择
             LOG_INFO("取消打开地图");
         }
     });
     connect(edit_map_btn, &QToolButton::clicked, [this, tools_edit_map_widget, edit_map_btn]() {
-        if (edit_map_btn->text() == "编辑地图") {
+        if (edit_map_btn->text() == "编辑地图")
+        {
             display_manager_->SetEditMapMode(Display::MapEditMode::kNormal);
             edit_map_btn->setText("结束编辑");
             tools_edit_map_widget->show();
-        } else {
+        }
+        else
+        {
             display_manager_->SetEditMapMode(Display::MapEditMode::kStop);
             edit_map_btn->setText("编辑地图");
             tools_edit_map_widget->hide();
@@ -643,18 +643,14 @@ void MainWindow::setupUi()
     connect(add_region_btn, &QToolButton::clicked, [this]() { display_manager_->SetEditMapMode(Display::MapEditMode::kRegion); });
     connect(draw_pen_btn, &QToolButton::clicked, [this]() { display_manager_->SetEditMapMode(Display::MapEditMode::kDrawWithPen); });
     connect(add_topology_path_btn, &QToolButton::clicked, [this]() { display_manager_->SetEditMapMode(Display::MapEditMode::kLinkTopology); });
-    connect(display_manager_->GetDisplay(DISPLAY_MAP),
-            SIGNAL(signalCursorPose(QPointF)), this,
-            SLOT(signalCursorPose(QPointF)));
+    connect(display_manager_->GetDisplay(DISPLAY_MAP), SIGNAL(signalCursorPose(QPointF)), this, SLOT(signalCursorPose(QPointF)));
 }
 
-void MainWindow::signalCursorPose(QPointF pos) {
-    basic::Point mapPos =
-        display_manager_->mapPose2Word(basic::Point(pos.x(), pos.y()));
-    label_pos_map_->setText("( x:" + QString::number(mapPos.x).mid(0, 4) +
-                            " y:" + QString::number(mapPos.y).mid(0, 4) + ") ");
-    label_pos_scene_->setText("(x:" + QString::number(pos.x()).mid(0, 4) +
-                              " y:" + QString::number(pos.y()).mid(0, 4) + ")");
+void MainWindow::signalCursorPose(QPointF pos)
+{
+    basic::Point mapPos = display_manager_->mapPose2Word(basic::Point(pos.x(), pos.y()));
+    label_pos_map_->setText("( x:" + QString::number(mapPos.x).mid(0, 4) + " y:" + QString::number(mapPos.y).mid(0, 4) + ") ");
+    label_pos_scene_->setText("(x:" + QString::number(pos.x()).mid(0, 4) + " y:" + QString::number(pos.y()).mid(0, 4) + ")");
 }
 
 //============================================================================
@@ -664,8 +660,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
     // that all top level windows of the dock manager are properly closed
     // write state
 
-    disconnect(this, SIGNAL(OnRecvChannelData(const MsgId &, const std::any &)),
-               this, SLOT(RecvChannelMsg(const MsgId &, const std::any &)));
+    disconnect(this, SIGNAL(OnRecvChannelData(const MsgId &, const std::any &)), this, SLOT(RecvChannelMsg(const MsgId &, const std::any &)));
     SaveState();
     dock_manager_->deleteLater();
     QMainWindow::closeEvent(event);
@@ -710,11 +705,16 @@ void MainWindow::updateOdomInfo(RobotState state)
     //   }
     //   // 仪表盘
     speed_dash_board_->set_speed(abs(state.vx * 100));
-    if (state.vx > 0.001) {
+    if (state.vx > 0.001)
+    {
         speed_dash_board_->set_gear(DashBoard::kGear_D);
-    } else if (state.vx < -0.001) {
+    }
+    else if (state.vx < -0.001)
+    {
         speed_dash_board_->set_gear(DashBoard::kGear_R);
-    } else {
+    }
+    else
+    {
         speed_dash_board_->set_gear(DashBoard::kGear_N);
     }
     //   QString number = QString::number(abs(state.vx * 100)).mid(0, 2);
@@ -727,7 +727,8 @@ void MainWindow::updateOdomInfo(RobotState state)
     //           QPainter painter(&image);
     //           myscene->render(&painter);   //关键函数
 }
-void MainWindow::SlotSetBatteryStatus(double percent, double voltage) {
+void MainWindow::SlotSetBatteryStatus(double percent, double voltage)
+{
     battery_bar_->setValue(percent);
     label_power_->setText(QString::number(voltage, 'f', 2) + "V");
 }
