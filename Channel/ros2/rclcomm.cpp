@@ -433,28 +433,32 @@ void rclcomm::odom_callback(const nav_msgs::msg::Odometry::SharedPtr msg)
 
 void rclcomm::SendMessage(const MsgId &msg_id, const std::any &msg)
 {
-    switch (msg_id) {
-    case MsgId::kSetNavGoalPose: {
-        auto pose = std::any_cast<basic::RobotPose>(msg);
-        std::cout << "recv nav goal pose:" << pose << std::endl;
+    switch (msg_id)
+    {
+        case MsgId::kSetNavGoalPose:
+        {
+            auto pose = std::any_cast<basic::RobotPose>(msg);
+            std::cout << "recv nav goal pose:" << pose << std::endl;
 
-        PubNavGoal(pose);
-
-    } break;
-    case MsgId::kSetRelocPose: {
-        auto pose = std::any_cast<basic::RobotPose>(msg);
-        std::cout << "recv reloc pose:" << pose << std::endl;
-        PubRelocPose(pose);
-
-    } break;
-    case MsgId::kSetRobotSpeed: {
-        auto speed = std::any_cast<basic::RobotSpeed>(msg);
-        std::cout << "recv reloc pose:" << speed << std::endl;
-        PubRobotSpeed(speed);
-
-    } break;
-    default:
+            PubNavGoal(pose);
+        }
         break;
+        case MsgId::kSetRelocPose:
+        {
+            auto pose = std::any_cast<basic::RobotPose>(msg);
+            std::cout << "recv reloc pose:" << pose << std::endl;
+            PubRelocPose(pose);
+        }
+        break;
+        case MsgId::kSetRobotSpeed:
+        {
+            auto speed = std::any_cast<basic::RobotSpeed>(msg);
+            std::cout << "recv reloc pose:" << speed << std::endl;
+            PubRobotSpeed(speed);
+        }
+        break;
+        default:
+            break;
     }
 }
 

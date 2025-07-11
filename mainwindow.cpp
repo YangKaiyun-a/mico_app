@@ -19,10 +19,34 @@
 using namespace ads;
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow)
 {
+    ui->setupUi(this);
+    init();
+}
+
+MainWindow::~MainWindow()
+{
+    delete ui;
+}
+
+void MainWindow::init()
+{
+    LOG_INFO("mico_app 程序启动" << QThread::currentThreadId());
+
+    initData();
+    initUI();
+
+    openChannel();
+
+    QTimer::singleShot(50, [=]() {
+        RestoreState();
+    });
+}
+
+void MainWindow::initData()
+{
     Q_INIT_RESOURCE(images);
     Q_INIT_RESOURCE(media);
 
-    LOG_INFO(" MainWindow init thread id" << QThread::currentThreadId());
     qRegisterMetaType<std::string>("std::string");
     qRegisterMetaType<RobotPose>("RobotPose");
     qRegisterMetaType<RobotSpeed>("RobotSpeed");
@@ -35,83 +59,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     qRegisterMetaType<std::any>("std::any");
     qRegisterMetaType<TopologyMap>("TopologyMap");
     qRegisterMetaType<TopologyMap::PointInfo>("TopologyMap::PointInfo");
-    setupUi();
-    openChannel();
-    QTimer::singleShot(50, [=]() { RestoreState(); });
 }
 
-bool MainWindow::openChannel()
+void MainWindow::initUI()
 {
-    if (channel_manager_.OpenChannelAuto())
-    {
-        registerChannel();
-        return true;
-    }
-    return false;
-}
-
-bool MainWindow::openChannel(const std::string &channel_name)
-{
-    if (channel_manager_.OpenChannel(channel_name))
-    {
-        registerChannel();
-        return true;
-    }
-    return false;
-}
-
-// 注册回调函数，rclcomm 类中接收到消息后触发信号 OnRecvChannelData
-void MainWindow::registerChannel()
-{
-    channel_manager_.RegisterOnDataCallback(std::move([this](const MsgId &id, const std::any &data) {
-        emit OnRecvChannelData(id, data);
-    }));
-}
-
-void MainWindow::RecvChannelMsg(const MsgId &id, const std::any &data)
-{
-    switch (id) {
-    case MsgId::kOdomPose:
-        updateOdomInfo(std::any_cast<RobotState>(data));
-        break;
-    case MsgId::kRobotPose: {
-        nav_goal_table_view_->UpdateRobotPose(std::any_cast<RobotPose>(data));
-    } break;
-    case MsgId::kBatteryState: {
-        std::map<std::string, std::string> map = std::any_cast<std::map<std::string, std::string>>(data);
-        this->SlotSetBatteryStatus(std::stod(map["percent"]), std::stod(map["voltage"]));
-    } break;
-    case MsgId::kImage: {
-        auto location_to_mat = std::any_cast<std::pair<std::string, std::shared_ptr<cv::Mat>>>(data);
-
-        this->SlotRecvImage(location_to_mat.first, location_to_mat.second);
-    } break;
-    default:
-        break;
-    }
-    display_manager_->UpdateTopicData(id, data);
-}
-
-void MainWindow::SlotRecvImage(const std::string &location, std::shared_ptr<cv::Mat> data)
-{
-    if (image_frame_map_.count(location))
-    {
-        QImage image(data->data, data->cols, data->rows, data->step[0], QImage::Format_RGB888);
-        image_frame_map_[location]->setImage(image);
-    }
-}
-
-void MainWindow::SendChannelMsg(const MsgId &id, const std::any &data)
-{
-    channel_manager_.SendMessage(id, data);
-}
-
-void MainWindow::closeChannel() { channel_manager_.CloseChannel(); }
-MainWindow::~MainWindow() { delete ui; }
-
-void MainWindow::setupUi()
-{
-    ui->setupUi(this);
     CDockManager::setConfigFlag(CDockManager::OpaqueSplitterResize, true);
     CDockManager::setConfigFlag(CDockManager::XmlCompressionEnabled, false);
     CDockManager::setConfigFlag(CDockManager::FocusHighlighting, true);
@@ -121,16 +72,17 @@ void MainWindow::setupUi()
     CDockManager::setConfigFlag(CDockManager::EqualSplitOnInsertion, true);
     CDockManager::setConfigFlag(CDockManager::ShowTabTextOnlyForActiveTab, true);
     CDockManager::setAutoHideConfigFlags(CDockManager::DefaultAutoHideConfig);
+
     dock_manager_ = new CDockManager(this);
     QVBoxLayout *center_layout = new QVBoxLayout();    //垂直
     QHBoxLayout *center_h_layout = new QHBoxLayout();  //水平
 
-    ///////////////////////////////////////////////////////////////地图工具栏
+    /***************************地图工具栏***************************/
     QHBoxLayout *horizontalLayout_tools = new QHBoxLayout();
     horizontalLayout_tools->setSpacing(0);
-    horizontalLayout_tools->setObjectName(
-        QString::fromUtf8(" horizontalLayout_tools"));
+    horizontalLayout_tools->setObjectName(QString::fromUtf8(" horizontalLayout_tools"));
 
+    // 重定位按钮
     QToolButton *reloc_btn = new QToolButton();
     reloc_btn->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     reloc_btn->setStyleSheet(
@@ -149,15 +101,11 @@ void MainWindow::setupUi()
     icon4.addFile(QString::fromUtf8(":/images/reloc2.svg"), QSize(64, 64), QIcon::Normal, QIcon::Off);
     reloc_btn->setIcon(icon4);
     reloc_btn->setText("重定位");
-    // reloc_btn->setMaximumSize(QSize(54, 54));
     reloc_btn->setIconSize(QSize(32, 32));
     horizontalLayout_tools->addWidget(reloc_btn);
-    QIcon icon5;
-    icon5.addFile(QString::fromUtf8(":/images/edit.svg"), QSize(64, 64), QIcon::Normal, QIcon::Off);
+
+    // 编辑地图按钮
     QToolButton *edit_map_btn = new QToolButton();
-    edit_map_btn->setIcon(icon5);
-    edit_map_btn->setText("编辑地图");
-    // edit_map_btn->setMaximumSize(QSize(54, 54));
     edit_map_btn->setIconSize(QSize(32, 32));
     edit_map_btn->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     edit_map_btn->setStyleSheet(
@@ -171,14 +119,14 @@ void MainWindow::setupUi()
         "QToolButton:pressed {"
         "   background-color: lightblue;"
         "}");
+    QIcon icon5;
+    icon5.addFile(QString::fromUtf8(":/images/edit.svg"), QSize(64, 64), QIcon::Normal, QIcon::Off);
+    edit_map_btn->setIcon(icon5);
+    edit_map_btn->setText("编辑地图");
     horizontalLayout_tools->addWidget(edit_map_btn);
 
-    QIcon icon6;
-    icon6.addFile(QString::fromUtf8(":/images/open.svg"), QSize(64, 64), QIcon::Normal, QIcon::Off);
+    // 打开地图按钮
     QToolButton *open_map_btn = new QToolButton();
-    open_map_btn->setIcon(icon6);
-    open_map_btn->setText("打开地图");
-    // open_map_btn->setMaximumSize(QSize(54, 54));
     open_map_btn->setIconSize(QSize(32, 32));
     open_map_btn->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     open_map_btn->setStyleSheet(
@@ -192,14 +140,14 @@ void MainWindow::setupUi()
         "QToolButton:pressed {"
         "   background-color: lightblue;"
         "}");
+    QIcon icon6;
+    icon6.addFile(QString::fromUtf8(":/images/open.svg"), QSize(64, 64), QIcon::Normal, QIcon::Off);
+    open_map_btn->setIcon(icon6);
+    open_map_btn->setText("打开地图");
     horizontalLayout_tools->addWidget(open_map_btn);
 
-    QIcon icon7;
-    icon7.addFile(QString::fromUtf8(":/images/save.svg"), QSize(64, 64), QIcon::Normal, QIcon::Off);
+    // 保存地图按钮
     QToolButton *save_map_btn = new QToolButton();
-    save_map_btn->setIcon(icon7);
-    save_map_btn->setText("保存地图");
-    // save_map_btn->setMaximumSize(QSize(54, 54));
     save_map_btn->setIconSize(QSize(32, 32));
     save_map_btn->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     save_map_btn->setStyleSheet(
@@ -213,11 +161,15 @@ void MainWindow::setupUi()
         "QToolButton:pressed {"
         "   background-color: lightblue;"
         "}");
+    QIcon icon7;
+    icon7.addFile(QString::fromUtf8(":/images/save.svg"), QSize(64, 64), QIcon::Normal, QIcon::Off);
+    save_map_btn->setIcon(icon7);
+    save_map_btn->setText("保存地图");
     horizontalLayout_tools->addWidget(save_map_btn);
     horizontalLayout_tools->addItem(new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Minimum));
     center_layout->addLayout(horizontalLayout_tools);
 
-    ///////////////////////////////////////////////////////////////////电池电量
+    // 电池电量
     battery_bar_ = new QProgressBar();
     battery_bar_->setObjectName(QString::fromUtf8("battery_bar_"));
     battery_bar_->setMaximumSize(QSize(90, 16777215));
@@ -261,14 +213,15 @@ void MainWindow::setupUi()
 
     horizontalLayout_tools->addWidget(label_power_);
     SlotSetBatteryStatus(0, 0);
-    //////////////////////////////////////////////////////////////编辑地图工具栏
-    QWidget *tools_edit_map_widget = new QWidget();
 
+    /***************************编辑地图工具栏***************************/
+    QWidget *tools_edit_map_widget = new QWidget();
     QVBoxLayout *layout_tools_edit_map = new QVBoxLayout();
     tools_edit_map_widget->setLayout(layout_tools_edit_map);
     layout_tools_edit_map->setSpacing(0);
     layout_tools_edit_map->setObjectName(QString::fromUtf8(" layout_tools_edit_map"));
-    //地图编辑 设置鼠标按钮
+
+    // 鼠标按钮
     QToolButton *normal_cursor_btn = new QToolButton();
     normal_cursor_btn->setStyleSheet(
         "QToolButton {"
@@ -287,8 +240,7 @@ void MainWindow::setupUi()
     normal_cursor_btn->setIcon(pose_tool_btn_icon);
     layout_tools_edit_map->addWidget(normal_cursor_btn);
 
-    //添加点位按钮
-
+    // 添加点位按钮
     QToolButton *add_point_btn = new QToolButton();
     add_point_btn->setStyleSheet(
         "QToolButton {"
@@ -307,6 +259,7 @@ void MainWindow::setupUi()
     add_point_btn->setIcon(add_point_btn_icon);
     layout_tools_edit_map->addWidget(add_point_btn);
 
+    // 连接工位点按钮（未启用）
     QToolButton *add_topology_path_btn = new QToolButton();
     add_topology_path_btn->setStyleSheet(
         "QToolButton {"
@@ -324,9 +277,9 @@ void MainWindow::setupUi()
     add_topology_path_btn_icon.addFile(QString::fromUtf8(":/images/topo_link_btn.svg"), QSize(), QIcon::Normal, QIcon::Off);
     add_topology_path_btn->setIcon(add_topology_path_btn_icon);
     layout_tools_edit_map->addWidget(add_topology_path_btn);
-    //TODO 拓扑点连接
     add_topology_path_btn->setEnabled(false);
-    //添加区域按钮
+
+    // 添加区域按钮
     QToolButton *add_region_btn = new QToolButton();
     add_region_btn->setStyleSheet(
         "QToolButton {"
@@ -346,16 +299,13 @@ void MainWindow::setupUi()
     add_region_btn->setEnabled(false);
     layout_tools_edit_map->addWidget(add_region_btn);
 
-    //分隔
+    // 分隔
     QFrame *separator = new QFrame();
     separator->setFrameShape(QFrame::HLine);
     separator->setFrameShadow(QFrame::Sunken);
-
-    // 将分割符号添加到布局中
     layout_tools_edit_map->addWidget(separator);
 
     //橡皮擦按钮
-
     QToolButton *erase_btn = new QToolButton();
     erase_btn->setStyleSheet(
         "QToolButton {"
@@ -373,7 +323,8 @@ void MainWindow::setupUi()
     erase_btn_icon.addFile(QString::fromUtf8(":/images/erase_btn.svg"), QSize(), QIcon::Normal, QIcon::Off);
     erase_btn->setIcon(erase_btn_icon);
     layout_tools_edit_map->addWidget(erase_btn);
-    //画笔按钮
+
+    // 画笔按钮
     QToolButton *draw_pen_btn = new QToolButton();
     draw_pen_btn->setStyleSheet(
         "QToolButton {"
@@ -392,8 +343,8 @@ void MainWindow::setupUi()
     draw_pen_btn->setIcon(draw_pen_btn_icon);
 
     layout_tools_edit_map->addWidget(draw_pen_btn);
-    //线段按钮
 
+    //线段按钮
     QToolButton *draw_line_btn = new QToolButton();
     draw_line_btn->setStyleSheet(
         "QToolButton {"
@@ -418,61 +369,58 @@ void MainWindow::setupUi()
     center_h_layout->addWidget(tools_edit_map_widget);
     center_layout->addLayout(center_h_layout);
 
-    /////////////////////////////////////////////////////////////////////////地图显示
 
+    /***************************地图显示***************************/
     display_manager_ = new Display::DisplayManager();
     center_h_layout->addWidget(display_manager_->GetViewPtr());
 
-    //////////////////////////////////////////////////////////////////////////坐标显示
+
+    /***************************地图下方的坐标***************************/
     QHBoxLayout *horizontalLayout_12 = new QHBoxLayout();
     horizontalLayout_12->setObjectName(QString::fromUtf8("horizontalLayout_12"));
+
     QLabel *label = new QLabel();
     label->setText("map:");
     label->setObjectName(QString::fromUtf8("label"));
-
     horizontalLayout_12->addWidget(label);
 
     label_pos_map_ = new QLabel();
     label_pos_map_->setObjectName(QString::fromUtf8("label_pos_map_"));
     label_pos_map_->setStyleSheet(QString::fromUtf8(""));
-
     horizontalLayout_12->addWidget(label_pos_map_);
 
     QLabel *label_5 = new QLabel();
     label_5->setText("scene:");
-
     label_5->setObjectName(QString::fromUtf8("label_5"));
-
     horizontalLayout_12->addWidget(label_5);
 
     label_pos_scene_ = new QLabel();
     label_pos_scene_->setObjectName(QString::fromUtf8("label_pos_scene_"));
-
     horizontalLayout_12->addWidget(label_pos_scene_);
 
     horizontalLayout_12->addItem(new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum));
-
     center_layout->addLayout(horizontalLayout_12);
 
-    /////////////////////////////////////////////////中心主窗体
-    QWidget *center_widget = new QWidget();
 
+    /***************************中心主窗体***************************/
+    QWidget *center_widget = new QWidget();
     center_widget->setLayout(center_layout);
     CDockWidget *CentralDockWidget = new CDockWidget("CentralWidget");
     CentralDockWidget->setWidget(center_widget);
     center_docker_area_ = dock_manager_->setCentralWidget(CentralDockWidget);
     center_docker_area_->setAllowedAreas(DockWidgetArea::OuterDockAreas);
 
-    //////////////////////////////////////////////////////////速度仪表盘
+
+    /***************************速度仪表盘***************************/
     ads::CDockWidget *DashBoardDockWidget = new ads::CDockWidget("DashBoard");
     QWidget *speed_dashboard_widget = new QWidget();
-    // speed_dashboard_widget->setMinimumSize(QSize(300, 300));
     DashBoardDockWidget->setWidget(speed_dashboard_widget);
     speed_dash_board_ = new DashBoard(speed_dashboard_widget);
     auto dashboard_area = dock_manager_->addDockWidget(ads::DockWidgetArea::LeftDockWidgetArea, DashBoardDockWidget, center_docker_area_);
     ui->menuView->addAction(DashBoardDockWidget->toggleViewAction());
 
-    ////////////////////////////////////////////////////////速度控制
+
+    /***************************速度控制***************************/
     speed_ctrl_widget_ = new SpeedCtrlWidget();
     connect(speed_ctrl_widget_, &SpeedCtrlWidget::signalControlSpeed, [this](const RobotSpeed &speed) {
         SendChannelMsg(MsgId::kSetRobotSpeed, speed);
@@ -482,8 +430,8 @@ void MainWindow::setupUi()
     auto speed_ctrl_area = dock_manager_->addDockWidget(ads::DockWidgetArea::BottomDockWidgetArea, SpeedCtrlDockWidget, dashboard_area);
     ui->menuView->addAction(SpeedCtrlDockWidget->toggleViewAction());
 
-    /////////////////////////////////////////////////////////导航任务列表
 
+    /***************************导航任务列表***************************/
     QWidget *task_list_widget = new QWidget();
     nav_goal_table_view_ = new NavGoalTableView();
     QVBoxLayout *horizontalLayout_13 = new QVBoxLayout();
@@ -513,6 +461,7 @@ void MainWindow::setupUi()
     nav_goal_list_dock_widget->setMaximumSize(480, 9999);
     dock_manager_->addDockWidget(ads::DockWidgetArea::RightDockWidgetArea, nav_goal_list_dock_widget, center_docker_area_);
     nav_goal_list_dock_widget->toggleView(false);
+
     connect(nav_goal_table_view_, &NavGoalTableView::signalSendNavGoal, [this](const RobotPose &pose) {
         SendChannelMsg(MsgId::kSetNavGoalPose, pose);
     });
@@ -644,6 +593,77 @@ void MainWindow::setupUi()
     connect(draw_pen_btn, &QToolButton::clicked, [this]() { display_manager_->SetEditMapMode(Display::MapEditMode::kDrawWithPen); });
     connect(add_topology_path_btn, &QToolButton::clicked, [this]() { display_manager_->SetEditMapMode(Display::MapEditMode::kLinkTopology); });
     connect(display_manager_->GetDisplay(DISPLAY_MAP), SIGNAL(signalCursorPose(QPointF)), this, SLOT(signalCursorPose(QPointF)));
+}
+
+bool MainWindow::openChannel()
+{
+    if (channel_manager_.OpenChannelAuto())
+    {
+        registerChannel();
+        return true;
+    }
+    return false;
+}
+
+bool MainWindow::openChannel(const std::string &channel_name)
+{
+    if (channel_manager_.OpenChannel(channel_name))
+    {
+        registerChannel();
+        return true;
+    }
+    return false;
+}
+
+// 注册回调函数，rclcomm 类中接收到消息后触发信号 OnRecvChannelData
+void MainWindow::registerChannel()
+{
+    channel_manager_.RegisterOnDataCallback(std::move([this](const MsgId &id, const std::any &data) {
+        emit OnRecvChannelData(id, data);
+    }));
+}
+
+void MainWindow::RecvChannelMsg(const MsgId &id, const std::any &data)
+{
+    switch (id) {
+    case MsgId::kOdomPose:
+        updateOdomInfo(std::any_cast<RobotState>(data));
+        break;
+    case MsgId::kRobotPose: {
+        nav_goal_table_view_->UpdateRobotPose(std::any_cast<RobotPose>(data));
+    } break;
+    case MsgId::kBatteryState: {
+        std::map<std::string, std::string> map = std::any_cast<std::map<std::string, std::string>>(data);
+        this->SlotSetBatteryStatus(std::stod(map["percent"]), std::stod(map["voltage"]));
+    } break;
+    case MsgId::kImage: {
+        auto location_to_mat = std::any_cast<std::pair<std::string, std::shared_ptr<cv::Mat>>>(data);
+
+        this->SlotRecvImage(location_to_mat.first, location_to_mat.second);
+    } break;
+    default:
+        break;
+    }
+    display_manager_->UpdateTopicData(id, data);
+}
+
+void MainWindow::SlotRecvImage(const std::string &location, std::shared_ptr<cv::Mat> data)
+{
+    if (image_frame_map_.count(location))
+    {
+        QImage image(data->data, data->cols, data->rows, data->step[0], QImage::Format_RGB888);
+        image_frame_map_[location]->setImage(image);
+    }
+}
+
+void MainWindow::SendChannelMsg(const MsgId &id, const std::any &data)
+{
+    channel_manager_.SendMessage(id, data);
+}
+
+void MainWindow::closeChannel()
+{
+    channel_manager_.CloseChannel();
 }
 
 void MainWindow::signalCursorPose(QPointF pos)

@@ -82,7 +82,9 @@ signals:
     void OnRecvChannelData(const MsgId &id, const std::any &data);
 
 private:
-    void setupUi();
+    void init();
+    void initData();
+    void initUI();
     bool openChannel();
     bool openChannel(const std::string &channel_name);
     void closeChannel();
