@@ -625,24 +625,30 @@ void MainWindow::registerChannel()
 
 void MainWindow::RecvChannelMsg(const MsgId &id, const std::any &data)
 {
-    switch (id) {
-    case MsgId::kOdomPose:
-        updateOdomInfo(std::any_cast<RobotState>(data));
-        break;
-    case MsgId::kRobotPose: {
-        nav_goal_table_view_->UpdateRobotPose(std::any_cast<RobotPose>(data));
-    } break;
-    case MsgId::kBatteryState: {
-        std::map<std::string, std::string> map = std::any_cast<std::map<std::string, std::string>>(data);
-        this->SlotSetBatteryStatus(std::stod(map["percent"]), std::stod(map["voltage"]));
-    } break;
-    case MsgId::kImage: {
-        auto location_to_mat = std::any_cast<std::pair<std::string, std::shared_ptr<cv::Mat>>>(data);
-
-        this->SlotRecvImage(location_to_mat.first, location_to_mat.second);
-    } break;
-    default:
-        break;
+    switch (id)
+    {
+        case MsgId::kOdomPose:
+            updateOdomInfo(std::any_cast<RobotState>(data));
+            break;
+        case MsgId::kRobotPose:
+        {
+            nav_goal_table_view_->UpdateRobotPose(std::any_cast<RobotPose>(data));
+            break;
+        }
+        case MsgId::kBatteryState:
+        {
+            std::map<std::string, std::string> map = std::any_cast<std::map<std::string, std::string>>(data);
+            this->SlotSetBatteryStatus(std::stod(map["percent"]), std::stod(map["voltage"]));
+            break;
+        }
+        case MsgId::kImage:
+        {
+            auto location_to_mat = std::any_cast<std::pair<std::string, std::shared_ptr<cv::Mat>>>(data);
+            this->SlotRecvImage(location_to_mat.first, location_to_mat.second);
+            break;
+        }
+        default:
+            break;
     }
     display_manager_->UpdateTopicData(id, data);
 }

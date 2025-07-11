@@ -54,10 +54,12 @@ DisplayManager::DisplayManager() {
     FactoryDisplay::Instance()->SetMoveEnable(DISPLAY_MAP);
     InitUi();
 }
+
 void DisplayManager::UpdateTopicData(const MsgId &id, const std::any &data)
 {
     UpdateDisplay(ToString(id), data);
 }
+
 void DisplayManager::slotSetRobotPose(const RobotPose &pose) {
     FactoryDisplay::Instance()->SetMoveEnable(DISPLAY_ROBOT, false);
     UpdateRobotPose(pose);
