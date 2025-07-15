@@ -9,8 +9,9 @@ struct DisplayConfig {
     std::string topic;
     bool enable = true;
     DisplayConfig() = default;
-    DisplayConfig(std::string display_name, std::string topic, bool enable)
-        : display_name(display_name), topic(topic), enable(enable) {}
+    DisplayConfig(std::string display_name, std::string topic, bool enable) : display_name(display_name), topic(topic), enable(enable) {
+
+    }
     JS_OBJ(display_name, topic, enable);
 };
 

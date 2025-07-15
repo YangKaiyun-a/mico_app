@@ -200,15 +200,17 @@ bool DisplayManager::UpdateDisplay(const std::string &display_type, const std::a
  * @description:坐标系转换为图元坐标系
  * @return {*}
  */
-std::vector<Point>
-DisplayManager::transLaserPoint(const std::vector<Point> &point) {
+std::vector<Point> DisplayManager::transLaserPoint(const std::vector<Point> &point)
+{
     // point为车身坐标系下的坐标 需要根据当前机器人坐标转换为map
     std::vector<Point> res;
-    for (auto one_point : point) {
+    for (auto one_point : point)
+    {
         //根据机器人坐标转换为map坐标系下
         basic::RobotPose map_pose = basic::absoluteSum(
             basic::RobotPose(robot_pose_.x, robot_pose_.y, robot_pose_.theta),
             basic::RobotPose(one_point.x, one_point.y, 0));
+
         // 转换为图元坐标系
         double x, y;
         map_data_.xy2ScenePose(map_pose.x, map_pose.y, x, y);
@@ -222,31 +224,41 @@ DisplayManager::transLaserPoint(const std::vector<Point> &point) {
  * @param {Vector3f&} pose x y theta
  * @return {*}
  */
-void DisplayManager::UpdateRobotPose(const RobotPose &pose) {
+void DisplayManager::UpdateRobotPose(const RobotPose &pose)
+{
     robot_pose_ = pose;
     GetDisplay(DISPLAY_ROBOT)->UpdateDisplay(wordPose2Map(pose));
     GetDisplay(DISPLAY_SHAPE)->UpdateDisplay(wordPose2Map(pose));
 }
 
-void DisplayManager::updateScaled(double value) {
+void DisplayManager::updateScaled(double value)
+{
     FactoryDisplay::Instance()->SetDisplayScaled(DISPLAY_LASER, value);
 }
-void DisplayManager::SetRelocMode(bool is_start) {
+
+void DisplayManager::SetRelocMode(bool is_start)
+{
     is_reloc_mode_ = is_start;
-    if (is_start) {
+
+    if (is_start)
+    {
         FocusDisplay("");
-        set_reloc_pose_widget_->SetPose(
-            RobotPose(robot_pose_.x, robot_pose_.y, robot_pose_.theta));
+        set_reloc_pose_widget_->SetPose(RobotPose(robot_pose_.x, robot_pose_.y, robot_pose_.theta));
         auto current_scene = GetDisplay(DISPLAY_ROBOT)->scenePos();
         QPointF view_pos = graphics_view_ptr_->mapFromScene(current_scene);
         set_reloc_pose_widget_->move(QPoint(view_pos.x(), view_pos.y()));
         set_reloc_pose_widget_->show();
-    } else {
+    }
+    else
+    {
         set_reloc_pose_widget_->hide();
     }
+
     FactoryDisplay::Instance()->SetMoveEnable(DISPLAY_ROBOT, is_start);
 }
-void DisplayManager::FocusDisplay(const std::string &display_name) {
+
+void DisplayManager::FocusDisplay(const std::string &display_name)
+{
     FactoryDisplay::Instance()->SetFocusDisplay(display_name);
 }
 
@@ -255,15 +267,14 @@ void DisplayManager::FocusDisplay(const std::string &display_name) {
  * @param {Vector2f&} point 传入的点坐标
  * @return {*}
  */
-RobotPose DisplayManager::wordPose2Scene(const RobotPose &point) {
+RobotPose DisplayManager::wordPose2Scene(const RobotPose &point)
+{
     // xy在栅格地图上的图元坐标
     double x, y;
     map_data_.xy2ScenePose(point.x, point.y, x, y);
-    // xy在map图层上的坐标
-    QPointF pose = FactoryDisplay::Instance()
-                       ->GetDisplay(DISPLAY_MAP)
-                       ->PoseToScene(QPointF(x, y));
 
+    // xy在map图层上的坐标
+    QPointF pose = FactoryDisplay::Instance()->GetDisplay(DISPLAY_MAP)->PoseToScene(QPointF(x, y));
     RobotPose res;
     res.x = pose.x();
     res.y = pose.y();
@@ -275,15 +286,16 @@ RobotPose DisplayManager::wordPose2Scene(const RobotPose &point) {
  * @param {Vector2f&} point 传入的点坐标
  * @return {*}
  */
-QPointF DisplayManager::wordPose2Scene(const QPointF &point) {
+QPointF DisplayManager::wordPose2Scene(const QPointF &point)
+{
     // xy在栅格地图上的图元坐标
     double x, y;
     map_data_.xy2ScenePose(point.x(), point.y(), x, y);
-    return FactoryDisplay::Instance()
-        ->GetDisplay(DISPLAY_MAP)
-        ->PoseToScene(QPointF(x, y));
+    return FactoryDisplay::Instance()->GetDisplay(DISPLAY_MAP)->PoseToScene(QPointF(x, y));
 }
-RobotPose DisplayManager::wordPose2Map(const RobotPose &pose) {
+
+RobotPose DisplayManager::wordPose2Map(const RobotPose &pose)
+{
     RobotPose ret = pose;
     double x, y;
     map_data_.xy2ScenePose(pose.x, pose.y, x, y);
@@ -291,7 +303,9 @@ RobotPose DisplayManager::wordPose2Map(const RobotPose &pose) {
     ret.y = y;
     return ret;
 }
-QPointF DisplayManager::wordPose2Map(const QPointF &pose) {
+
+QPointF DisplayManager::wordPose2Map(const QPointF &pose)
+{
     QPointF ret;
     double x, y;
     map_data_.xy2ScenePose(pose.x(), pose.y(), x, y);
@@ -299,7 +313,9 @@ QPointF DisplayManager::wordPose2Map(const QPointF &pose) {
     ret.setY(y);
     return ret;
 }
-RobotPose DisplayManager::mapPose2Word(const RobotPose &pose) {
+
+RobotPose DisplayManager::mapPose2Word(const RobotPose &pose)
+{
     RobotPose ret = pose;
     double x, y;
     map_data_.ScenePose2xy(pose.x, pose.y, x, y);
@@ -307,33 +323,54 @@ RobotPose DisplayManager::mapPose2Word(const RobotPose &pose) {
     ret.y = y;
     return ret;
 }
-RobotPose DisplayManager::scenePoseToWord(const RobotPose &pose) {
-    QPointF pose_map = FactoryDisplay::Instance()
-    ->GetDisplay(DISPLAY_MAP)
-        ->mapFromScene(QPointF(pose.x, pose.y));
+
+RobotPose DisplayManager::scenePoseToWord(const RobotPose &pose)
+{
+    QPointF pose_map = FactoryDisplay::Instance()->GetDisplay(DISPLAY_MAP)->mapFromScene(QPointF(pose.x, pose.y));
     return mapPose2Word(RobotPose(pose_map.x(), pose_map.y(), pose.theta));
 }
-RobotPose DisplayManager::scenePoseToMap(const RobotPose &pose) {
-    QPointF pose_map = FactoryDisplay::Instance()
-    ->GetDisplay(DISPLAY_MAP)
-        ->mapFromScene(QPointF(pose.x, pose.y));
+
+RobotPose DisplayManager::scenePoseToMap(const RobotPose &pose)
+{
+    QPointF pose_map = FactoryDisplay::Instance()->GetDisplay(DISPLAY_MAP)->mapFromScene(QPointF(pose.x, pose.y));
     return RobotPose(pose_map.x(), pose_map.y(), pose.theta);
 }
-VirtualDisplay *DisplayManager::GetDisplay(const std::string &name) {
+
+VirtualDisplay *DisplayManager::GetDisplay(const std::string &name)
+{
     return FactoryDisplay::Instance()->GetDisplay(name);
 }
-void DisplayManager::StartReloc() {
-    if (!set_reloc_pose_widget_->isVisible()) {
+
+void DisplayManager::StartReloc()
+{
+    if (!set_reloc_pose_widget_->isVisible())
+    {
         SetRelocMode(true);
     }
 }
-void DisplayManager::SetEditMapMode(MapEditMode mode) { scene_manager_ptr_->SetEditMapMode(mode); }
-void DisplayManager::AddOneNavPoint() { scene_manager_ptr_->AddOneNavPoint(); }
-OccupancyMap &DisplayManager::GetMap() { return map_data_; }
-void DisplayManager::UpdateMap(OccupancyMap &) {
+
+void DisplayManager::SetEditMapMode(MapEditMode mode)
+{
+    scene_manager_ptr_->SetEditMapMode(mode);
+}
+
+void DisplayManager::AddOneNavPoint()
+{
+    scene_manager_ptr_->AddOneNavPoint();
+}
+
+OccupancyMap &DisplayManager::GetMap()
+{
+    return map_data_;
+}
+
+void DisplayManager::UpdateMap(OccupancyMap &)
+{
     emit signalPubMap(map_data_);
 }
-void DisplayManager::SaveMap(const std::string &save_path) {
+
+void DisplayManager::SaveMap(const std::string &save_path)
+{
     LOG_INFO("start save topology map")
     scene_manager_ptr_->SaveTopologyMap(save_path);
     LOG_INFO("start save occ map")
@@ -341,7 +378,9 @@ void DisplayManager::SaveMap(const std::string &save_path) {
     auto map = display_map_->GetOccupancyMap();
     map.Save(save_path);
 }
-void DisplayManager::OpenMap(const std::string &path) {
+
+void DisplayManager::OpenMap(const std::string &path)
+{
     boost::filesystem::path filepath(path);
     //文件夹
     std::string directory = filepath.parent_path().string();
@@ -354,40 +393,43 @@ void DisplayManager::OpenMap(const std::string &path) {
     std::string extension = filepath.extension().string();
     LOG_INFO("Extension: " << extension);
 
-    if (extension == ".topology") {
+    if (extension == ".topology")
+    {
         scene_manager_ptr_->OpenTopologyMap(path);
-    } else if (extension == ".yaml") {
-        std::string topology_path =
-            directory + "/" + filenameWithoutExtension + ".topology";
-        std::string pgm_path =
-            directory + "/" + filenameWithoutExtension + ".pgm";
-        std::string yaml_path =
-            directory + "/" + filenameWithoutExtension + ".yaml";
-        if (boost::filesystem::exists(topology_path)) {
+    }
+    else if (extension == ".yaml")
+    {
+        std::string topology_path = directory + "/" + filenameWithoutExtension + ".topology";
+        std::string pgm_path = directory + "/" + filenameWithoutExtension + ".pgm";
+        std::string yaml_path = directory + "/" + filenameWithoutExtension + ".yaml";
+
+        if (boost::filesystem::exists(topology_path))
+        {
             scene_manager_ptr_->OpenTopologyMap(topology_path);
         }
-        if (boost::filesystem::exists(yaml_path)) {
+
+        if (boost::filesystem::exists(yaml_path))
+        {
             OccupancyMap map;
             bool ret = map.Load(yaml_path);
             LOG_INFO("open map ret:" << ret);
             UpdateDisplay(DISPLAY_MAP, map);
-        } else {
+        }
+        else
+        {
             LOG_ERROR("pgm or yaml not exit! path:" << directory + "/" + filenameWithoutExtension)
         }
     }
 }
-void DisplayManager::SetScaleBig() {
-    FactoryDisplay::Instance()
-    ->GetDisplay(DISPLAY_MAP)
-        ->SetScaled(
-            FactoryDisplay::Instance()->GetDisplay(DISPLAY_MAP)->GetScaleValue() *
-            1.3);
+
+void DisplayManager::SetScaleBig()
+{
+    FactoryDisplay::Instance()->GetDisplay(DISPLAY_MAP)->SetScaled(FactoryDisplay::Instance()->GetDisplay(DISPLAY_MAP)->GetScaleValue() * 1.3);
 }
-void DisplayManager::SetScaleSmall() {
-    FactoryDisplay::Instance()
-    ->GetDisplay(DISPLAY_MAP)
-        ->SetScaled(
-            FactoryDisplay::Instance()->GetDisplay(DISPLAY_MAP)->GetScaleValue() *
-            0.7);
+
+void DisplayManager::SetScaleSmall()
+{
+    FactoryDisplay::Instance()->GetDisplay(DISPLAY_MAP)->SetScaled(FactoryDisplay::Instance()->GetDisplay(DISPLAY_MAP)->GetScaleValue() * 0.7);
 }
+
 }  // namespace Display

@@ -305,7 +305,7 @@ void MainWindow::initUI()
     separator->setFrameShadow(QFrame::Sunken);
     layout_tools_edit_map->addWidget(separator);
 
-    //橡皮擦按钮
+    // 橡皮擦按钮
     QToolButton *erase_btn = new QToolButton();
     erase_btn->setStyleSheet(
         "QToolButton {"
@@ -344,7 +344,7 @@ void MainWindow::initUI()
 
     layout_tools_edit_map->addWidget(draw_pen_btn);
 
-    //线段按钮
+    // 线段按钮
     QToolButton *draw_line_btn = new QToolButton();
     draw_line_btn->setStyleSheet(
         "QToolButton {"
