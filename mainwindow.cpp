@@ -690,7 +690,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
     SaveState();
     dock_manager_->deleteLater();
     QMainWindow::closeEvent(event);
-    LOG_INFO("ros qt5 gui app close!");
+    LOG_INFO("micao app close!");
 }
 
 void MainWindow::SaveState()
@@ -729,7 +729,7 @@ void MainWindow::updateOdomInfo(RobotState state)
     //     ui->label_turnRight->setPixmap(
     //         QPixmap::fromImage(QImage("://images/turnRight_l.png")));
     //   }
-    //   // 仪表盘
+    // 仪表盘
     speed_dash_board_->set_speed(abs(state.vx * 100));
     if (state.vx > 0.001)
     {
