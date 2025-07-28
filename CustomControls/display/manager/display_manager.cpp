@@ -1,7 +1,8 @@
-// 1,图元坐标系 scenPose 对应所有图层的外部全局坐标系
-// 2, 图层坐标系 每个图层的单独坐标系
-// 3, 占栅格地图坐标系 occPose
-// 4,机器人全局地图坐标系 wordPose
+// 1、图元坐标系 scenPose 对应所有图层的外部全局坐标系
+// 2、图层坐标系 每个图层的单独坐标系
+// 3、占栅格地图坐标系 occPose
+// 4、机器人全局地图坐标系 wordPose
+
 #include "display/manager/display_manager.h"
 #include <Eigen/Eigen>
 #include <QOpenGLWidget>
@@ -10,50 +11,67 @@
 #include "algorithm.h"
 #include "display/manager/scene_manager.h"
 #include "logger.h"
+
+
 namespace Display {
 
-DisplayManager::DisplayManager() {
+DisplayManager::DisplayManager()
+{
+    // 用于展示地图等数据的视图窗口
     graphics_view_ptr_ = new ViewManager();
     graphics_view_ptr_->SetDisplayManagerPtr(this);
+
+    // 管理和存储地图等数据和逻辑
     scene_manager_ptr_ = new SceneManager();
     scene_manager_ptr_->Init(graphics_view_ptr_, this);
+
     // 设置绘制区域
     FactoryDisplay::Instance()->Init(graphics_view_ptr_, scene_manager_ptr_);
-    connect(scene_manager_ptr_,
-            SIGNAL(signalTopologyMapUpdate(const TopologyMap &)), this,
-            SIGNAL(signalTopologyMapUpdate(const TopologyMap &)));
-    connect(
-        scene_manager_ptr_,
-        SIGNAL(signalCurrentSelectPointChanged(const TopologyMap::PointInfo &)),
-        this,
-        SIGNAL(signalCurrentSelectPointChanged(const TopologyMap::PointInfo &)));
-    //------------------------------------start display instace (register
-    // display)-----------------------------
+    connect(scene_manager_ptr_, SIGNAL(signalTopologyMapUpdate(const TopologyMap &)), this, SIGNAL(signalTopologyMapUpdate(const TopologyMap &)));
+    connect(scene_manager_ptr_, SIGNAL(signalCurrentSelectPointChanged(const TopologyMap::PointInfo &)), this, SIGNAL(signalCurrentSelectPointChanged(const TopologyMap::PointInfo &)));
+
+    //------------------------------------start display instace (register display)-----------------------------
     (new DisplayOccMap(DISPLAY_MAP, 1));
     (new DisplayCostMap(DISPLAY_GLOBAL_COST_MAP, 2, DISPLAY_MAP));
 
     (new DisplayCostMap(DISPLAY_LOCAL_COST_MAP, 3, DISPLAY_MAP));
-    (new PointShape(PointShape::ePointType::kRobot, DISPLAY_ROBOT, DISPLAY_ROBOT,
-                    9, DISPLAY_MAP))
-        ->SetRotateEnable(true);
+    (new PointShape(PointShape::ePointType::kRobot, DISPLAY_ROBOT, DISPLAY_ROBOT, 9, DISPLAY_MAP))->SetRotateEnable(true);
     new LaserPoints(DISPLAY_LASER, 2, DISPLAY_MAP);
     new DisplayPath(DISPLAY_GLOBAL_PATH, 6, DISPLAY_MAP);
     new DisplayPath(DISPLAY_LOCAL_PATH, 6, DISPLAY_MAP);
     new RobotShape(DISPLAY_SHAPE, 8, DISPLAY_MAP);
-    // defalut display config
 
+    // defalut display config
     SetDisplayConfig(DISPLAY_GLOBAL_PATH + "/Color", Color(0, 0, 255));
     SetDisplayConfig(DISPLAY_LOCAL_PATH + "/Color", Color(0, 255, 0));
 
     // connection
-
-    connect(GetDisplay(DISPLAY_ROBOT),
-            SIGNAL(signalPoseUpdate(const RobotPose &)), this,
-            SLOT(slotRobotScenePoseChanged(const RobotPose &)));
+    connect(GetDisplay(DISPLAY_ROBOT), SIGNAL(signalPoseUpdate(const RobotPose &)), this, SLOT(slotRobotScenePoseChanged(const RobotPose &)));
     // 设置默认地图图层响应鼠标事件
     FactoryDisplay::Instance()->SetMoveEnable(DISPLAY_MAP);
     InitUi();
 }
+
+DisplayManager::~DisplayManager()
+{
+
+}
+
+void DisplayManager::InitUi()
+{
+    set_reloc_pose_widget_ = new SetPoseWidget(graphics_view_ptr_);
+    set_reloc_pose_widget_->hide();
+
+    connect(set_reloc_pose_widget_, &SetPoseWidget::SignalHandleOver, [this](const bool &is_submit, const RobotPose &pose) {
+        SetRelocMode(false);
+        if (is_submit)
+        {
+            emit signalPub2DPose(pose);
+        }
+    });
+    connect(set_reloc_pose_widget_, SIGNAL(SignalPoseChanged(const RobotPose &)), this, SLOT(slotSetRobotPose(const RobotPose &)));
+}
+
 
 void DisplayManager::UpdateTopicData(const MsgId &id, const std::any &data)
 {
@@ -86,20 +104,6 @@ void DisplayManager::slotRobotScenePoseChanged(const RobotPose &pose) {
             RobotPose(robot_pose_.x, robot_pose_.y, robot_pose_.theta));
     }
 }
-void DisplayManager::InitUi() {
-    set_reloc_pose_widget_ = new SetPoseWidget(graphics_view_ptr_);
-    set_reloc_pose_widget_->hide();
-    connect(set_reloc_pose_widget_, &SetPoseWidget::SignalHandleOver,
-            [this](const bool &is_submit, const RobotPose &pose) {
-                SetRelocMode(false);
-                if (is_submit) {
-                    emit signalPub2DPose(pose);
-                }
-            });
-    connect(set_reloc_pose_widget_, SIGNAL(SignalPoseChanged(const RobotPose &)),
-            this, SLOT(slotSetRobotPose(const RobotPose &)));
-}
-DisplayManager::~DisplayManager() {}
 
 bool DisplayManager::SetDisplayConfig(const std::string &config_name, const std::any &data)
 {

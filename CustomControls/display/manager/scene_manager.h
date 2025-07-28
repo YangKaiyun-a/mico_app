@@ -9,16 +9,16 @@
 #include "../../nav_goal_widget.h"
 #include "../../set_pose_widget.h"
 namespace Display {
+
 class DisplayManager;
 class SceneManager : public QGraphicsScene {
     Q_OBJECT
-
 private:
     SetPoseWidget *set_nav_pose_widget_;
     QGraphicsView *view_ptr_;
     Display::VirtualDisplay *curr_handle_display_{nullptr};
     DisplayManager *display_manager_;
-    NavGoalWidget *nav_goal_widget_;
+    NavGoalWidget *nav_goal_widget_;    // 设置目标点位页面
 
     TopologyMap topology_map_;
     MapEditMode current_mode_;
