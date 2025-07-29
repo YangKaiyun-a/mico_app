@@ -20,6 +20,8 @@
 #include "virtual_display.h"
 namespace Display {
 
+///< PointShape 用来绘制地图上某个点位的形状
+
 class PointShape : public VirtualDisplay {
     Q_OBJECT
 public:
@@ -30,9 +32,7 @@ public:
         kNavGoal
     };
 
-    PointShape(const ePointType &type, const std::string &display_type,
-               const std::string &display_name, const int &z_value,
-               std::string parent_name = "");
+    PointShape(const ePointType &type, const std::string &display_type, const std::string &display_name, const int &z_value, std::string parent_name = "");
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = nullptr) override;
     bool UpdateData(const std::any &data) override;
     bool SetDisplayConfig(const std::string &config_name, const std::any &config_data) override;
@@ -54,8 +54,7 @@ private:
     inline double deg2rad(double x) { return M_PI * x / 180.0; }
     // 弧度转角度
     inline double rad2deg(double x) { return 180.0 * x / M_PI; }
-    QVariant itemChange(GraphicsItemChange change,
-                        const QVariant &value) override;
+    QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
 };
 // NOLINTEND
 }  // namespace Display

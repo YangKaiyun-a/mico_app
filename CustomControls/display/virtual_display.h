@@ -58,7 +58,7 @@ enum MapEditMode {
     kDrawLine,      // 绘制线段模式
     kAddPoint,      // 添加点位模式
     kRegion,        // 添加区域模式
-    kDrawWithPen,   //画笔
+    kDrawWithPen,   // 画笔
     kLinkTopology,  // 拓扑图
 };
 
@@ -97,22 +97,36 @@ signals:
     void signalItemChange(GraphicsItemChange change, const QVariant &value);
 
 public:
-    VirtualDisplay(const std::string &display_type, const int &z_value,
-                   const std::string &parent_name, std::string display_name = "");
+    VirtualDisplay(const std::string &display_type, const int &z_value, const std::string &parent_name, std::string display_name = "");
     virtual ~VirtualDisplay();
-    bool UpdateDisplay(const std::any &data) { return UpdateData(data); }
-    VirtualDisplay *SetRotateEnable(const bool &enable) {
+
+    bool UpdateDisplay(const std::any &data)
+    {
+        return UpdateData(data);
+    }
+
+    VirtualDisplay *SetRotateEnable(const bool &enable)
+    {
         enable_rotate_ = enable;
         return this;
     }
-    double GetScaleValue() { return scale_value_; }
-    VirtualDisplay *SetScaleEnable(const bool &enable) {
+
+    double GetScaleValue()
+    {
+        return scale_value_;
+    }
+
+    VirtualDisplay *SetScaleEnable(const bool &enable)
+    {
         enable_scale_ = enable;
         return this;
     }
-    VirtualDisplay *SetMoveEnable(const bool &enable) {
+
+    VirtualDisplay *SetMoveEnable(const bool &enable)
+    {
         move_enable_ = enable;
-        if (enable) {
+        if (enable)
+        {
             // 只有响应的图层才响应鼠标事件
             setAcceptHoverEvents(true);
             setAcceptedMouseButtons(Qt::AllButtons);
@@ -123,30 +137,74 @@ public:
         update();
         return this;
     }
-    bool GetMoveEnable() { return move_enable_; }
-    void AddChild(VirtualDisplay *child) { children_.push_back(child); }
-    void RemoveChild(VirtualDisplay *child) {
-        children_.erase(std::remove(children_.begin(), children_.end(), child),
-                        children_.end());
-    }
-    std::vector<VirtualDisplay *> GetChildren() { return children_; }
-    void UpdateMap(OccupancyMap map) { map_data_ = map; }
 
-    double GetRotate() { return rotate_value_; }
+    bool GetMoveEnable()
+    {
+        return move_enable_;
+    }
+
+    void AddChild(VirtualDisplay *child)
+    {
+        children_.push_back(child);
+    }
+
+    void RemoveChild(VirtualDisplay *child)
+    {
+        children_.erase(std::remove(children_.begin(), children_.end(), child), children_.end());
+    }
+
+    std::vector<VirtualDisplay *> GetChildren()
+    {
+        return children_;
+    }
+
+    void UpdateMap(OccupancyMap map)
+    {
+        map_data_ = map;
+    }
+
+    double GetRotate()
+    {
+        return rotate_value_;
+    }
+
     virtual bool UpdateData(const std::any &data) = 0;
-    virtual bool SetDisplayConfig(const std::string &config_name,
-                                  const std::any &config_data);
+    virtual bool SetDisplayConfig(const std::string &config_name, const std::any &config_data);
     bool SetScaled(const double &value);
     bool SetRotate(const double &value);
-    void SetBoundingRect(QRectF rect) { bounding_rect_ = rect; }
-    QPointF GetOriginPose() { return bounding_rect_.topLeft(); }
-    QPointF GetOriginPoseScene() { return mapToScene(GetOriginPose()); }
-    QPointF PoseToScene(QPointF pose) {  //将坐标转换为scene(以中心为原点)
+    void SetBoundingRect(QRectF rect)
+    {
+        bounding_rect_ = rect;
+    }
+
+    QPointF GetOriginPose()
+    {
+        return bounding_rect_.topLeft();
+    }
+
+    QPointF GetOriginPoseScene()
+    {
+        return mapToScene(GetOriginPose());
+    }
+
+    QPointF PoseToScene(QPointF pose)
+    {
+        //将坐标转换为scene(以中心为原点)
         return mapToScene((pose + GetOriginPose()));
     }
+
     void CenterOnScene(QPointF pose);
-    bool IsMoving() { return is_moving_; }
-    void UpdatePose(const RobotPose &pose) { SetPoseInParent(pose); }
+
+    bool IsMoving()
+    {
+        return is_moving_;
+    }
+
+    void UpdatePose(const RobotPose &pose)
+    {
+        SetPoseInParent(pose);
+    }
+
     void SetPoseInParent(const RobotPose &pose);
     RobotPose GetCurrentScenePose() { return curr_scene_pose_; }
     RobotPose GetPoseInParent() { return pose_in_parent_; }
@@ -154,11 +212,15 @@ public:
     std::string GetDisplayName() { return display_name_; }
     void SetDisplayName(const std::string &name) { display_name_ = name; }
     //设置原点在全局的坐标
-    void SetOriginPoseInScene(const QPointF &pose) {
+    void SetOriginPoseInScene(const QPointF &pose)
+    {
         setPos(pose - GetOriginPose());
     }
     void MovedBy(const qreal &x, const qreal &y);
-    QRectF boundingRect() const override { return bounding_rect_; }
+    QRectF boundingRect() const override
+    {
+        return bounding_rect_;
+    }
     std::string GetDisplayType();
     void SetDisplayType(const std::string &display_type);
     void Update();
@@ -169,8 +231,8 @@ private:
     void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
     void hoverMoveEvent(QGraphicsSceneHoverEvent *event) override;
-    virtual QVariant itemChange(GraphicsItemChange change,
-                                const QVariant &value) override;
+    virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
+
 private slots:
     void parentItemChange(GraphicsItemChange change, const QVariant &value);
 };

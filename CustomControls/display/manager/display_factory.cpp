@@ -73,6 +73,7 @@ bool FactoryDisplay::SetDisplayScenePose(const std::string &display_name, const 
     display->setPos(pose);
     return true;
 }
+
 // 设置图层的scene坐标
 bool FactoryDisplay::SetDisplayPoseInParent(const std::string &display_name, const RobotPose &pose)
 {
@@ -83,6 +84,7 @@ bool FactoryDisplay::SetDisplayPoseInParent(const std::string &display_name, con
     display->SetPoseInParent(pose);
     return true;
 }
+
 // 设置图层放大缩小
 bool FactoryDisplay::SetDisplayScaled(const std::string &display_name, const double &value)
 {
@@ -93,6 +95,7 @@ bool FactoryDisplay::SetDisplayScaled(const std::string &display_name, const dou
     display->SetScaled(value);
     return true;
 }
+
 void FactoryDisplay::AddDisplay(VirtualDisplay *display, const std::string &parent_name)
 {
     if (total_display_map_.count(display->GetDisplayName()) != 0)
@@ -137,6 +140,7 @@ void FactoryDisplay::RemoveDisplay(const std::string &name)
         total_display_map_.erase(iter);
     }
 }
+
 int FactoryDisplay::GetDisplaySize()
 {
     return total_display_map_.size();

@@ -52,7 +52,7 @@ private:
     double global_scal_value_ = 1;
     bool is_reloc_mode_{false};
     ViewManager *graphics_view_ptr_;
-    SetPoseWidget *set_reloc_pose_widget_;
+    SetPoseWidget *set_reloc_pose_widget_;      ///< 重定位页面
     SceneManager *scene_manager_ptr_;
     bool init_flag_{false};
 signals:

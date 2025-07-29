@@ -30,22 +30,27 @@ DisplayManager::DisplayManager()
     connect(scene_manager_ptr_, SIGNAL(signalTopologyMapUpdate(const TopologyMap &)), this, SIGNAL(signalTopologyMapUpdate(const TopologyMap &)));
     connect(scene_manager_ptr_, SIGNAL(signalCurrentSelectPointChanged(const TopologyMap::PointInfo &)), this, SIGNAL(signalCurrentSelectPointChanged(const TopologyMap::PointInfo &)));
 
-    //------------------------------------start display instace (register display)-----------------------------
-    (new DisplayOccMap(DISPLAY_MAP, 1));
-    (new DisplayCostMap(DISPLAY_GLOBAL_COST_MAP, 2, DISPLAY_MAP));
-
-    (new DisplayCostMap(DISPLAY_LOCAL_COST_MAP, 3, DISPLAY_MAP));
+    // 绘制地图
+    new DisplayOccMap(DISPLAY_MAP, 1);
+    // 绘制全局代价地图
+    new DisplayCostMap(DISPLAY_GLOBAL_COST_MAP, 2, DISPLAY_MAP);
+    // 绘制局部代价地图
+    new DisplayCostMap(DISPLAY_LOCAL_COST_MAP, 3, DISPLAY_MAP);
+    // 绘制中心点机器人图标
     (new PointShape(PointShape::ePointType::kRobot, DISPLAY_ROBOT, DISPLAY_ROBOT, 9, DISPLAY_MAP))->SetRotateEnable(true);
+    // 绘制雷达点
     new LaserPoints(DISPLAY_LASER, 2, DISPLAY_MAP);
+    // 绘制全局路径
     new DisplayPath(DISPLAY_GLOBAL_PATH, 6, DISPLAY_MAP);
+    // 绘制局部路径
     new DisplayPath(DISPLAY_LOCAL_PATH, 6, DISPLAY_MAP);
+    // 绘制机器人形状
     new RobotShape(DISPLAY_SHAPE, 8, DISPLAY_MAP);
 
     // defalut display config
     SetDisplayConfig(DISPLAY_GLOBAL_PATH + "/Color", Color(0, 0, 255));
     SetDisplayConfig(DISPLAY_LOCAL_PATH + "/Color", Color(0, 255, 0));
 
-    // connection
     connect(GetDisplay(DISPLAY_ROBOT), SIGNAL(signalPoseUpdate(const RobotPose &)), this, SLOT(slotRobotScenePoseChanged(const RobotPose &)));
     // 设置默认地图图层响应鼠标事件
     FactoryDisplay::Instance()->SetMoveEnable(DISPLAY_MAP);
@@ -59,6 +64,7 @@ DisplayManager::~DisplayManager()
 
 void DisplayManager::InitUi()
 {
+    // 重定位页面
     set_reloc_pose_widget_ = new SetPoseWidget(graphics_view_ptr_);
     set_reloc_pose_widget_->hide();
 
@@ -66,6 +72,7 @@ void DisplayManager::InitUi()
         SetRelocMode(false);
         if (is_submit)
         {
+            // 发送给模块
             emit signalPub2DPose(pose);
         }
     });
@@ -248,7 +255,11 @@ void DisplayManager::SetRelocMode(bool is_start)
     {
         FocusDisplay("");
         set_reloc_pose_widget_->SetPose(RobotPose(robot_pose_.x, robot_pose_.y, robot_pose_.theta));
+
+        // current_scene 为 DISPLAY_ROBOT 图层在大场景 Scene 中的左上角坐标
         auto current_scene = GetDisplay(DISPLAY_ROBOT)->scenePos();
+
+        // 将 current_scene 转换为视图坐标
         QPointF view_pos = graphics_view_ptr_->mapFromScene(current_scene);
         set_reloc_pose_widget_->move(QPoint(view_pos.x(), view_pos.y()));
         set_reloc_pose_widget_->show();
@@ -340,11 +351,13 @@ RobotPose DisplayManager::scenePoseToMap(const RobotPose &pose)
     return RobotPose(pose_map.x(), pose_map.y(), pose.theta);
 }
 
+// 获取图层
 VirtualDisplay *DisplayManager::GetDisplay(const std::string &name)
 {
     return FactoryDisplay::Instance()->GetDisplay(name);
 }
 
+// 重定位按钮槽函数
 void DisplayManager::StartReloc()
 {
     if (!set_reloc_pose_widget_->isVisible())
