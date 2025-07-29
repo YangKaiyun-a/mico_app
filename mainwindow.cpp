@@ -52,7 +52,6 @@ void MainWindow::initData()
     qRegisterMetaType<RobotSpeed>("RobotSpeed");
     qRegisterMetaType<RobotState>("RobotState");
     qRegisterMetaType<OccupancyMap>("OccupancyMap");
-    qRegisterMetaType<OccupancyMap>("OccupancyMap");
     qRegisterMetaType<LaserScan>("LaserScan");
     qRegisterMetaType<RobotPath>("RobotPath");
     qRegisterMetaType<MsgId>("MsgId");
@@ -586,12 +585,24 @@ void MainWindow::initUI()
     connect(add_point_btn, &QToolButton::clicked, [this]() {
         display_manager_->SetEditMapMode(Display::MapEditMode::kAddPoint);
     });
-    connect(normal_cursor_btn, &QToolButton::clicked, [this]() { display_manager_->SetEditMapMode(Display::MapEditMode::kNormal); });
-    connect(erase_btn, &QToolButton::clicked, [this]() { display_manager_->SetEditMapMode(Display::MapEditMode::kErase); });
-    connect(draw_line_btn, &QToolButton::clicked, [this]() { display_manager_->SetEditMapMode(Display::MapEditMode::kDrawLine); });
-    connect(add_region_btn, &QToolButton::clicked, [this]() { display_manager_->SetEditMapMode(Display::MapEditMode::kRegion); });
-    connect(draw_pen_btn, &QToolButton::clicked, [this]() { display_manager_->SetEditMapMode(Display::MapEditMode::kDrawWithPen); });
-    connect(add_topology_path_btn, &QToolButton::clicked, [this]() { display_manager_->SetEditMapMode(Display::MapEditMode::kLinkTopology); });
+    connect(normal_cursor_btn, &QToolButton::clicked, [this]() {
+        display_manager_->SetEditMapMode(Display::MapEditMode::kNormal);
+    });
+    connect(erase_btn, &QToolButton::clicked, [this]() {
+        display_manager_->SetEditMapMode(Display::MapEditMode::kErase);
+    });
+    connect(draw_line_btn, &QToolButton::clicked, [this]() {
+        display_manager_->SetEditMapMode(Display::MapEditMode::kDrawLine);
+    });
+    connect(add_region_btn, &QToolButton::clicked, [this]() {
+        display_manager_->SetEditMapMode(Display::MapEditMode::kRegion);
+    });
+    connect(draw_pen_btn, &QToolButton::clicked, [this]() {
+        display_manager_->SetEditMapMode(Display::MapEditMode::kDrawWithPen);
+    });
+    connect(add_topology_path_btn, &QToolButton::clicked, [this]() {
+        display_manager_->SetEditMapMode(Display::MapEditMode::kLinkTopology);
+    });
     connect(display_manager_->GetDisplay(DISPLAY_MAP), SIGNAL(signalCursorPose(QPointF)), this, SLOT(signalCursorPose(QPointF)));
 }
 
