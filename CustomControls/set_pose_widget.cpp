@@ -75,6 +75,7 @@ void SetPoseWidget::SetPose(const RobotPose &pose)
     spinBox_x_->blockSignals(true);
     spinBox_y_->blockSignals(true);
     spinBox_theta_->blockSignals(true);
+
     spinBox_x_->setValue(pose.x);
     spinBox_y_->setValue(pose.y);
     spinBox_theta_->setValue(rad2deg(pose.theta));

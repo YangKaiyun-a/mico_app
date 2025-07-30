@@ -42,7 +42,6 @@ class DisplayManager : public QObject
 public:
 private:
     std::map<std::string, std::any> display_map_;
-
     RobotPose robot_pose_{0, 0, 0};
     RobotPose robot_pose_goal_{0, 0, 0};
     OccupancyMap map_data_;
