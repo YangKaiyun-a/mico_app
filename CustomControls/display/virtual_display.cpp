@@ -5,19 +5,21 @@ namespace Display {
 VirtualDisplay::VirtualDisplay(const std::string &display_type, const int &z_value, const std::string &parent_name, std::string display_name)
     : display_type_(display_type), display_name_(display_name), parent_name_(parent_name)
 {
-    //如果没有设置图层名 则以type作为名称
+    // 如果没有设置图层名 则以type作为名称
     if (display_name.empty())
     {
         display_name_ = display_type;
     }
 
     FactoryDisplay::Instance()->AddDisplay(this, parent_name);
+
+    // 检查父图层是否存在
     parent_ptr_ = FactoryDisplay::Instance()->GetDisplay(parent_name_);
     if (parent_ptr_ != nullptr)
     {
-        connect(parent_ptr_, SIGNAL(signalItemChange(GraphicsItemChange, const QVariant &)),
-                    this, SLOT(parentItemChange(GraphicsItemChange, const QVariant &)));
+        connect(parent_ptr_, &VirtualDisplay::signalItemChange, this, &VirtualDisplay::parentItemChange);
     }
+
     this->setZValue(z_value);
     transform_ = this->transform();
 }
@@ -27,6 +29,7 @@ void VirtualDisplay::CenterOnScene(QPointF pose)
     FactoryDisplay::Instance()-> CenterOnScene(pose);
 }
 
+// 当该 item 的状态发生改变时调用（移动、缩放、旋转、选中、添加到场景、删除、可见性变化等）
 QVariant VirtualDisplay::itemChange(GraphicsItemChange change, const QVariant &value)
 {
     emit signalItemChange(change, value);
@@ -37,8 +40,10 @@ void VirtualDisplay::parentItemChange(GraphicsItemChange change, const QVariant 
 {
     switch (change)
     {
-        case QGraphicsItem::ItemScaleHasChanged:
-            SetPoseInParent(pose_in_parent_);
+        case QGraphicsItem::ItemScaleHasChanged:    // 缩放比例发生变化
+            SetPoseInParent(pose_in_parent_);       // 调整 item 坐标
+            break;
+        default:
             break;
     }
 }
@@ -180,6 +185,7 @@ void VirtualDisplay::wheelEvent(QGraphicsSceneWheelEvent *event)
     }
     update();
 }
+
 void VirtualDisplay::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
     if (!move_enable_)
@@ -188,12 +194,14 @@ void VirtualDisplay::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
         QGraphicsItem::mouseMoveEvent(event);
         return;
     }
+
     if (pressed_button_ == Qt::LeftButton)
     {
         QPointF point = (event->pos() - pressed_pose_) * scale_value_;
         MovedBy(point.x(), point.y());
         end_pose_ = event->pos();
     }
+
     ////////////////////////// 右健旋转
     if (pressed_button_ == Qt::RightButton && enable_rotate_)
     {
@@ -241,8 +249,10 @@ void VirtualDisplay::mousePressEvent(QGraphicsSceneMouseEvent *event)
         QGraphicsItem::mousePressEvent(event);
         return;
     }
+
     pressed_button_ = event->button();
     pressed_pose_ = event->pos();
+
     if (event->button() == Qt::LeftButton)
     {
         is_mouse_press_ = true;
@@ -265,7 +275,7 @@ void VirtualDisplay::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
     }
 
     if (pressed_button_ == event->button())
-        pressed_button_ == Qt::NoButton;
+        pressed_button_ = Qt::NoButton;
 
     if (event->button() == Qt::LeftButton)
     {

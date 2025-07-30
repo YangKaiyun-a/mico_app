@@ -32,9 +32,11 @@ private:
     QCursor rect_cursor_;
     QCursor region_cursor_;
     QCursor pen_cursor_;
+
 signals:
     void signalTopologyMapUpdate(const TopologyMap &map);
     void signalCurrentSelectPointChanged(const TopologyMap::PointInfo &);
+
 public slots:
     void SetEditMapMode(MapEditMode mode);
     void SaveTopologyMap(const std::string &file_path);

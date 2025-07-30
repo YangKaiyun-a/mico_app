@@ -116,6 +116,7 @@ void NavGoalTableView::StartTaskChain(bool is_loop)
                 RobotPose target_pose = point.ToRobotPose();
                 emit signalSendNavGoal(target_pose);
                 RobotPose diff = absoluteDifference(target_pose, robot_pose_);
+
                 while (diff.mod() > 0.2 || fabs(diff.theta) > deg2rad(15))
                 {
                     LOG_INFO("Task chain is running diff:" << diff << " mode:" << diff.mod() << " deg:" << rad2deg(fabs(diff.theta)));

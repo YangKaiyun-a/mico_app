@@ -27,16 +27,17 @@ DisplayManager::DisplayManager()
 
     // 设置绘制区域
     FactoryDisplay::Instance()->Init(graphics_view_ptr_, scene_manager_ptr_);
-    connect(scene_manager_ptr_, SIGNAL(signalTopologyMapUpdate(const TopologyMap &)), this, SIGNAL(signalTopologyMapUpdate(const TopologyMap &)));
-    connect(scene_manager_ptr_, SIGNAL(signalCurrentSelectPointChanged(const TopologyMap::PointInfo &)), this, SIGNAL(signalCurrentSelectPointChanged(const TopologyMap::PointInfo &)));
+    connect(scene_manager_ptr_, &SceneManager::signalTopologyMapUpdate, this, &DisplayManager::signalTopologyMapUpdate);
+    connect(scene_manager_ptr_, &SceneManager::signalCurrentSelectPointChanged, this, &DisplayManager::signalCurrentSelectPointChanged);
 
+    // 调用 FactoryDisplay::Instance()->AddDisplay 将下列派生类添加到 Scene 中
     // 绘制地图
     new DisplayOccMap(DISPLAY_MAP, 1);
     // 绘制全局代价地图
     new DisplayCostMap(DISPLAY_GLOBAL_COST_MAP, 2, DISPLAY_MAP);
     // 绘制局部代价地图
     new DisplayCostMap(DISPLAY_LOCAL_COST_MAP, 3, DISPLAY_MAP);
-    // 绘制中心点机器人图标
+    // 绘制中心点机器人图标（默认为箭头）
     (new PointShape(PointShape::ePointType::kRobot, DISPLAY_ROBOT, DISPLAY_ROBOT, 9, DISPLAY_MAP))->SetRotateEnable(true);
     // 绘制雷达点
     new LaserPoints(DISPLAY_LASER, 2, DISPLAY_MAP);
@@ -44,14 +45,14 @@ DisplayManager::DisplayManager()
     new DisplayPath(DISPLAY_GLOBAL_PATH, 6, DISPLAY_MAP);
     // 绘制局部路径
     new DisplayPath(DISPLAY_LOCAL_PATH, 6, DISPLAY_MAP);
-    // 绘制机器人形状
+    // 绘制机器人形状（默认为正方形）
     new RobotShape(DISPLAY_SHAPE, 8, DISPLAY_MAP);
 
-    // defalut display config
     SetDisplayConfig(DISPLAY_GLOBAL_PATH + "/Color", Color(0, 0, 255));
     SetDisplayConfig(DISPLAY_LOCAL_PATH + "/Color", Color(0, 255, 0));
 
     connect(GetDisplay(DISPLAY_ROBOT), SIGNAL(signalPoseUpdate(const RobotPose &)), this, SLOT(slotRobotScenePoseChanged(const RobotPose &)));
+
     // 设置默认地图图层响应鼠标事件
     FactoryDisplay::Instance()->SetMoveEnable(DISPLAY_MAP);
     InitUi();
@@ -68,7 +69,7 @@ void DisplayManager::InitUi()
     set_reloc_pose_widget_ = new SetPoseWidget(graphics_view_ptr_);
     set_reloc_pose_widget_->hide();
 
-    connect(set_reloc_pose_widget_, &SetPoseWidget::SignalHandleOver, [this](const bool &is_submit, const RobotPose &pose) {
+    connect(set_reloc_pose_widget_, &SetPoseWidget::SignalHandleOver, this, [=](const bool &is_submit, const RobotPose &pose) {
         SetRelocMode(false);
         if (is_submit)
         {
@@ -85,30 +86,31 @@ void DisplayManager::UpdateTopicData(const MsgId &id, const std::any &data)
     UpdateDisplay(ToString(id), data);
 }
 
-void DisplayManager::slotSetRobotPose(const RobotPose &pose) {
+void DisplayManager::slotSetRobotPose(const RobotPose &pose)
+{
     FactoryDisplay::Instance()->SetMoveEnable(DISPLAY_ROBOT, false);
     UpdateRobotPose(pose);
+
     // enable move after 300ms
-    QTimer::singleShot(300, [this]() {
+    QTimer::singleShot(300, this, [=]() {
         FactoryDisplay::Instance()->SetMoveEnable(DISPLAY_ROBOT, true);
     });
 }
 
-void DisplayManager::slotRobotScenePoseChanged(const RobotPose &pose) {
-    if (is_reloc_mode_) {
-        QPointF occ_pose =
-            GetDisplay(DISPLAY_MAP)->mapFromScene(QPointF(pose.x, pose.y));
+void DisplayManager::slotRobotScenePoseChanged(const RobotPose &pose)
+{
+    if (is_reloc_mode_)
+    {
+        QPointF occ_pose = GetDisplay(DISPLAY_MAP)->mapFromScene(QPointF(pose.x, pose.y));
         double x, y;
         map_data_.ScenePose2xy(occ_pose.x(), occ_pose.y(), x, y);
         // 更新坐标
         robot_pose_.x = x;
         robot_pose_.y = y;
         robot_pose_.theta = pose.theta;
-        QPointF view_pos =
-            graphics_view_ptr_->mapFromScene(QPointF(pose.x, pose.y));
+        QPointF view_pos = graphics_view_ptr_->mapFromScene(QPointF(pose.x, pose.y));
         set_reloc_pose_widget_->move(QPoint(view_pos.x(), view_pos.y()));
-        set_reloc_pose_widget_->SetPose(
-            RobotPose(robot_pose_.x, robot_pose_.y, robot_pose_.theta));
+        set_reloc_pose_widget_->SetPose(RobotPose(robot_pose_.x, robot_pose_.y, robot_pose_.theta));
     }
 }
 
@@ -125,8 +127,7 @@ bool DisplayManager::SetDisplayConfig(const std::string &config_name, const std:
     if (!display)
     {
         std::cout << "error current display not fi csxnd:"
-                  << config_list[0].toStdString() << " config_name:" << config_name
-                  << std::endl;
+                  << config_list[0].toStdString() << " config_name:" << config_name << std::endl;
         return false;
     }
 
@@ -140,6 +141,7 @@ bool DisplayManager::SetDisplayConfig(const std::string &config_name, const std:
     }
     return display->SetDisplayConfig(config_list[1].toStdString(), data);
 }
+
 bool DisplayManager::UpdateDisplay(const std::string &display_type, const std::any &data)
 {
     // std::cout << "update display:" << display_type << std::endl;/

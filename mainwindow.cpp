@@ -11,7 +11,6 @@
 #include "DockComponentsFactory.h"
 #include "Eigen/Dense"
 #include "FloatingDockContainer.h"
-#include "algorithm/algorithm.h"
 #include "logger.h"
 #include "speed_ctrl.h"
 
@@ -37,7 +36,7 @@ void MainWindow::init()
 
     openChannel();
 
-    QTimer::singleShot(50, [=]() {
+    QTimer::singleShot(50, this, [=]() {
         RestoreState();
     });
 }
@@ -75,6 +74,7 @@ void MainWindow::initUI()
     dock_manager_ = new CDockManager(this);
     QVBoxLayout *center_layout = new QVBoxLayout();    //垂直
     QHBoxLayout *center_h_layout = new QHBoxLayout();  //水平
+
 
     /***************************地图工具栏***************************/
     QHBoxLayout *horizontalLayout_tools = new QHBoxLayout();
@@ -212,6 +212,7 @@ void MainWindow::initUI()
 
     horizontalLayout_tools->addWidget(label_power_);
     SlotSetBatteryStatus(0, 0);
+
 
     /***************************编辑地图工具栏***************************/
     QWidget *tools_edit_map_widget = new QWidget();
@@ -404,7 +405,7 @@ void MainWindow::initUI()
     /***************************中心主窗体***************************/
     QWidget *center_widget = new QWidget();
     center_widget->setLayout(center_layout);
-    CDockWidget *CentralDockWidget = new CDockWidget("CentralWidget");
+    CDockWidget *CentralDockWidget = new ads::CDockWidget("CentralWidget");
     CentralDockWidget->setWidget(center_widget);
     center_docker_area_ = dock_manager_->setCentralWidget(CentralDockWidget);
     center_docker_area_->setAllowedAreas(DockWidgetArea::OuterDockAreas);
@@ -461,10 +462,10 @@ void MainWindow::initUI()
     dock_manager_->addDockWidget(ads::DockWidgetArea::RightDockWidgetArea, nav_goal_list_dock_widget, center_docker_area_);
     nav_goal_list_dock_widget->toggleView(false);
 
-    connect(nav_goal_table_view_, &NavGoalTableView::signalSendNavGoal, [this](const RobotPose &pose) {
+    connect(nav_goal_table_view_, &NavGoalTableView::signalSendNavGoal, this, [=](const RobotPose &pose) {
         SendChannelMsg(MsgId::kSetNavGoalPose, pose);
     });
-    connect(btn_load_task_chain, &QPushButton::clicked, [this]() {
+    connect(btn_load_task_chain, &QPushButton::clicked, this, [=]() {
         QString fileName = QFileDialog::getOpenFileName(nullptr, "Open JSON file", "", "JSON files (*.json)");
         // 如果用户选择了文件，则输出文件名
         if (!fileName.isEmpty())
@@ -473,7 +474,7 @@ void MainWindow::initUI()
             nav_goal_table_view_->LoadTaskChain(fileName.toStdString());
         }
     });
-    connect(btn_save_task_chain, &QPushButton::clicked, [this]() {
+    connect(btn_save_task_chain, &QPushButton::clicked, this, [=]() {
         QString fileName = QFileDialog::getSaveFileName(nullptr, "Save JSON file", "", "JSON files (*.json)");
 
         // 如果用户选择了文件，则输出文件名
@@ -490,10 +491,10 @@ void MainWindow::initUI()
 
     // nav_goal_list_dock_widget->toggleView(false);
     ui->menuView->addAction(nav_goal_list_dock_widget->toggleViewAction());
-    connect(btn_add_one_goal, &QPushButton::clicked, [this, nav_goal_list_dock_widget]() {
+    connect(btn_add_one_goal, &QPushButton::clicked, this, [=]() {
         nav_goal_table_view_->AddItem();
     });
-    connect(btn_start_task_chain, &QPushButton::clicked, [this, btn_start_task_chain, loop_task_checkbox]() {
+    connect(btn_start_task_chain, &QPushButton::clicked, this, [=]() {
         if (btn_start_task_chain->text() == "Start Task Chain")
         {
             btn_start_task_chain->setText("Stop Task Chain");
@@ -505,12 +506,12 @@ void MainWindow::initUI()
             nav_goal_table_view_->StopTaskChain();
         }
     });
-    connect(nav_goal_table_view_, &NavGoalTableView::signalTaskFinish, [this, btn_start_task_chain]() {
+    connect(nav_goal_table_view_, &NavGoalTableView::signalTaskFinish, this, [=]() {
         LOG_INFO("task finish!");
         btn_start_task_chain->setText("Start Task Chain");
     });
-    connect(display_manager_, SIGNAL(signalTopologyMapUpdate(const TopologyMap &)), nav_goal_table_view_, SLOT(UpdateTopologyMap(const TopologyMap &)));
-    connect(display_manager_, SIGNAL(signalCurrentSelectPointChanged(const TopologyMap::PointInfo &)), nav_goal_table_view_, SLOT(UpdateSelectPoint(const TopologyMap::PointInfo &)));
+    connect(display_manager_, &Display::DisplayManager::signalTopologyMapUpdate, nav_goal_table_view_, &NavGoalTableView::UpdateTopologyMap);
+    connect(display_manager_, &Display::DisplayManager::signalCurrentSelectPointChanged, nav_goal_table_view_, &NavGoalTableView::UpdateSelectPoint);
 
     //////////////////////////////////////////////////////图片
 
@@ -529,15 +530,17 @@ void MainWindow::initUI()
     //////////////////////////////////////////////////////槽链接
 
     connect(this, SIGNAL(OnRecvChannelData(const MsgId &, const std::any &)), this, SLOT(RecvChannelMsg(const MsgId &, const std::any &)), Qt::BlockingQueuedConnection);
-    connect(display_manager_, &Display::DisplayManager::signalPub2DPose, [this](const RobotPose &pose) {
+    connect(display_manager_, &Display::DisplayManager::signalPub2DPose, this, [=](const RobotPose &pose) {
         SendChannelMsg(MsgId::kSetRelocPose, pose);
     });
-    connect(display_manager_, &Display::DisplayManager::signalPub2DGoal, [this](const RobotPose &pose) {
+    connect(display_manager_, &Display::DisplayManager::signalPub2DGoal, this, [=](const RobotPose &pose) {
         SendChannelMsg(MsgId::kSetNavGoalPose, pose);
     });
     // ui相关
-    connect(reloc_btn, &QToolButton::clicked, [this]() { display_manager_->StartReloc(); });
-    connect(save_map_btn, &QToolButton::clicked, [this]() {
+    connect(reloc_btn, &QToolButton::clicked, this, [=]() {
+        display_manager_->StartReloc();
+    });
+    connect(save_map_btn, &QToolButton::clicked, this, [=]() {
         QString fileName = QFileDialog::getSaveFileName(nullptr, "Save Map files", "", "Map files (*.yaml,*.pgm,*.pgm.json)");
         if (!fileName.isEmpty())
         {
@@ -551,7 +554,7 @@ void MainWindow::initUI()
             LOG_INFO("取消保存地图");
         }
     });
-    connect(open_map_btn, &QToolButton::clicked, [this]() {
+    connect(open_map_btn, &QToolButton::clicked, this, [=]() {
         QStringList filters;
         filters << "地图(*.yaml)" << "拓扑地图(*.topology)";
 
@@ -568,7 +571,7 @@ void MainWindow::initUI()
             LOG_INFO("取消打开地图");
         }
     });
-    connect(edit_map_btn, &QToolButton::clicked, [this, tools_edit_map_widget, edit_map_btn]() {
+    connect(edit_map_btn, &QToolButton::clicked, this, [=]() {
         if (edit_map_btn->text() == "编辑地图")
         {
             display_manager_->SetEditMapMode(Display::MapEditMode::kNormal);
@@ -582,28 +585,28 @@ void MainWindow::initUI()
             tools_edit_map_widget->hide();
         }
     });
-    connect(add_point_btn, &QToolButton::clicked, [this]() {
+    connect(add_point_btn, &QToolButton::clicked, this, [=]() {
         display_manager_->SetEditMapMode(Display::MapEditMode::kAddPoint);
     });
-    connect(normal_cursor_btn, &QToolButton::clicked, [this]() {
+    connect(normal_cursor_btn, &QToolButton::clicked, this, [=]() {
         display_manager_->SetEditMapMode(Display::MapEditMode::kNormal);
     });
-    connect(erase_btn, &QToolButton::clicked, [this]() {
+    connect(erase_btn, &QToolButton::clicked, this, [=]() {
         display_manager_->SetEditMapMode(Display::MapEditMode::kErase);
     });
-    connect(draw_line_btn, &QToolButton::clicked, [this]() {
+    connect(draw_line_btn, &QToolButton::clicked, this, [=]() {
         display_manager_->SetEditMapMode(Display::MapEditMode::kDrawLine);
     });
-    connect(add_region_btn, &QToolButton::clicked, [this]() {
+    connect(add_region_btn, &QToolButton::clicked, this, [=]() {
         display_manager_->SetEditMapMode(Display::MapEditMode::kRegion);
     });
-    connect(draw_pen_btn, &QToolButton::clicked, [this]() {
+    connect(draw_pen_btn, &QToolButton::clicked, this, [=]() {
         display_manager_->SetEditMapMode(Display::MapEditMode::kDrawWithPen);
     });
-    connect(add_topology_path_btn, &QToolButton::clicked, [this]() {
+    connect(add_topology_path_btn, &QToolButton::clicked, this, [=]() {
         display_manager_->SetEditMapMode(Display::MapEditMode::kLinkTopology);
     });
-    connect(display_manager_->GetDisplay(DISPLAY_MAP), SIGNAL(signalCursorPose(QPointF)), this, SLOT(signalCursorPose(QPointF)));
+    connect(display_manager_->GetDisplay(DISPLAY_MAP), &Display::VirtualDisplay::signalCursorPose, this, &MainWindow::signalCursorPose);
 }
 
 bool MainWindow::openChannel()

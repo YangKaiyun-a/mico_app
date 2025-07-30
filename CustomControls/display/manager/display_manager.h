@@ -40,49 +40,9 @@ class DisplayManager : public QObject
 {
     Q_OBJECT
 public:
-private:
-    std::map<std::string, std::any> display_map_;
-    RobotPose robot_pose_{0, 0, 0};
-    RobotPose robot_pose_goal_{0, 0, 0};
-    OccupancyMap map_data_;
-    std::string focus_display_;
-    RobotPose local_cost_world_pose_;
-    OccupancyMap local_cost_map_;
-    double global_scal_value_ = 1;
-    bool is_reloc_mode_{false};
-    ViewManager *graphics_view_ptr_;
-    SetPoseWidget *set_reloc_pose_widget_;      ///< 重定位页面
-    SceneManager *scene_manager_ptr_;
-    bool init_flag_{false};
-signals:
-    void cursorPosMap(QPointF);
-    void signalPub2DPose(const RobotPose &pose);
-    void signalPub2DGoal(const RobotPose &pose);
-    void signalTopologyMapUpdate(const TopologyMap &map);
-    void signalCurrentSelectPointChanged(const TopologyMap::PointInfo &);
-    void signalPubMap(const OccupancyMap &map);
-public slots:
-    void updateScaled(double value);
-    void StartReloc();
-    void SetEditMapMode(MapEditMode mode);
-    void AddOneNavPoint();
-    void slotRobotScenePoseChanged(const RobotPose &pose);
-    void slotSetRobotPose(const RobotPose &pose);
-    void UpdateTopicData(const MsgId &id, const std::any &data);
-    void FocusDisplay(const std::string &display_type);
-    void SaveMap(const std::string &save_path);
-    void OpenMap(const std::string &save_path);
-    void SetScaleBig();
-    void SetScaleSmall();
-
-private:
-    void InitUi();
-    std::vector<Point> transLaserPoint(const std::vector<Point> &point);
-    QPushButton *btn_move_focus_;
-
-public:
     DisplayManager();
     ~DisplayManager();
+
     QGraphicsView *GetViewPtr() { return graphics_view_ptr_; }
     VirtualDisplay *GetDisplay(const std::string &name);
     QPointF wordPose2Scene(const QPointF &point);
@@ -104,6 +64,48 @@ public:
     {
         focus_display_ = display_type;
     }
+
+signals:
+    void cursorPosMap(QPointF);
+    void signalPub2DPose(const RobotPose &pose);
+    void signalPub2DGoal(const RobotPose &pose);
+    void signalTopologyMapUpdate(const TopologyMap &map);
+    void signalCurrentSelectPointChanged(const TopologyMap::PointInfo &);
+    void signalPubMap(const OccupancyMap &map);
+
+public slots:
+    void updateScaled(double value);
+    void StartReloc();
+    void SetEditMapMode(MapEditMode mode);
+    void AddOneNavPoint();
+    void slotRobotScenePoseChanged(const RobotPose &pose);
+    void slotSetRobotPose(const RobotPose &pose);
+    void UpdateTopicData(const MsgId &id, const std::any &data);
+    void FocusDisplay(const std::string &display_type);
+    void SaveMap(const std::string &save_path);
+    void OpenMap(const std::string &save_path);
+    void SetScaleBig();
+    void SetScaleSmall();
+
+private:
+    void InitUi();
+    std::vector<Point> transLaserPoint(const std::vector<Point> &point);
+    QPushButton *btn_move_focus_;
+
+private:
+    std::map<std::string, std::any> display_map_;
+    RobotPose robot_pose_{0, 0, 0};
+    RobotPose robot_pose_goal_{0, 0, 0};
+    OccupancyMap map_data_;
+    std::string focus_display_;
+    RobotPose local_cost_world_pose_;
+    OccupancyMap local_cost_map_;
+    double global_scal_value_ = 1;
+    bool is_reloc_mode_{false};
+    ViewManager *graphics_view_ptr_;            ///< 主视图 QGraphicsView
+    SetPoseWidget *set_reloc_pose_widget_;      ///< 重定位页面
+    SceneManager *scene_manager_ptr_;           ///< 主场景 QGraphicsScene
+    bool init_flag_{false};
 };
 
 }  // namespace Display

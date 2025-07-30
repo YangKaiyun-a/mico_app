@@ -64,38 +64,6 @@ enum MapEditMode {
 
 class VirtualDisplay : public QObject, public QGraphicsItem {
     Q_OBJECT
-
-public:
-    std::string display_type_{"null"};
-    QPointF pressed_pose_;
-    QPointF start_pose_;
-    QPointF end_pose_;
-    bool is_mouse_press_;
-    Qt::MouseButton pressed_button_{Qt::MouseButton::NoButton};
-    double scale_value_ = 1;
-    bool move_enable_{false};
-    bool is_rotate_event_{false};
-    bool enable_scale_{true};
-    QRectF bounding_rect_;
-    QTransform transform_;
-    double rotate_value_{0};
-    OccupancyMap map_data_;
-    QPointF rotate_center_;
-    bool enable_rotate_{false};
-    std::string parent_name_;
-    RobotPose pose_in_parent_{0, 0, 0};
-    RobotPose curr_scene_pose_{0, 0, 0};
-    VirtualDisplay *parent_ptr_;
-    std::vector<VirtualDisplay *> children_;
-    bool is_moving_{false};
-    std::string display_name_;
-    double min_scale_value_{0.1};
-    double max_scale_value_{20};
-signals:
-    void signalCursorPose(QPointF pose);
-    void signalPoseUpdate(const RobotPose &pose);
-    void signalItemChange(GraphicsItemChange change, const QVariant &value);
-
 public:
     VirtualDisplay(const std::string &display_type, const int &z_value, const std::string &parent_name, std::string display_name = "");
     virtual ~VirtualDisplay();
@@ -224,6 +192,38 @@ public:
     std::string GetDisplayType();
     void SetDisplayType(const std::string &display_type);
     void Update();
+
+public:
+    std::string display_type_{"null"};
+    QPointF pressed_pose_;
+    QPointF start_pose_;
+    QPointF end_pose_;
+    bool is_mouse_press_;
+    Qt::MouseButton pressed_button_{Qt::MouseButton::NoButton};
+    double scale_value_ = 1;
+    bool move_enable_{false};
+    bool is_rotate_event_{false};
+    bool enable_scale_{true};
+    QRectF bounding_rect_;
+    QTransform transform_;
+    double rotate_value_{0};
+    OccupancyMap map_data_;
+    QPointF rotate_center_;
+    bool enable_rotate_{false};
+    std::string parent_name_;
+    RobotPose pose_in_parent_{0, 0, 0};
+    RobotPose curr_scene_pose_{0, 0, 0};
+    VirtualDisplay *parent_ptr_;                    ///< 当前图层的父图层
+    std::vector<VirtualDisplay *> children_;
+    bool is_moving_{false};
+    std::string display_name_;
+    double min_scale_value_{0.1};
+    double max_scale_value_{20};
+
+signals:
+    void signalCursorPose(QPointF pose);
+    void signalPoseUpdate(const RobotPose &pose);
+    void signalItemChange(GraphicsItemChange change, const QVariant &value);
 
 private:
     void wheelEvent(QGraphicsSceneWheelEvent *event) override;

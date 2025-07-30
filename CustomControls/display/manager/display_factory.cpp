@@ -19,7 +19,8 @@ bool FactoryDisplay::Init(QGraphicsView *viewer, SceneManager *scene_ptr)
         viewer_ptr_->setScene(scene_manager_ptr_);
         viewer_ptr_->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
         run_flag_ = true;
-        connect(&timer_coordinate_system_, SIGNAL(timeout()), this, SLOT(Process()));
+
+        connect(&timer_coordinate_system_, &QTimer::timeout, this, &FactoryDisplay::Process);
         timer_coordinate_system_.setInterval(10);
         timer_coordinate_system_.start();
         return true;
@@ -45,8 +46,7 @@ VirtualDisplay *FactoryDisplay::GetDisplay(const std::string &display_name)
 
 void FactoryDisplay::RemoveDisplay(VirtualDisplay *display)
 {
-    auto find_iter = std::find_if(
-        total_display_map_.begin(), total_display_map_.end(),
+    auto find_iter = std::find_if(total_display_map_.begin(), total_display_map_.end(),
         [display](std::pair<std::string, VirtualDisplay *> pair) -> bool {
             return pair.second == display;
         });
@@ -63,7 +63,7 @@ void FactoryDisplay::RemoveDisplay(VirtualDisplay *display)
     }
 }
 
-// 设置图层的scene坐标
+// 设置图层的 scene 坐标
 bool FactoryDisplay::SetDisplayScenePose(const std::string &display_name, const QPointF &pose)
 {
     VirtualDisplay *display = GetDisplay(display_name);
@@ -74,7 +74,6 @@ bool FactoryDisplay::SetDisplayScenePose(const std::string &display_name, const 
     return true;
 }
 
-// 设置图层的scene坐标
 bool FactoryDisplay::SetDisplayPoseInParent(const std::string &display_name, const RobotPose &pose)
 {
     VirtualDisplay *display = GetDisplay(display_name);
@@ -170,14 +169,10 @@ bool FactoryDisplay::GetMoveEnable(const std::string &display_name)
     }
     return false;
 }
-/**
- *
- * @description: 更新图层间的坐标系关系
- * @return {*}
- */
+
+// 将 focus_display_name_ 图层移动到窗口正中间
 void FactoryDisplay::Process()
 {
-    // focus on
     auto display = GetDisplay(focus_display_name_);
     if (display != nullptr)
     {
