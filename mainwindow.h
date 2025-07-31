@@ -58,26 +58,6 @@ public slots:
 protected:
     virtual void closeEvent(QCloseEvent *event) override;
 
-private:
-    QAction *SavePerspectiveAction = nullptr;
-    QWidgetAction *PerspectiveListAction = nullptr;
-    ChannelManager channel_manager_;
-    Ui::MainWindow *ui;
-    DashBoard *speed_dash_board_;
-    ads::CDockManager *dock_manager_;
-    ads::CDockAreaWidget *StatusDockArea;
-    ads::CDockWidget *TimelineDockWidget;
-    Display::DisplayManager *display_manager_;          ///< 管理地图显示
-    QLabel *label_pos_map_;
-    QLabel *label_pos_scene_;
-    QThread message_thread_;
-    SpeedCtrlWidget *speed_ctrl_widget_;
-    NavGoalTableView *nav_goal_table_view_;             ///< 任务列表页面
-    QProgressBar *battery_bar_;                         ///< 电池进度条
-    QLabel *label_power_;                               ///< 电池百分比
-    ads::CDockAreaWidget *center_docker_area_;
-    std::map<std::string, RatioLayoutedFrame *> image_frame_map_;
-
 signals:
     void OnRecvChannelData(const MsgId &id, const std::any &data);
 
@@ -90,5 +70,25 @@ private:
     void closeChannel();
     void registerChannel();
     void SaveState();
+
+private:
+    QAction *SavePerspectiveAction = nullptr;
+    QWidgetAction *PerspectiveListAction = nullptr;
+    ChannelManager channel_manager_;
+    Ui::MainWindow *ui;
+    DashBoard *speed_dash_board_;                       ///< 速度仪表盘
+    ads::CDockManager *dock_manager_;
+    ads::CDockAreaWidget *StatusDockArea;
+    ads::CDockWidget *TimelineDockWidget;
+    Display::DisplayManager *display_manager_;          ///< 管理地图显示
+    QLabel *label_pos_map_;
+    QLabel *label_pos_scene_;
+    QThread message_thread_;
+    SpeedCtrlWidget *speed_ctrl_widget_;                ///< 速度控制页面
+    NavGoalTableView *nav_goal_table_view_;             ///< 任务列表页面
+    QProgressBar *battery_bar_;                         ///< 电池进度条
+    QLabel *label_power_;                               ///< 电池百分比
+    ads::CDockAreaWidget *center_docker_area_;
+    std::map<std::string, RatioLayoutedFrame *> image_frame_map_;
 };
 #endif  // MAINWINDOW_H
