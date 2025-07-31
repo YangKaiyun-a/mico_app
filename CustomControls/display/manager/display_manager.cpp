@@ -17,6 +17,16 @@ namespace Display {
 
 DisplayManager::DisplayManager()
 {
+    InitUi();
+}
+
+DisplayManager::~DisplayManager()
+{
+
+}
+
+void DisplayManager::InitUi()
+{
     // 用于展示地图等数据的视图窗口
     graphics_view_ptr_ = new ViewManager();
     graphics_view_ptr_->SetDisplayManagerPtr(this);
@@ -30,7 +40,7 @@ DisplayManager::DisplayManager()
     connect(scene_manager_ptr_, &SceneManager::signalTopologyMapUpdate, this, &DisplayManager::signalTopologyMapUpdate);
     connect(scene_manager_ptr_, &SceneManager::signalCurrentSelectPointChanged, this, &DisplayManager::signalCurrentSelectPointChanged);
 
-    // 调用 FactoryDisplay::Instance()->AddDisplay 将下列派生类添加到 Scene 中
+    // 会在基类构造函数中调用 FactoryDisplay::Instance()->AddDisplay 将下列派生类添加到 Scene 中
     // 绘制地图
     new DisplayOccMap(DISPLAY_MAP, 1);
     // 绘制全局代价地图
@@ -55,16 +65,7 @@ DisplayManager::DisplayManager()
 
     // 设置默认地图图层响应鼠标事件
     FactoryDisplay::Instance()->SetMoveEnable(DISPLAY_MAP);
-    InitUi();
-}
 
-DisplayManager::~DisplayManager()
-{
-
-}
-
-void DisplayManager::InitUi()
-{
     // 重定位页面
     set_reloc_pose_widget_ = new SetPoseWidget(graphics_view_ptr_);
     set_reloc_pose_widget_->hide();
@@ -77,13 +78,85 @@ void DisplayManager::InitUi()
             emit signalPub2DPose(pose);
         }
     });
-    connect(set_reloc_pose_widget_, SIGNAL(SignalPoseChanged(const RobotPose &)), this, SLOT(slotSetRobotPose(const RobotPose &)));
+    connect(set_reloc_pose_widget_, &SetPoseWidget::SignalPoseChanged, this, &DisplayManager::slotSetRobotPose);
 }
 
-
+// 接收到 ros2 消息后更新 item
 void DisplayManager::UpdateTopicData(const MsgId &id, const std::any &data)
 {
     UpdateDisplay(ToString(id), data);
+}
+
+// 更新 item
+bool DisplayManager::UpdateDisplay(const std::string &display_type, const std::any &data)
+{
+    // std::cout << "update display:" << display_type << std::endl;/
+    VirtualDisplay *display = GetDisplay(display_type);
+    if (!display)
+    {
+        // std::cout << "error current display not find on update:" << display_type
+        //           << std::endl;
+        return false;
+    }
+
+    if (display_type == DISPLAY_MAP)
+    {
+        // 全局静态地图
+        display->UpdateDisplay(data);
+        GetAnyData(OccupancyMap, data, map_data_);
+        // 所有图层更新地图数据
+        for (auto [name, display] : FactoryDisplay::Instance()->GetTotalDisplayMap())
+        {
+            display->UpdateMap(map_data_);
+        }
+        if (!init_flag_)
+        {
+            scene_manager_ptr_->LoadTopologyMap();
+            init_flag_ = true;
+        }
+
+    }
+    else if (display_type == DISPLAY_ROBOT)
+    {
+        // 机器人坐标
+        // 重定位时屏蔽位置更新
+        if (!is_reloc_mode_)
+        {
+            GetAnyData(RobotPose, data, robot_pose_);
+            UpdateRobotPose(robot_pose_);
+        }
+    }
+    else if (display_type == DISPLAY_LASER)
+    {
+        // 雷达数据
+        LaserScan laser_scan;
+        GetAnyData(LaserScan, data, laser_scan)
+        // 点坐标转换为图元坐标系下
+        laser_scan.data = transLaserPoint(laser_scan.data);
+        display->UpdateDisplay(laser_scan);
+    }
+    else if (display_type == DISPLAY_GLOBAL_PATH || display_type == DISPLAY_LOCAL_PATH)
+    {
+        // 全局/局部路径
+        // 激光坐标转换为地图的图元坐标
+        RobotPath path_data;
+        RobotPath path_data_trans;
+        GetAnyData(RobotPath, data, path_data);
+        for (auto one_points : path_data)
+        {
+            // std::cout << "location:" << one_laser.first << std::endl;
+            // 转换为图元坐标系
+            double x, y;
+            map_data_.xy2ScenePose(one_points.x, one_points.y, x, y);
+            path_data_trans.push_back(Point(x, y));
+        }
+        display->UpdateDisplay(path_data_trans);
+    }
+    else
+    {
+        display->UpdateDisplay(data);
+    }
+    return true;
 }
 
 void DisplayManager::slotSetRobotPose(const RobotPose &pose)
@@ -104,6 +177,7 @@ void DisplayManager::slotRobotScenePoseChanged(const RobotPose &pose)
         QPointF occ_pose = GetDisplay(DISPLAY_MAP)->mapFromScene(QPointF(pose.x, pose.y));
         double x, y;
         map_data_.ScenePose2xy(occ_pose.x(), occ_pose.y(), x, y);
+
         // 更新坐标
         robot_pose_.x = x;
         robot_pose_.y = y;
@@ -141,73 +215,6 @@ bool DisplayManager::SetDisplayConfig(const std::string &config_name, const std:
     }
     return display->SetDisplayConfig(config_list[1].toStdString(), data);
 }
-
-bool DisplayManager::UpdateDisplay(const std::string &display_type, const std::any &data)
-{
-    // std::cout << "update display:" << display_type << std::endl;/
-    VirtualDisplay *display = GetDisplay(display_type);
-    if (!display) {
-        // std::cout << "error current display not find on update:" << display_type
-        //           << std::endl;
-        return false;
-    }
-    if (display_type == DISPLAY_MAP)
-    {
-        display->UpdateDisplay(data);
-        GetAnyData(OccupancyMap, data, map_data_);
-        // 所有图层更新地图数据
-        for (auto [name, display] : FactoryDisplay::Instance()->GetTotalDisplayMap())
-        {
-            display->UpdateMap(map_data_);
-        }
-        if (!init_flag_)
-        {
-            scene_manager_ptr_->LoadTopologyMap();
-            init_flag_ = true;
-        }
-
-    }
-    else if (display_type == DISPLAY_ROBOT)
-    {
-        //重定位时屏蔽位置更新
-        if (!is_reloc_mode_)
-        {
-            GetAnyData(RobotPose, data, robot_pose_);
-            UpdateRobotPose(robot_pose_);
-        }
-    }
-    else if (display_type == DISPLAY_LASER)
-    {
-        LaserScan laser_scan;
-        GetAnyData(LaserScan, data, laser_scan)
-        // 点坐标转换为图元坐标系下
-        laser_scan.data = transLaserPoint(laser_scan.data);
-
-        display->UpdateDisplay(laser_scan);
-    }
-    else if (display_type == DISPLAY_GLOBAL_PATH || display_type == DISPLAY_LOCAL_PATH)
-    {
-        // 激光坐标转换为地图的图元坐标
-        RobotPath path_data;
-        RobotPath path_data_trans;
-        GetAnyData(RobotPath, data, path_data);
-        for (auto one_points : path_data)
-        {
-            // std::cout << "location:" << one_laser.first << std::endl;
-            // 转换为图元坐标系
-            double x, y;
-            map_data_.xy2ScenePose(one_points.x, one_points.y, x, y);
-            path_data_trans.push_back(Point(x, y));
-        }
-        display->UpdateDisplay(path_data_trans);
-    }
-    else
-    {
-        display->UpdateDisplay(data);
-    }
-    return true;
-}
-
 
 /**
  * @description:坐标系转换为图元坐标系

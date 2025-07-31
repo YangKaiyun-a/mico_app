@@ -42,10 +42,10 @@ QT_END_NAMESPACE
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
-
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+
 public slots:
     void signalCursorPose(QPointF pos);
     void SendChannelMsg(const MsgId &id, const std::any &data);
@@ -67,17 +67,17 @@ private:
     ads::CDockManager *dock_manager_;
     ads::CDockAreaWidget *StatusDockArea;
     ads::CDockWidget *TimelineDockWidget;
-    Display::DisplayManager *display_manager_;
-
+    Display::DisplayManager *display_manager_;          ///< 管理地图显示
     QLabel *label_pos_map_;
     QLabel *label_pos_scene_;
     QThread message_thread_;
     SpeedCtrlWidget *speed_ctrl_widget_;
-    NavGoalTableView *nav_goal_table_view_;
-    QProgressBar *battery_bar_;
-    QLabel *label_power_;
+    NavGoalTableView *nav_goal_table_view_;             ///< 任务列表页面
+    QProgressBar *battery_bar_;                         ///< 电池进度条
+    QLabel *label_power_;                               ///< 电池百分比
     ads::CDockAreaWidget *center_docker_area_;
     std::map<std::string, RatioLayoutedFrame *> image_frame_map_;
+
 signals:
     void OnRecvChannelData(const MsgId &id, const std::any &data);
 

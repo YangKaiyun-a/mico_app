@@ -405,7 +405,7 @@ void rclcomm::local_path_callback(const nav_msgs::msg::Path::SharedPtr msg)
     }
 }
 
-// 订阅里程计数据
+// 订阅里程计数器
 void rclcomm::odom_callback(const nav_msgs::msg::Odometry::SharedPtr msg)
 {
     basic::RobotState state;

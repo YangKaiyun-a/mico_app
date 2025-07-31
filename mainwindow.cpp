@@ -529,7 +529,7 @@ void MainWindow::initUI()
 
     //////////////////////////////////////////////////////槽链接
 
-    connect(this, SIGNAL(OnRecvChannelData(const MsgId &, const std::any &)), this, SLOT(RecvChannelMsg(const MsgId &, const std::any &)), Qt::BlockingQueuedConnection);
+    connect(this, &MainWindow::OnRecvChannelData, this, &MainWindow::RecvChannelMsg, Qt::BlockingQueuedConnection);
     connect(display_manager_, &Display::DisplayManager::signalPub2DPose, this, [=](const RobotPose &pose) {
         SendChannelMsg(MsgId::kSetRelocPose, pose);
     });
@@ -642,15 +642,18 @@ void MainWindow::RecvChannelMsg(const MsgId &id, const std::any &data)
     switch (id)
     {
         case MsgId::kOdomPose:
+            // 里程计数器
             updateOdomInfo(std::any_cast<RobotState>(data));
             break;
         case MsgId::kRobotPose:
         {
+            // 坐标变化
             nav_goal_table_view_->UpdateRobotPose(std::any_cast<RobotPose>(data));
             break;
         }
         case MsgId::kBatteryState:
         {
+            // 当前电量
             std::map<std::string, std::string> map = std::any_cast<std::map<std::string, std::string>>(data);
             this->SlotSetBatteryStatus(std::stod(map["percent"]), std::stod(map["voltage"]));
             break;
@@ -767,6 +770,7 @@ void MainWindow::updateOdomInfo(RobotState state)
     //           QPainter painter(&image);
     //           myscene->render(&painter);   //关键函数
 }
+
 void MainWindow::SlotSetBatteryStatus(double percent, double voltage)
 {
     battery_bar_->setValue(percent);

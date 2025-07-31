@@ -9,6 +9,7 @@
 #include "algorithm.h"
 #include "config_manager.h"
 #include "logger.h"
+
 NavGoalTableView::NavGoalTableView(QWidget *_parent_widget) : QTableView(_parent_widget)
 {
     table_model_ = new QStandardItemModel();
