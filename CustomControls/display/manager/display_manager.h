@@ -53,7 +53,7 @@ public:
     RobotPose scenePoseToWord(const RobotPose &pose);
     RobotPose scenePoseToMap(const RobotPose &pose);
     bool UpdateDisplay(const std::string &display_type, const std::any &data);
-    void UpdateRobotPose(const RobotPose &pose);
+    void UpdateRobotPose(const RobotPose &pose);                                    ///< 更新机器人在世界坐标系下的坐标
     bool SetDisplayConfig(const std::string &config_name, const std::any &data);
     void SetRelocMode(bool is_move);
     void SetNavGoalMode(bool is_start);
@@ -75,7 +75,7 @@ public slots:
     void SetEditMapMode(MapEditMode mode);
     void AddOneNavPoint();
     void slotRobotScenePoseChanged(const RobotPose &pose);
-    void slotSetRobotPose(const RobotPose &pose);
+    void onSigRobotPoseChanged(const RobotPose &pose);                   ///< 机器人坐标发生变化的槽函数
     void UpdateTopicData(const MsgId &id, const std::any &data);
     void FocusDisplay(const std::string &display_type);
     void SaveMap(const std::string &save_path);
@@ -97,7 +97,7 @@ private:
     RobotPose local_cost_world_pose_;
     OccupancyMap local_cost_map_;
     double global_scal_value_ = 1;
-    bool is_reloc_mode_{false};
+    bool is_reloc_mode_{false};                 ///< 当前是否为重定位
     ViewManager *graphics_view_ptr_;            ///< 主视图 QGraphicsView
     SetPoseWidget *set_reloc_pose_widget_;      ///< 重定位页面
     SceneManager *scene_manager_ptr_;           ///< 主场景 QGraphicsScene

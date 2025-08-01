@@ -1,4 +1,6 @@
 #include "nav_goal_widget.h"
+#include "define.h"
+#include "signalmanager.h"
 
 #include <QDoubleSpinBox>
 #include <QLabel>
@@ -61,9 +63,10 @@ NavGoalWidget::NavGoalWidget(QWidget *parent) : QWidget(parent)
     layout->addLayout(layout_button);
     //   QPalette pal = childWidget->palette();
     this->setLayout(layout);
-    connect(spinBox_x_, SIGNAL(valueChanged(double)), this, SLOT(SlotUpdateValue(double)));
-    connect(spinBox_y_, SIGNAL(valueChanged(double)), this, SLOT(SlotUpdateValue(double)));
-    connect(spinBox_theta_, SIGNAL(valueChanged(double)), this, SLOT(SlotUpdateValue(double)));
+
+    connect(spinBox_x_, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &NavGoalWidget::onValueChanged);
+    connect(spinBox_y_, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &NavGoalWidget::onValueChanged);
+    connect(spinBox_theta_, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &NavGoalWidget::onValueChanged);
     connect(button_send, &QPushButton::clicked, [this]() {
         emit SignalHandleOver(HandleResult::kSend, RobotPose(spinBox_x_->value(), spinBox_y_->value(), deg2rad(spinBox_theta_->value())));
     });
@@ -75,9 +78,9 @@ NavGoalWidget::NavGoalWidget(QWidget *parent) : QWidget(parent)
     });
 }
 
-void NavGoalWidget::SlotUpdateValue(double value)
+void NavGoalWidget::onValueChanged(double value)
 {
-    emit SignalPoseChanged(RobotPose(spinBox_x_->value(), spinBox_y_->value(), deg2rad(spinBox_theta_->value())));
+    Q_EMIT SigManager->sigTargetChanged(RobotPose(spinBox_x_->value(), spinBox_y_->value(), deg2rad(spinBox_theta_->value())));
 }
 
 void NavGoalWidget::SetEditEnabled(bool flag)

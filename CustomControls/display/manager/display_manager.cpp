@@ -61,6 +61,7 @@ void DisplayManager::InitUi()
     SetDisplayConfig(DISPLAY_GLOBAL_PATH + "/Color", Color(0, 0, 255));
     SetDisplayConfig(DISPLAY_LOCAL_PATH + "/Color", Color(0, 255, 0));
 
+    // 暂时不知道这个信号槽的作用
     connect(GetDisplay(DISPLAY_ROBOT), SIGNAL(signalPoseUpdate(const RobotPose &)), this, SLOT(slotRobotScenePoseChanged(const RobotPose &)));
 
     // 设置默认地图图层响应鼠标事件
@@ -74,11 +75,10 @@ void DisplayManager::InitUi()
         SetRelocMode(false);
         if (is_submit)
         {
-            // 发送给模块
             Q_EMIT SigManager->sigPub2DPose(pose);
         }
     });
-    connect(set_reloc_pose_widget_, &SetPoseWidget::SignalPoseChanged, this, &DisplayManager::slotSetRobotPose);
+    connect(SigManager, &SignalManager::sigRobotPoseChanged, this, &DisplayManager::onSigRobotPoseChanged);
 }
 
 // 接收到 ros2 消息后更新 item
@@ -90,12 +90,9 @@ void DisplayManager::UpdateTopicData(const MsgId &id, const std::any &data)
 // 更新 item
 bool DisplayManager::UpdateDisplay(const std::string &display_type, const std::any &data)
 {
-    // std::cout << "update display:" << display_type << std::endl;/
     VirtualDisplay *display = GetDisplay(display_type);
     if (!display)
     {
-        // std::cout << "error current display not find on update:" << display_type
-        //           << std::endl;
         return false;
     }
 
@@ -144,7 +141,6 @@ bool DisplayManager::UpdateDisplay(const std::string &display_type, const std::a
         GetAnyData(RobotPath, data, path_data);
         for (auto one_points : path_data)
         {
-            // std::cout << "location:" << one_laser.first << std::endl;
             // 转换为图元坐标系
             double x, y;
             map_data_.xy2ScenePose(one_points.x, one_points.y, x, y);
@@ -159,12 +155,19 @@ bool DisplayManager::UpdateDisplay(const std::string &display_type, const std::a
     return true;
 }
 
-void DisplayManager::slotSetRobotPose(const RobotPose &pose)
+// 重定位时更新机器人在世界坐标系下的坐标
+void DisplayManager::onSigRobotPoseChanged(const RobotPose &pose)
 {
+    if(!is_reloc_mode_)
+    {
+        return;
+    }
+
+    qDebug() << "重定位发生改变";
+
     FactoryDisplay::Instance()->SetMoveEnable(DISPLAY_ROBOT, false);
     UpdateRobotPose(pose);
 
-    // enable move after 300ms
     QTimer::singleShot(300, this, [=]() {
         FactoryDisplay::Instance()->SetMoveEnable(DISPLAY_ROBOT, true);
     });
@@ -239,11 +242,7 @@ std::vector<Point> DisplayManager::transLaserPoint(const std::vector<Point> &poi
     return res;
 }
 
-/**
- * @description: 更新机器人在世界坐标系下的坐标
- * @param {Vector3f&} pose x y theta
- * @return {*}
- */
+// 更新机器人在世界坐标系下的坐标
 void DisplayManager::UpdateRobotPose(const RobotPose &pose)
 {
     robot_pose_ = pose;

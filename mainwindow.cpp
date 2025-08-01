@@ -616,11 +616,7 @@ void MainWindow::closeChannel()
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    // Delete dock manager here to delete all floating widgets. This ensures
-    // that all top level windows of the dock manager are properly closed
-    // write state
-
-    disconnect(this, SIGNAL(OnRecvChannelData(const MsgId &, const std::any &)), this, SLOT(RecvChannelMsg(const MsgId &, const std::any &)));
+    disconnect(SigManager, &SignalManager::sigRecvChannelData, this, &MainWindow::onSigRecvChannelData);
     SaveState();
     dock_manager_->deleteLater();
     QMainWindow::closeEvent(event);
@@ -635,8 +631,6 @@ void MainWindow::SaveState()
     dock_manager_->addPerspective("history");
     dock_manager_->savePerspectives(settings);
 }
-
-//============================================================================
 
 // 恢复主窗口（包括窗口大小、位置、布局和自定义界面状态）**到上一次关闭时保存的样子
 void MainWindow::RestoreState()
@@ -695,6 +689,8 @@ void MainWindow::SlotSetBatteryStatus(double percent, double voltage)
 }
 
 
+
+
 /********************************************槽函数********************************************/
 
 // 发送目标点位的槽函数
@@ -739,6 +735,7 @@ void MainWindow::onSigRecvChannelData(const MsgId &id, const std::any &data)
     }
     case MsgId::kImage:
     {
+        // 相机图片信息
         auto location_to_mat = std::any_cast<std::pair<std::string, std::shared_ptr<cv::Mat>>>(data);
         this->SlotRecvImage(location_to_mat.first, location_to_mat.second);
         break;
@@ -749,6 +746,7 @@ void MainWindow::onSigRecvChannelData(const MsgId &id, const std::any &data)
     display_manager_->UpdateTopicData(id, data);
 }
 
+// 接收当前光标的坐标
 void MainWindow::onSigCursorPose(QPointF pos)
 {
     basic::Point mapPos = display_manager_->mapPose2Word(basic::Point(pos.x(), pos.y()));

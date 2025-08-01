@@ -1,4 +1,7 @@
 #include "set_pose_widget.h"
+#include "define.h"
+#include "signalmanager.h"
+
 
 #include <QDoubleSpinBox>
 #include <QLabel>
@@ -54,20 +57,21 @@ SetPoseWidget::SetPoseWidget(QWidget *parent) : QWidget(parent)
     //   QPalette pal = childWidget->palette();
     this->setLayout(layout);
 
-    connect(spinBox_x_, SIGNAL(valueChanged(double)), this, SLOT(SlotUpdateValue(double)));
-    connect(spinBox_y_, SIGNAL(valueChanged(double)), this,  SLOT(SlotUpdateValue(double)));
-    connect(spinBox_theta_, SIGNAL(valueChanged(double)), this, SLOT(SlotUpdateValue(double)));
-    connect(button_ok, &QPushButton::clicked, [this]() {
+    connect(spinBox_x_, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &SetPoseWidget::onValueChanged);
+    connect(spinBox_y_, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &SetPoseWidget::onValueChanged);
+    connect(spinBox_theta_, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &SetPoseWidget::onValueChanged);
+
+    connect(button_ok, &QPushButton::clicked, this, [=]() {
         emit SignalHandleOver(true, RobotPose(spinBox_x_->value(), spinBox_y_->value(), deg2rad(spinBox_theta_->value())));
     });
-    connect(button_cancel, &QPushButton::clicked, [this]() {
+    connect(button_cancel, &QPushButton::clicked, this, [=]() {
         emit SignalHandleOver(false, RobotPose(spinBox_x_->value(), spinBox_y_->value(), deg2rad(spinBox_theta_->value())));
     });
 }
 
-void SetPoseWidget::SlotUpdateValue(double value)
+void SetPoseWidget::onValueChanged(double value)
 {
-    emit SignalPoseChanged(RobotPose(spinBox_x_->value(), spinBox_y_->value(),    deg2rad(spinBox_theta_->value())));
+    Q_EMIT SigManager->sigRobotPoseChanged(RobotPose(spinBox_x_->value(), spinBox_y_->value(), deg2rad(spinBox_theta_->value())));
 }
 
 void SetPoseWidget::SetPose(const RobotPose &pose)

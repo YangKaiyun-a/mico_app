@@ -22,12 +22,11 @@ private:
     QDoubleSpinBox *spinBox_theta_;
 
 signals:
-    void SignalPoseChanged(const RobotPose &pose);
     void SignalHandleOver(const bool &is_submit, const RobotPose &pose);
 
 public slots:
     void SetPose(const RobotPose &pose);
-    void SlotUpdateValue(double);
+    void onValueChanged(double);
 
 public:
     SetPoseWidget(QWidget *parent = 0);

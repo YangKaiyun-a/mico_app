@@ -48,8 +48,8 @@ public:
     void SendChannelMsg(const MsgId &id, const std::any &data);             ///< 发送 ROS2 数据
 
 public slots:
-    void onSigCursorPose(QPointF pos);
-    void onSigSendNavGoal(const std::any &data);           ///< 发送目标点位的槽函数
+    void onSigCursorPose(QPointF pos);                                      ///< 接收当前光标的坐标
+    void onSigSendNavGoal(const std::any &data);                            ///< 发送目标点位的槽函数
     void onSigPub2DPose(const basic::RobotPose &pose);                      ///< 发送位姿的槽函数
     void onSigPub2DGoal(const basic::RobotPose &pose);                      ///< 发送目标点位的槽函数
     void onSigRecvChannelData(const MsgId &id, const std::any &data);       ///< 对接收到的 ROS2 数据进行分发
@@ -78,8 +78,8 @@ private:
     ads::CDockAreaWidget *StatusDockArea;
     ads::CDockWidget *TimelineDockWidget;
     Display::DisplayManager *display_manager_;          ///< 管理地图显示
-    QLabel *label_pos_map_;
-    QLabel *label_pos_scene_;
+    QLabel *label_pos_map_;                             ///< 坐标
+    QLabel *label_pos_scene_;                           ///< 坐标
     QThread message_thread_;
     SpeedCtrlWidget *speed_ctrl_widget_;                ///< 速度控制页面
     NavGoalTableView *nav_goal_table_view_;             ///< 任务列表页面

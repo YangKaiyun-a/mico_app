@@ -21,14 +21,15 @@ private:
 
 signals:
     void sigRecvChannelData(const MsgId &id, const std::any &data);
-    void sigSendNavGoal(const basic::RobotPose &pose);
-    void sigPub2DPose(const basic::RobotPose &pose);
-    void sigPub2DGoal(const basic::RobotPose &pose);
+    void sigSendNavGoal(const basic::RobotPose &pose);                  ///< 发送目标坐标（任务列表页面）
+    void sigPub2DPose(const basic::RobotPose &pose);                    ///< 发现重定位坐标
+    void sigPub2DGoal(const basic::RobotPose &pose);                    ///< 发送目标坐标（设置目标坐标页面）
     void sigTaskFinish();
     void sigTopologyMapUpdate(const TopologyMap &map);
     void sigCurrentSelectPointChanged(const TopologyMap::PointInfo &);
     void sigCursorPose(QPointF pose);
-
+    void sigRobotPoseChanged(const basic::RobotPose &pose);             ///< 重定位坐标发生改变
+    void sigTargetChanged(const basic::RobotPose &pose);                ///< 目标点坐标发生改变
 
 private:
     static SignalManager* m_signalManager;

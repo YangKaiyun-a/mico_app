@@ -226,7 +226,7 @@ void SceneManager::blindNavGoalWidget(Display::VirtualDisplay *display)
     });
     nav_goal_widget_->disconnect();
 
-    connect(nav_goal_widget_, &NavGoalWidget::SignalHandleOver, [this, display](const NavGoalWidget::HandleResult &flag, const RobotPose &pose) {
+    connect(nav_goal_widget_, &NavGoalWidget::SignalHandleOver, this, [display, this](const NavGoalWidget::HandleResult &flag, const RobotPose &pose) {
         if (flag == NavGoalWidget::HandleResult::kSend)
         {
             Q_EMIT SigManager->sigPub2DGoal(pose);
@@ -252,10 +252,12 @@ void SceneManager::blindNavGoalWidget(Display::VirtualDisplay *display)
             nav_goal_widget_->hide();
         }
     });
-    connect(nav_goal_widget_, &NavGoalWidget::SignalPoseChanged, [this, display](const RobotPose &pose) {
+    connect(SigManager, &SignalManager::sigTargetChanged, this, [display, this](const RobotPose &pose) {
+        qDebug() << "目标点位发生变化";
         display->UpdateDisplay(display_manager_->wordPose2Map(pose));
     });
 }
+
 void SceneManager::updateNavGoalWidgetPose(Display::VirtualDisplay *display, bool is_move)
 {
     auto pose = display_manager_->scenePoseToWord(curr_handle_display_->GetCurrentScenePose());

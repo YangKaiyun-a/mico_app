@@ -38,7 +38,6 @@ private:
     QLineEdit *lineEdit_name_;
 
 signals:
-    void SignalPoseChanged(const RobotPose &pose);
     void SignalHandleOver(const HandleResult &flag, const RobotPose &pose);
 
 public slots:
@@ -46,7 +45,7 @@ public slots:
     void SetEditEnabled(bool flag);
 
 private slots:
-    void SlotUpdateValue(double);
+    void onValueChanged(double);
 
 public:
     NavGoalWidget(QWidget *parent = 0);
