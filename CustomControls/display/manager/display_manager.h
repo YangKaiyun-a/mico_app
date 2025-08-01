@@ -67,10 +67,6 @@ public:
 
 signals:
     void cursorPosMap(QPointF);
-    void signalPub2DPose(const RobotPose &pose);
-    void signalPub2DGoal(const RobotPose &pose);
-    void signalTopologyMapUpdate(const TopologyMap &map);
-    void signalCurrentSelectPointChanged(const TopologyMap::PointInfo &);
     void signalPubMap(const OccupancyMap &map);
 
 public slots:

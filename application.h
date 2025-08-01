@@ -12,18 +12,15 @@ class Application : public QApplication
 {
     Q_OBJECT
 public:
-    explicit Application(int &argc, char **argv);
     ~Application() override;
 
+    static Application* instance();
     static Application* instance(int &argc, char **argv);
     void init();
 
-protected:
-
-
 private:
+    explicit Application(int &argc, char **argv);
     static Application* m_singlenApplication;
-
 };
 
 #endif // APPLICATION_H

@@ -3,8 +3,27 @@
 
 #include <iostream>
 namespace fs = boost::filesystem;
-ChannelManager::ChannelManager() {}
-ChannelManager::~ChannelManager() {}
+
+ChannelManager* ChannelManager::m_channelManager = nullptr;
+
+ChannelManager::ChannelManager()
+{
+
+}
+
+ChannelManager *ChannelManager::instance()
+{
+    if(!m_channelManager)
+    {
+        m_channelManager = new ChannelManager();
+    }
+    return m_channelManager;
+}
+
+ChannelManager::~ChannelManager()
+{
+
+}
 
 // 自动查找所有通道，优先打开第一个发现的通道。
 bool ChannelManager::OpenChannelAuto() 

@@ -1,5 +1,8 @@
 #include "algorithm.h"
 #include "display/manager/display_factory.h"
+#include "define.h"
+#include "signalmanager.h"
+
 namespace Display {
 
 VirtualDisplay::VirtualDisplay(const std::string &display_type, const int &z_value, const std::string &parent_name, std::string display_name)
@@ -289,7 +292,7 @@ void VirtualDisplay::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 
 void VirtualDisplay::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
 {
-    emit signalCursorPose(event->pos());
+    Q_EMIT SigManager->sigCursorPose(event->pos());
     if (!move_enable_)
     {
         // 如果当前图层不响应鼠标时间,则事件向下传递

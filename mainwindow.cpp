@@ -4,6 +4,8 @@
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "define.h"
+#include "signalmanager.h"
 #include "AutoHideDockContainer.h"
 #include "DockAreaTabBar.h"
 #include "DockAreaTitleBar.h"
@@ -33,8 +35,6 @@ void MainWindow::init()
 
     initData();
     initUI();
-
-    openChannel();
 
     QTimer::singleShot(50, this, [=]() {
         RestoreState();
@@ -462,12 +462,25 @@ void MainWindow::initUI()
     dock_manager_->addDockWidget(ads::DockWidgetArea::RightDockWidgetArea, nav_goal_list_dock_widget, center_docker_area_);
     nav_goal_list_dock_widget->toggleView(false);
 
-    connect(nav_goal_table_view_, &NavGoalTableView::signalSendNavGoal, this, [=](const RobotPose &pose) {
-        SendChannelMsg(MsgId::kSetNavGoalPose, pose);
-    });
+    // nav_goal_list_dock_widget->toggleView(false);
+    ui->menuView->addAction(nav_goal_list_dock_widget->toggleViewAction());
+
+    for (auto one_image : Config::ConfigManager::Instacnce()->GetRootConfig().images)
+    {
+        LOG_INFO("init image window location:" << one_image.location << " topic:" << one_image.topic);
+        image_frame_map_[one_image.location] = new RatioLayoutedFrame();
+        ads::CDockWidget *dock_widget = new ads::CDockWidget(std::string("image/" + one_image.location).c_str());
+        dock_widget->setWidget(image_frame_map_[one_image.location]);
+
+        dock_manager_->addDockWidget(ads::DockWidgetArea::RightDockWidgetArea, dock_widget, center_docker_area_);
+        dock_widget->toggleView(true);
+        ui->menuView->addAction(dock_widget->toggleViewAction());
+    }
+
+    /******************************连接******************************/
+
     connect(btn_load_task_chain, &QPushButton::clicked, this, [=]() {
         QString fileName = QFileDialog::getOpenFileName(nullptr, "Open JSON file", "", "JSON files (*.json)");
-        // 如果用户选择了文件，则输出文件名
         if (!fileName.isEmpty())
         {
             qDebug() << "Selected file:" << fileName;
@@ -476,8 +489,6 @@ void MainWindow::initUI()
     });
     connect(btn_save_task_chain, &QPushButton::clicked, this, [=]() {
         QString fileName = QFileDialog::getSaveFileName(nullptr, "Save JSON file", "", "JSON files (*.json)");
-
-        // 如果用户选择了文件，则输出文件名
         if (!fileName.isEmpty())
         {
             qDebug() << "Selected file:" << fileName;
@@ -488,9 +499,6 @@ void MainWindow::initUI()
             }
         }
     });
-
-    // nav_goal_list_dock_widget->toggleView(false);
-    ui->menuView->addAction(nav_goal_list_dock_widget->toggleViewAction());
     connect(btn_add_one_goal, &QPushButton::clicked, this, [=]() {
         nav_goal_table_view_->AddItem();
     });
@@ -506,37 +514,6 @@ void MainWindow::initUI()
             nav_goal_table_view_->StopTaskChain();
         }
     });
-    connect(nav_goal_table_view_, &NavGoalTableView::signalTaskFinish, this, [=]() {
-        LOG_INFO("task finish!");
-        btn_start_task_chain->setText("Start Task Chain");
-    });
-    connect(display_manager_, &Display::DisplayManager::signalTopologyMapUpdate, nav_goal_table_view_, &NavGoalTableView::UpdateTopologyMap);
-    connect(display_manager_, &Display::DisplayManager::signalCurrentSelectPointChanged, nav_goal_table_view_, &NavGoalTableView::UpdateSelectPoint);
-
-    //////////////////////////////////////////////////////图片
-
-    for (auto one_image : Config::ConfigManager::Instacnce()->GetRootConfig().images)
-    {
-        LOG_INFO("init image window location:" << one_image.location << " topic:" << one_image.topic);
-        image_frame_map_[one_image.location] = new RatioLayoutedFrame();
-        ads::CDockWidget *dock_widget = new ads::CDockWidget(std::string("image/" + one_image.location).c_str());
-        dock_widget->setWidget(image_frame_map_[one_image.location]);
-
-        dock_manager_->addDockWidget(ads::DockWidgetArea::RightDockWidgetArea, dock_widget, center_docker_area_);
-        dock_widget->toggleView(true);
-        ui->menuView->addAction(dock_widget->toggleViewAction());
-    }
-
-    //////////////////////////////////////////////////////槽链接
-
-    connect(this, &MainWindow::OnRecvChannelData, this, &MainWindow::RecvChannelMsg, Qt::BlockingQueuedConnection);
-    connect(display_manager_, &Display::DisplayManager::signalPub2DPose, this, [=](const RobotPose &pose) {
-        SendChannelMsg(MsgId::kSetRelocPose, pose);
-    });
-    connect(display_manager_, &Display::DisplayManager::signalPub2DGoal, this, [=](const RobotPose &pose) {
-        SendChannelMsg(MsgId::kSetNavGoalPose, pose);
-    });
-    // ui相关
     connect(reloc_btn, &QToolButton::clicked, this, [=]() {
         display_manager_->StartReloc();
     });
@@ -606,68 +583,15 @@ void MainWindow::initUI()
     connect(add_topology_path_btn, &QToolButton::clicked, this, [=]() {
         display_manager_->SetEditMapMode(Display::MapEditMode::kLinkTopology);
     });
-    connect(display_manager_->GetDisplay(DISPLAY_MAP), &Display::VirtualDisplay::signalCursorPose, this, &MainWindow::signalCursorPose);
-}
-
-bool MainWindow::openChannel()
-{
-    if (channel_manager_.OpenChannelAuto())
-    {
-        registerChannel();
-        return true;
-    }
-    return false;
-}
-
-bool MainWindow::openChannel(const std::string &channel_name)
-{
-    if (channel_manager_.OpenChannel(channel_name))
-    {
-        registerChannel();
-        return true;
-    }
-    return false;
-}
-
-// 注册回调函数，rclcomm 类中接收到消息后触发信号 OnRecvChannelData
-void MainWindow::registerChannel()
-{
-    channel_manager_.RegisterOnDataCallback(std::move([this](const MsgId &id, const std::any &data) {
-        emit OnRecvChannelData(id, data);
-    }));
-}
-
-void MainWindow::RecvChannelMsg(const MsgId &id, const std::any &data)
-{
-    switch (id)
-    {
-        case MsgId::kOdomPose:
-            // 里程计数器
-            updateOdomInfo(std::any_cast<RobotState>(data));
-            break;
-        case MsgId::kRobotPose:
-        {
-            // 坐标变化
-            nav_goal_table_view_->UpdateRobotPose(std::any_cast<RobotPose>(data));
-            break;
-        }
-        case MsgId::kBatteryState:
-        {
-            // 当前电量
-            std::map<std::string, std::string> map = std::any_cast<std::map<std::string, std::string>>(data);
-            this->SlotSetBatteryStatus(std::stod(map["percent"]), std::stod(map["voltage"]));
-            break;
-        }
-        case MsgId::kImage:
-        {
-            auto location_to_mat = std::any_cast<std::pair<std::string, std::shared_ptr<cv::Mat>>>(data);
-            this->SlotRecvImage(location_to_mat.first, location_to_mat.second);
-            break;
-        }
-        default:
-            break;
-    }
-    display_manager_->UpdateTopicData(id, data);
+    connect(SigManager, &SignalManager::sigTaskFinish, this, [=]() {
+        LOG_INFO("task finish!");
+        btn_start_task_chain->setText("Start Task Chain");
+    });
+    connect(SigManager, &SignalManager::sigRecvChannelData, this, &MainWindow::onSigRecvChannelData, Qt::BlockingQueuedConnection);
+    connect(SigManager, &SignalManager::sigSendNavGoal, this, &MainWindow::onSigSendNavGoal);
+    connect(SigManager, &SignalManager::sigPub2DPose, this, &MainWindow::onSigPub2DPose);
+    connect(SigManager, &SignalManager::sigPub2DGoal, this, &MainWindow::onSigPub2DGoal);
+    connect(SigManager, &SignalManager::sigCursorPose, this, &MainWindow::onSigCursorPose);
 }
 
 void MainWindow::SlotRecvImage(const std::string &location, std::shared_ptr<cv::Mat> data)
@@ -679,24 +603,17 @@ void MainWindow::SlotRecvImage(const std::string &location, std::shared_ptr<cv::
     }
 }
 
+// 发送 ROS2 数据的接口
 void MainWindow::SendChannelMsg(const MsgId &id, const std::any &data)
 {
-    channel_manager_.SendMessage(id, data);
+    ChannelManager::instance()->SendMessage(id, data);
 }
 
 void MainWindow::closeChannel()
 {
-    channel_manager_.CloseChannel();
+    ChannelManager::instance()->CloseChannel();
 }
 
-void MainWindow::signalCursorPose(QPointF pos)
-{
-    basic::Point mapPos = display_manager_->mapPose2Word(basic::Point(pos.x(), pos.y()));
-    label_pos_map_->setText("( x:" + QString::number(mapPos.x).mid(0, 4) + " y:" + QString::number(mapPos.y).mid(0, 4) + ") ");
-    label_pos_scene_->setText("(x:" + QString::number(pos.x()).mid(0, 4) + " y:" + QString::number(pos.y()).mid(0, 4) + ")");
-}
-
-//============================================================================
 void MainWindow::closeEvent(QCloseEvent *event)
 {
     // Delete dock manager here to delete all floating widgets. This ensures
@@ -775,4 +692,66 @@ void MainWindow::SlotSetBatteryStatus(double percent, double voltage)
 {
     battery_bar_->setValue(percent);
     label_power_->setText(QString::number(voltage, 'f', 2) + "V");
+}
+
+
+/********************************************槽函数********************************************/
+
+// 发送目标点位的槽函数
+void MainWindow::onSigSendNavGoal(const std::any &data)
+{
+    SendChannelMsg(MsgId::kSetNavGoalPose, data);
+}
+
+// 发送重定位的槽函数
+void MainWindow::onSigPub2DPose(const RobotPose &pose)
+{
+    SendChannelMsg(MsgId::kSetRelocPose, pose);
+}
+
+// 发送目标点位的槽函数
+void MainWindow::onSigPub2DGoal(const RobotPose &pose)
+{
+    SendChannelMsg(MsgId::kSetNavGoalPose, pose);
+}
+
+// 对接收到的 ROS2 数据进行分发
+void MainWindow::onSigRecvChannelData(const MsgId &id, const std::any &data)
+{
+    switch (id)
+    {
+    case MsgId::kOdomPose:
+        // 里程计数器
+        updateOdomInfo(std::any_cast<RobotState>(data));
+        break;
+    case MsgId::kRobotPose:
+    {
+        // 坐标变化
+        nav_goal_table_view_->UpdateRobotPose(std::any_cast<RobotPose>(data));
+        break;
+    }
+    case MsgId::kBatteryState:
+    {
+        // 当前电量
+        std::map<std::string, std::string> map = std::any_cast<std::map<std::string, std::string>>(data);
+        this->SlotSetBatteryStatus(std::stod(map["percent"]), std::stod(map["voltage"]));
+        break;
+    }
+    case MsgId::kImage:
+    {
+        auto location_to_mat = std::any_cast<std::pair<std::string, std::shared_ptr<cv::Mat>>>(data);
+        this->SlotRecvImage(location_to_mat.first, location_to_mat.second);
+        break;
+    }
+    default:
+        break;
+    }
+    display_manager_->UpdateTopicData(id, data);
+}
+
+void MainWindow::onSigCursorPose(QPointF pos)
+{
+    basic::Point mapPos = display_manager_->mapPose2Word(basic::Point(pos.x(), pos.y()));
+    label_pos_map_->setText("( x:" + QString::number(mapPos.x).mid(0, 4) + " y:" + QString::number(mapPos.y).mid(0, 4) + ") ");
+    label_pos_scene_->setText("(x:" + QString::number(pos.x()).mid(0, 4) + " y:" + QString::number(pos.y()).mid(0, 4) + ")");
 }

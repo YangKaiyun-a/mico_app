@@ -13,27 +13,21 @@
 #include <boost/filesystem.hpp>
 #include "msg/msg_info.h"
 #include "../virtual_channel_node.h"
+
 class ChannelManager {
 private:
     VirtualChannelNode *channel_ptr_{nullptr};
     boost::dll::shared_library *library_channel_;
 
 public:
-    explicit ChannelManager();
+    static ChannelManager* instance();
     ~ChannelManager();
 
-    /// @brief 传入channel so路径，打开对应的通信channel
-    /// @param name
-    /// @return
-    bool OpenChannel(const std::string &name);
-
-    /// @brief 自动查找当前可执行程序路径下的lib目录中的channel并打开
-    /// @return
-    bool OpenChannelAuto();
-
-    /// @brief 查找lib路径下所有channel
-    /// @return channel list
-    std::vector<std::string> DiscoveryAllChannel();
+    bool OpenChannel(const std::string &name);                      ///< 传入channel so路径，打开对应的通信channel
+    bool OpenChannelAuto();                                         ///< 自动查找当前可执行程序路径下的lib目录中的channel并打开
+    void CloseChannel();                                            ///< 关闭通信channel
+    std::vector<std::string> DiscoveryAllChannel();                 ///< 查找lib路径下所有channel
+    void SendMessage(const MsgId &msg_id, const std::any &msg);     ///< 调用通道发送消息
 
     VirtualChannelNode *GetChannel();
 
@@ -46,7 +40,9 @@ public:
         }
     }
 
-    void CloseChannel();
+private:
+    explicit ChannelManager();
 
-    void SendMessage(const MsgId &msg_id, const std::any &msg);
+private:
+    static ChannelManager* m_channelManager;
 };

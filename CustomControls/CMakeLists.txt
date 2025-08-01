@@ -30,6 +30,7 @@ target_link_libraries(CustomControls
     Eigen3::Eigen
     Basic
     Config
+    Controller
 )
 
 # 让使用者可以直接 include

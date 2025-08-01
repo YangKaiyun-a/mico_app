@@ -42,7 +42,7 @@ file(GLOB PRO_SOURCES_DIR
     "${CMAKE_CURRENT_SOURCE_DIR}/*.ui"
 )
 
-
+add_subdirectory(Controller)
 add_subdirectory(CustomControls)
 add_subdirectory(Config)
 add_subdirectory(Basic)
@@ -65,6 +65,7 @@ target_link_libraries(${PROJECT_NAME}
       dockwidget::dockwidget
       json_struct
       ${OpenCV_LIBS}
+      Controller
       CustomControls
       Config
       Basic

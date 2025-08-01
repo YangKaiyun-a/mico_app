@@ -25,9 +25,9 @@ private:
     TaskChain task_chain_;
 
 public slots:
-    void UpdateTopologyMap(const TopologyMap &_topology_map);
+    void onSigTopologyMapUpdate(const TopologyMap &_topology_map);
     void AddItem();
-    void UpdateSelectPoint(const TopologyMap::PointInfo &);
+    void onSigCurrentSelectPointChanged(const TopologyMap::PointInfo &);
     void StartTaskChain(bool is_loop);
     void StopTaskChain();
     void UpdateRobotPose(const RobotPose &pose);
@@ -35,7 +35,6 @@ public slots:
     bool SaveTaskChain(const std::string &name);
 
 signals:
-    void signalSendNavGoal(const RobotPose &pose);
     void signalTaskFinish();
 
 private:

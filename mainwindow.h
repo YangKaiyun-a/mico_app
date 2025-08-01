@@ -45,11 +45,14 @@ class MainWindow : public QMainWindow {
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+    void SendChannelMsg(const MsgId &id, const std::any &data);             ///< 发送 ROS2 数据
 
 public slots:
-    void signalCursorPose(QPointF pos);
-    void SendChannelMsg(const MsgId &id, const std::any &data);
-    void RecvChannelMsg(const MsgId &id, const std::any &data);
+    void onSigCursorPose(QPointF pos);
+    void onSigSendNavGoal(const std::any &data);           ///< 发送目标点位的槽函数
+    void onSigPub2DPose(const basic::RobotPose &pose);                      ///< 发送位姿的槽函数
+    void onSigPub2DGoal(const basic::RobotPose &pose);                      ///< 发送目标点位的槽函数
+    void onSigRecvChannelData(const MsgId &id, const std::any &data);       ///< 对接收到的 ROS2 数据进行分发
     void updateOdomInfo(RobotState state);
     void RestoreState();
     void SlotSetBatteryStatus(double percent, double voltage);
@@ -58,23 +61,17 @@ public slots:
 protected:
     virtual void closeEvent(QCloseEvent *event) override;
 
-signals:
-    void OnRecvChannelData(const MsgId &id, const std::any &data);
 
 private:
     void init();
     void initData();
     void initUI();
-    bool openChannel();
-    bool openChannel(const std::string &channel_name);
     void closeChannel();
-    void registerChannel();
     void SaveState();
 
 private:
     QAction *SavePerspectiveAction = nullptr;
     QWidgetAction *PerspectiveListAction = nullptr;
-    ChannelManager channel_manager_;
     Ui::MainWindow *ui;
     DashBoard *speed_dash_board_;                       ///< 速度仪表盘
     ads::CDockManager *dock_manager_;

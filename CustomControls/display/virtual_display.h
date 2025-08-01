@@ -221,7 +221,6 @@ public:
     double max_scale_value_{20};
 
 signals:
-    void signalCursorPose(QPointF pose);
     void signalPoseUpdate(const RobotPose &pose);
     void signalItemChange(GraphicsItemChange change, const QVariant &value);
 

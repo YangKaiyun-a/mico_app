@@ -8,8 +8,9 @@ INITIALIZE_EASYLOGGINGPP
 
 int main(int argc, char *argv[])
 {
-    Application a(argc, argv);
+    Application::instance(argc, argv)->init();
+
     MainWindow w;
     w.show();
-    return a.exec();
+    return  Application::instance()->exec();
 }

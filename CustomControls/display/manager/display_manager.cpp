@@ -11,6 +11,8 @@
 #include "algorithm.h"
 #include "display/manager/scene_manager.h"
 #include "logger.h"
+#include "define.h"
+#include "signalmanager.h"
 
 
 namespace Display {
@@ -37,8 +39,6 @@ void DisplayManager::InitUi()
 
     // 设置绘制区域
     FactoryDisplay::Instance()->Init(graphics_view_ptr_, scene_manager_ptr_);
-    connect(scene_manager_ptr_, &SceneManager::signalTopologyMapUpdate, this, &DisplayManager::signalTopologyMapUpdate);
-    connect(scene_manager_ptr_, &SceneManager::signalCurrentSelectPointChanged, this, &DisplayManager::signalCurrentSelectPointChanged);
 
     // 会在基类构造函数中调用 FactoryDisplay::Instance()->AddDisplay 将下列派生类添加到 Scene 中
     // 绘制地图
@@ -75,7 +75,7 @@ void DisplayManager::InitUi()
         if (is_submit)
         {
             // 发送给模块
-            emit signalPub2DPose(pose);
+            Q_EMIT SigManager->sigPub2DPose(pose);
         }
     });
     connect(set_reloc_pose_widget_, &SetPoseWidget::SignalPoseChanged, this, &DisplayManager::slotSetRobotPose);

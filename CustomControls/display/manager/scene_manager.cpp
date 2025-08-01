@@ -6,6 +6,8 @@
 #include "display_factory.h"
 #include "display_manager.h"
 #include "../point_shape.h"
+#include "define.h"
+#include "signalmanager.h"
 
 namespace Display {
 
@@ -79,7 +81,7 @@ void SceneManager::OpenTopologyMap(const std::string &file_path)
 
     LOG_INFO("加载地图成功！");
     SetPointMoveEnable(false);
-    emit signalTopologyMapUpdate(topology_map_);
+    Q_EMIT SigManager->sigTopologyMapUpdate(topology_map_);
 }
 
 void SceneManager::SetEditMapMode(MapEditMode mode)
@@ -161,7 +163,7 @@ void SceneManager::saveTopologyMap()
 {
     Config::ConfigManager::Instacnce()->WriteTopologyMap(Config::ConfigManager::Instacnce()->GetRootConfig().topology_map_config.map_name, topology_map_);
     LOG_INFO("save topology map");
-    emit signalTopologyMapUpdate(topology_map_);
+    Q_EMIT SigManager->sigTopologyMapUpdate(topology_map_);
 }
 
 void SceneManager::AddOneNavPoint()
@@ -227,7 +229,7 @@ void SceneManager::blindNavGoalWidget(Display::VirtualDisplay *display)
     connect(nav_goal_widget_, &NavGoalWidget::SignalHandleOver, [this, display](const NavGoalWidget::HandleResult &flag, const RobotPose &pose) {
         if (flag == NavGoalWidget::HandleResult::kSend)
         {
-            emit display_manager_->signalPub2DGoal(pose);
+            Q_EMIT SigManager->sigPub2DGoal(pose);
             nav_goal_widget_->hide();
             curr_handle_display_ = nullptr;
             nav_goal_widget_->hide();
@@ -364,7 +366,7 @@ void SceneManager::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
 
             // 窗体初始化
             blindNavGoalWidget(display);
-            emit signalCurrentSelectPointChanged(
+            Q_EMIT SigManager->sigCurrentSelectPointChanged(
                 TopologyMap::PointInfo(TopologyMap::PointInfo(
                     display_manager_->scenePoseToWord(basic::RobotPose(position.x(), position.y(), 0)),
                     display->GetDisplayName())));

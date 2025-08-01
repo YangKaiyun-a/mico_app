@@ -9,6 +9,8 @@
 #include "algorithm.h"
 #include "config_manager.h"
 #include "logger.h"
+#include "define.h"
+#include "signalmanager.h"
 
 NavGoalTableView::NavGoalTableView(QWidget *_parent_widget) : QTableView(_parent_widget)
 {
@@ -25,7 +27,10 @@ NavGoalTableView::NavGoalTableView(QWidget *_parent_widget) : QTableView(_parent
     this->setHorizontalHeader(headerView);
     // 添加数据模型
     table_model_->setHorizontalHeaderLabels(table_h_headers);
+
     connect(table_model_, &QStandardItemModel::itemChanged, this, &NavGoalTableView::onItemChanged);
+    connect(SigManager, &SignalManager::sigTopologyMapUpdate, this, &NavGoalTableView::onSigTopologyMapUpdate);
+    connect(SigManager, &SignalManager::sigCurrentSelectPointChanged, this, &NavGoalTableView::onSigCurrentSelectPointChanged);
 }
 
 NavGoalTableView::~NavGoalTableView()
@@ -44,12 +49,12 @@ void NavGoalTableView::onItemChanged(QStandardItem *item)
         qDebug() << "任务状态: " << item->checkState();
     }
 }
-void NavGoalTableView::UpdateTopologyMap(const TopologyMap &_topology_map)
+void NavGoalTableView::onSigTopologyMapUpdate(const TopologyMap &_topology_map)
 {
     topologyMap_ = _topology_map;
 }
 
-void NavGoalTableView::UpdateSelectPoint(const TopologyMap::PointInfo &point)
+void NavGoalTableView::onSigCurrentSelectPointChanged(const TopologyMap::PointInfo &point)
 {
     if (!this->isEnabled())
     {
@@ -115,7 +120,8 @@ void NavGoalTableView::StartTaskChain(bool is_loop)
                     continue;
                 }
                 RobotPose target_pose = point.ToRobotPose();
-                emit signalSendNavGoal(target_pose);
+                Q_EMIT SigManager->sigSendNavGoal(target_pose);
+
                 RobotPose diff = absoluteDifference(target_pose, robot_pose_);
 
                 while (diff.mod() > 0.2 || fabs(diff.theta) > deg2rad(15))
@@ -124,7 +130,7 @@ void NavGoalTableView::StartTaskChain(bool is_loop)
                     diff = absoluteDifference(target_pose, robot_pose_);
                     if (!is_task_chain_running_)
                     {
-                        emit signalTaskFinish();
+                        Q_EMIT SigManager->sigTaskFinish();
                         LOG_INFO("Task chain is stopped");
                         return;
                     }
@@ -135,7 +141,7 @@ void NavGoalTableView::StartTaskChain(bool is_loop)
         } while (is_loop);
 
         LOG_INFO("Task chain is finished");
-        emit signalTaskFinish();
+        Q_EMIT SigManager->sigTaskFinish();
     });
 }
 
