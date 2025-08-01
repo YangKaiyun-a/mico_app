@@ -61,7 +61,7 @@ void DisplayManager::InitUi()
     SetDisplayConfig(DISPLAY_GLOBAL_PATH + "/Color", Color(0, 0, 255));
     SetDisplayConfig(DISPLAY_LOCAL_PATH + "/Color", Color(0, 255, 0));
 
-    // 暂时不知道这个信号槽的作用
+    // 当重定位改变时，坐标页面随之移动
     connect(GetDisplay(DISPLAY_ROBOT), SIGNAL(signalPoseUpdate(const RobotPose &)), this, SLOT(slotRobotScenePoseChanged(const RobotPose &)));
 
     // 设置默认地图图层响应鼠标事件
@@ -173,6 +173,7 @@ void DisplayManager::onSigRobotPoseChanged(const RobotPose &pose)
     });
 }
 
+// 当重定位改变时，坐标页面随之移动
 void DisplayManager::slotRobotScenePoseChanged(const RobotPose &pose)
 {
     if (is_reloc_mode_)

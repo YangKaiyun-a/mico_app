@@ -194,7 +194,7 @@ public:
     void Update();
 
 public:
-    std::string display_type_{"null"};
+    std::string display_type_{"null"};                              ///< 当前图层的类型
     QPointF pressed_pose_;
     QPointF start_pose_;
     QPointF end_pose_;
@@ -216,7 +216,7 @@ public:
     VirtualDisplay *parent_ptr_;                    ///< 当前图层的父图层
     std::vector<VirtualDisplay *> children_;
     bool is_moving_{false};
-    std::string display_name_;
+    std::string display_name_;                      ///< 当前图层的名称
     double min_scale_value_{0.1};
     double max_scale_value_{20};
 

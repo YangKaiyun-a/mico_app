@@ -48,7 +48,7 @@ public:
     void SendChannelMsg(const MsgId &id, const std::any &data);             ///< 发送 ROS2 数据
 
 public slots:
-    void onSigCursorPose(QPointF pos);                                      ///< 接收当前光标的坐标
+    void onSigCursorPose(const std::string &display_name, QPointF pos);                                      ///< 接收当前光标的坐标
     void onSigSendNavGoal(const std::any &data);                            ///< 发送目标点位的槽函数
     void onSigPub2DPose(const basic::RobotPose &pose);                      ///< 发送位姿的槽函数
     void onSigPub2DGoal(const basic::RobotPose &pose);                      ///< 发送目标点位的槽函数

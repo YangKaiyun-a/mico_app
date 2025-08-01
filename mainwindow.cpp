@@ -747,8 +747,13 @@ void MainWindow::onSigRecvChannelData(const MsgId &id, const std::any &data)
 }
 
 // 接收当前光标的坐标
-void MainWindow::onSigCursorPose(QPointF pos)
+void MainWindow::onSigCursorPose(const std::string &display_name, QPointF pos)
 {
+    if(display_name != DISPLAY_MAP)
+    {
+        return;
+    }
+
     basic::Point mapPos = display_manager_->mapPose2Word(basic::Point(pos.x(), pos.y()));
     label_pos_map_->setText("( x:" + QString::number(mapPos.x).mid(0, 4) + " y:" + QString::number(mapPos.y).mid(0, 4) + ") ");
     label_pos_scene_->setText("(x:" + QString::number(pos.x()).mid(0, 4) + " y:" + QString::number(pos.y()).mid(0, 4) + ")");
