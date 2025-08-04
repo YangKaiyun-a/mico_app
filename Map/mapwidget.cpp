@@ -1,11 +1,5 @@
-#include <QDebug>
-#include <iostream>
-#include <opencv2/opencv.hpp>
-
-#include "mainwindow.h"
-#include "ui_mainwindow.h"
-#include "define.h"
-#include "signalmanager.h"
+#include "mapwidget.h"
+#include "ui_mapwidget.h"
 #include "AutoHideDockContainer.h"
 #include "DockAreaTabBar.h"
 #include "DockAreaTitleBar.h"
@@ -13,53 +7,34 @@
 #include "DockComponentsFactory.h"
 #include "Eigen/Dense"
 #include "FloatingDockContainer.h"
-#include "logger.h"
-#include "speed_ctrl.h"
+#include "define.h"
+#include "signalmanager.h"
+#include "manager/channel_manager.h"
+// #include "config_manager.h"
 
+#include <QVBoxLayout>
+#include <QHBoxLayout>
 
 using namespace ads;
-MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow)
+
+MapWidget::MapWidget(QWidget *parent) : QWidget(parent)
+    , ui(new Ui::MapWidget)
 {
     ui->setupUi(this);
-    // init();
+    init();
 }
 
-MainWindow::~MainWindow()
+MapWidget::~MapWidget()
 {
     delete ui;
 }
 
-void MainWindow::init()
+void MapWidget::init()
 {
-    LOG_INFO("mico_app 程序启动" << QThread::currentThreadId());
-
-    initData();
     initUI();
-
-    QTimer::singleShot(50, this, [=]() {
-        RestoreState();
-    });
 }
 
-void MainWindow::initData()
-{
-    Q_INIT_RESOURCE(images);
-    Q_INIT_RESOURCE(media);
-
-    qRegisterMetaType<std::string>("std::string");
-    qRegisterMetaType<RobotPose>("RobotPose");
-    qRegisterMetaType<RobotSpeed>("RobotSpeed");
-    qRegisterMetaType<RobotState>("RobotState");
-    qRegisterMetaType<OccupancyMap>("OccupancyMap");
-    qRegisterMetaType<LaserScan>("LaserScan");
-    qRegisterMetaType<RobotPath>("RobotPath");
-    qRegisterMetaType<MsgId>("MsgId");
-    qRegisterMetaType<std::any>("std::any");
-    qRegisterMetaType<TopologyMap>("TopologyMap");
-    qRegisterMetaType<TopologyMap::PointInfo>("TopologyMap::PointInfo");
-}
-
-void MainWindow::initUI()
+void MapWidget::initUI()
 {
     CDockManager::setConfigFlag(CDockManager::OpaqueSplitterResize, true);
     CDockManager::setConfigFlag(CDockManager::XmlCompressionEnabled, false);
@@ -71,7 +46,7 @@ void MainWindow::initUI()
     CDockManager::setConfigFlag(CDockManager::ShowTabTextOnlyForActiveTab, true);
     CDockManager::setAutoHideConfigFlags(CDockManager::DefaultAutoHideConfig);
 
-    dock_manager_ = new CDockManager(this);
+    m_dock_manager = new CDockManager(this);
     QVBoxLayout *center_layout = new QVBoxLayout();    //垂直
     QHBoxLayout *center_h_layout = new QHBoxLayout();  //水平
 
@@ -169,12 +144,12 @@ void MainWindow::initUI()
     center_layout->addLayout(horizontalLayout_tools);
 
     // 电池电量
-    battery_bar_ = new QProgressBar();
-    battery_bar_->setObjectName(QString::fromUtf8("battery_bar_"));
-    battery_bar_->setMaximumSize(QSize(90, 16777215));
-    battery_bar_->setAutoFillBackground(true);
-    battery_bar_->setStyleSheet(QString::fromUtf8(
-        "QProgressBar#battery_bar_\n"
+    m_battery_bar = new QProgressBar();
+    m_battery_bar->setObjectName(QString::fromUtf8("battery_bar_"));
+    m_battery_bar->setMaximumSize(QSize(90, 16777215));
+    m_battery_bar->setAutoFillBackground(true);
+    m_battery_bar->setStyleSheet(QString::fromUtf8(
+        "QProgressBar#m_battery_bar\n"
         "{\n"
         "      border:none;   /*\346\227\240\350\276\271\346\241\206*/\n"
         "      background:rgb(211, 215, 207);\n"
@@ -192,9 +167,9 @@ void MainWindow::initUI()
         "}\n"
         ""));
 
-    battery_bar_->setAlignment(Qt::AlignBottom | Qt::AlignHCenter);
+    m_battery_bar->setAlignment(Qt::AlignBottom | Qt::AlignHCenter);
 
-    horizontalLayout_tools->addWidget(battery_bar_);
+    horizontalLayout_tools->addWidget(m_battery_bar);
 
     QLabel *label_11 = new QLabel();
     label_11->setObjectName(QString::fromUtf8("label_11"));
@@ -204,13 +179,13 @@ void MainWindow::initUI()
 
     horizontalLayout_tools->addWidget(label_11);
 
-    label_power_ = new QLabel();
-    label_power_->setObjectName(QString::fromUtf8("label_power_"));
-    label_power_->setMinimumSize(QSize(50, 32));
-    label_power_->setMaximumSize(QSize(50, 32));
-    label_power_->setStyleSheet(QString::fromUtf8(""));
+    m_label_power = new QLabel();
+    m_label_power->setObjectName(QString::fromUtf8("label_power_"));
+    m_label_power->setMinimumSize(QSize(50, 32));
+    m_label_power->setMaximumSize(QSize(50, 32));
+    m_label_power->setStyleSheet(QString::fromUtf8(""));
 
-    horizontalLayout_tools->addWidget(label_power_);
+    horizontalLayout_tools->addWidget(m_label_power);
     SlotSetBatteryStatus(0, 0);
 
 
@@ -371,8 +346,8 @@ void MainWindow::initUI()
 
 
     /***************************地图显示***************************/
-    display_manager_ = new Display::DisplayManager();
-    center_h_layout->addWidget(display_manager_->GetViewPtr());
+    m_display_manager = new Display::DisplayManager();
+    center_h_layout->addWidget(m_display_manager->GetViewPtr());
 
 
     /***************************地图下方的坐标***************************/
@@ -384,19 +359,19 @@ void MainWindow::initUI()
     label->setObjectName(QString::fromUtf8("label"));
     horizontalLayout_12->addWidget(label);
 
-    label_pos_map_ = new QLabel();
-    label_pos_map_->setObjectName(QString::fromUtf8("label_pos_map_"));
-    label_pos_map_->setStyleSheet(QString::fromUtf8(""));
-    horizontalLayout_12->addWidget(label_pos_map_);
+    m_label_pos_map = new QLabel();
+    m_label_pos_map->setObjectName(QString::fromUtf8("m_label_pos_map"));
+    m_label_pos_map->setStyleSheet(QString::fromUtf8(""));
+    horizontalLayout_12->addWidget(m_label_pos_map);
 
     QLabel *label_5 = new QLabel();
     label_5->setText("scene:");
     label_5->setObjectName(QString::fromUtf8("label_5"));
     horizontalLayout_12->addWidget(label_5);
 
-    label_pos_scene_ = new QLabel();
-    label_pos_scene_->setObjectName(QString::fromUtf8("label_pos_scene_"));
-    horizontalLayout_12->addWidget(label_pos_scene_);
+    m_label_pos_scene = new QLabel();
+    m_label_pos_scene->setObjectName(QString::fromUtf8("m_label_pos_scene"));
+    horizontalLayout_12->addWidget(m_label_pos_scene);
 
     horizontalLayout_12->addItem(new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum));
     center_layout->addLayout(horizontalLayout_12);
@@ -407,35 +382,33 @@ void MainWindow::initUI()
     center_widget->setLayout(center_layout);
     CDockWidget *CentralDockWidget = new ads::CDockWidget("CentralWidget");
     CentralDockWidget->setWidget(center_widget);
-    center_docker_area_ = dock_manager_->setCentralWidget(CentralDockWidget);
-    center_docker_area_->setAllowedAreas(DockWidgetArea::OuterDockAreas);
+    m_center_docker_area = m_dock_manager->setCentralWidget(CentralDockWidget);
+    m_center_docker_area->setAllowedAreas(DockWidgetArea::OuterDockAreas);
 
 
     /***************************速度仪表盘***************************/
     ads::CDockWidget *DashBoardDockWidget = new ads::CDockWidget("DashBoard");
     QWidget *speed_dashboard_widget = new QWidget();
     DashBoardDockWidget->setWidget(speed_dashboard_widget);
-    speed_dash_board_ = new DashBoard(speed_dashboard_widget);
-    auto dashboard_area = dock_manager_->addDockWidget(ads::DockWidgetArea::LeftDockWidgetArea, DashBoardDockWidget, center_docker_area_);
-    ui->menuView->addAction(DashBoardDockWidget->toggleViewAction());
+    m_speed_dash_board = new DashBoard(speed_dashboard_widget);
+    auto dashboard_area = m_dock_manager->addDockWidget(ads::DockWidgetArea::LeftDockWidgetArea, DashBoardDockWidget, m_center_docker_area);
 
 
     /***************************速度控制***************************/
-    speed_ctrl_widget_ = new SpeedCtrlWidget();
-    connect(speed_ctrl_widget_, &SpeedCtrlWidget::signalControlSpeed, [this](const RobotSpeed &speed) {
+    m_speed_ctrl_widget = new SpeedCtrlWidget();
+    connect(m_speed_ctrl_widget, &SpeedCtrlWidget::signalControlSpeed, [this](const RobotSpeed &speed) {
         SendChannelMsg(MsgId::kSetRobotSpeed, speed);
     });
     ads::CDockWidget *SpeedCtrlDockWidget = new ads::CDockWidget("SpeedCtrl");
-    SpeedCtrlDockWidget->setWidget(speed_ctrl_widget_);
-    auto speed_ctrl_area = dock_manager_->addDockWidget(ads::DockWidgetArea::BottomDockWidgetArea, SpeedCtrlDockWidget, dashboard_area);
-    ui->menuView->addAction(SpeedCtrlDockWidget->toggleViewAction());
+    SpeedCtrlDockWidget->setWidget(m_speed_ctrl_widget);
+    auto speed_ctrl_area = m_dock_manager->addDockWidget(ads::DockWidgetArea::BottomDockWidgetArea, SpeedCtrlDockWidget, dashboard_area);
 
 
     /***************************导航任务列表***************************/
     QWidget *task_list_widget = new QWidget();
-    nav_goal_table_view_ = new NavGoalTableView();
+    m_nav_goal_table_view = new NavGoalTableView();
     QVBoxLayout *horizontalLayout_13 = new QVBoxLayout();
-    horizontalLayout_13->addWidget(nav_goal_table_view_);
+    horizontalLayout_13->addWidget(m_nav_goal_table_view);
     task_list_widget->setLayout(horizontalLayout_13);
     ads::CDockWidget *nav_goal_list_dock_widget = new ads::CDockWidget("Task");
     QPushButton *btn_add_one_goal = new QPushButton("Add Point");
@@ -459,22 +432,17 @@ void MainWindow::initUI()
     nav_goal_list_dock_widget->setMinimumSizeHintMode(CDockWidget::MinimumSizeHintFromDockWidget);
     nav_goal_list_dock_widget->setMinimumSize(200, 150);
     nav_goal_list_dock_widget->setMaximumSize(480, 9999);
-    dock_manager_->addDockWidget(ads::DockWidgetArea::RightDockWidgetArea, nav_goal_list_dock_widget, center_docker_area_);
+    m_dock_manager->addDockWidget(ads::DockWidgetArea::RightDockWidgetArea, nav_goal_list_dock_widget, m_center_docker_area);
     nav_goal_list_dock_widget->toggleView(false);
-
-    // nav_goal_list_dock_widget->toggleView(false);
-    ui->menuView->addAction(nav_goal_list_dock_widget->toggleViewAction());
 
     for (auto one_image : Config::ConfigManager::Instacnce()->GetRootConfig().images)
     {
         LOG_INFO("init image window location:" << one_image.location << " topic:" << one_image.topic);
-        image_frame_map_[one_image.location] = new RatioLayoutedFrame();
+        m_image_frame_map[one_image.location] = new RatioLayoutedFrame();
         ads::CDockWidget *dock_widget = new ads::CDockWidget(std::string("image/" + one_image.location).c_str());
-        dock_widget->setWidget(image_frame_map_[one_image.location]);
-
-        dock_manager_->addDockWidget(ads::DockWidgetArea::RightDockWidgetArea, dock_widget, center_docker_area_);
+        dock_widget->setWidget(m_image_frame_map[one_image.location]);
+        m_dock_manager->addDockWidget(ads::DockWidgetArea::RightDockWidgetArea, dock_widget, m_center_docker_area);
         dock_widget->toggleView(true);
-        ui->menuView->addAction(dock_widget->toggleViewAction());
     }
 
     /******************************连接******************************/
@@ -484,7 +452,7 @@ void MainWindow::initUI()
         if (!fileName.isEmpty())
         {
             qDebug() << "Selected file:" << fileName;
-            nav_goal_table_view_->LoadTaskChain(fileName.toStdString());
+            m_nav_goal_table_view->LoadTaskChain(fileName.toStdString());
         }
     });
     connect(btn_save_task_chain, &QPushButton::clicked, this, [=]() {
@@ -495,27 +463,27 @@ void MainWindow::initUI()
             if (!fileName.endsWith(".json"))
             {
                 fileName += ".json";
-                nav_goal_table_view_->SaveTaskChain(fileName.toStdString());
+                m_nav_goal_table_view->SaveTaskChain(fileName.toStdString());
             }
         }
     });
     connect(btn_add_one_goal, &QPushButton::clicked, this, [=]() {
-        nav_goal_table_view_->AddItem();
+        m_nav_goal_table_view->AddItem();
     });
     connect(btn_start_task_chain, &QPushButton::clicked, this, [=]() {
         if (btn_start_task_chain->text() == "Start Task Chain")
         {
             btn_start_task_chain->setText("Stop Task Chain");
-            nav_goal_table_view_->StartTaskChain(loop_task_checkbox->isChecked());
+            m_nav_goal_table_view->StartTaskChain(loop_task_checkbox->isChecked());
         }
         else
         {
             btn_start_task_chain->setText("Start Task Chain");
-            nav_goal_table_view_->StopTaskChain();
+            m_nav_goal_table_view->StopTaskChain();
         }
     });
     connect(reloc_btn, &QToolButton::clicked, this, [=]() {
-        display_manager_->StartReloc();
+        m_display_manager->StartReloc();
     });
     connect(save_map_btn, &QToolButton::clicked, this, [=]() {
         QString fileName = QFileDialog::getSaveFileName(nullptr, "Save Map files", "", "Map files (*.yaml,*.pgm,*.pgm.json)");
@@ -523,7 +491,7 @@ void MainWindow::initUI()
         {
             // 用户选择了文件夹，可以在这里进行相应的操作
             LOG_INFO("用户选择的保存地图路径：" << fileName.toStdString());
-            display_manager_->SaveMap(fileName.toStdString());
+            m_display_manager->SaveMap(fileName.toStdString());
         }
         else
         {
@@ -540,7 +508,7 @@ void MainWindow::initUI()
         {
             // 用户选择了文件夹，可以在这里进行相应的操作
             LOG_INFO("用户选择的打开地图路径：" << fileName.toStdString());
-            display_manager_->OpenMap(fileName.toStdString());
+            m_display_manager->OpenMap(fileName.toStdString());
         }
         else
         {
@@ -551,98 +519,76 @@ void MainWindow::initUI()
     connect(edit_map_btn, &QToolButton::clicked, this, [=]() {
         if (edit_map_btn->text() == "编辑地图")
         {
-            display_manager_->SetEditMapMode(Display::MapEditMode::kNormal);
+            m_display_manager->SetEditMapMode(Display::MapEditMode::kNormal);
             edit_map_btn->setText("结束编辑");
             tools_edit_map_widget->show();
         }
         else
         {
-            display_manager_->SetEditMapMode(Display::MapEditMode::kStop);
+            m_display_manager->SetEditMapMode(Display::MapEditMode::kStop);
             edit_map_btn->setText("编辑地图");
             tools_edit_map_widget->hide();
         }
     });
     connect(add_point_btn, &QToolButton::clicked, this, [=]() {
-        display_manager_->SetEditMapMode(Display::MapEditMode::kAddPoint);
+        m_display_manager->SetEditMapMode(Display::MapEditMode::kAddPoint);
     });
     connect(normal_cursor_btn, &QToolButton::clicked, this, [=]() {
-        display_manager_->SetEditMapMode(Display::MapEditMode::kNormal);
+        m_display_manager->SetEditMapMode(Display::MapEditMode::kNormal);
     });
     connect(erase_btn, &QToolButton::clicked, this, [=]() {
-        display_manager_->SetEditMapMode(Display::MapEditMode::kErase);
+        m_display_manager->SetEditMapMode(Display::MapEditMode::kErase);
     });
     connect(draw_line_btn, &QToolButton::clicked, this, [=]() {
-        display_manager_->SetEditMapMode(Display::MapEditMode::kDrawLine);
+        m_display_manager->SetEditMapMode(Display::MapEditMode::kDrawLine);
     });
     connect(add_region_btn, &QToolButton::clicked, this, [=]() {
-        display_manager_->SetEditMapMode(Display::MapEditMode::kRegion);
+        m_display_manager->SetEditMapMode(Display::MapEditMode::kRegion);
     });
     connect(draw_pen_btn, &QToolButton::clicked, this, [=]() {
-        display_manager_->SetEditMapMode(Display::MapEditMode::kDrawWithPen);
+        m_display_manager->SetEditMapMode(Display::MapEditMode::kDrawWithPen);
     });
     connect(add_topology_path_btn, &QToolButton::clicked, this, [=]() {
-        display_manager_->SetEditMapMode(Display::MapEditMode::kLinkTopology);
+        m_display_manager->SetEditMapMode(Display::MapEditMode::kLinkTopology);
     });
     connect(SigManager, &SignalManager::sigTaskFinish, this, [=]() {
         LOG_INFO("task finish!");
         btn_start_task_chain->setText("Start Task Chain");
     });
-    connect(SigManager, &SignalManager::sigRecvChannelData, this, &MainWindow::onSigRecvChannelData, Qt::BlockingQueuedConnection);
-    connect(SigManager, &SignalManager::sigSendNavGoal, this, &MainWindow::onSigSendNavGoal);
-    connect(SigManager, &SignalManager::sigPub2DPose, this, &MainWindow::onSigPub2DPose);
-    connect(SigManager, &SignalManager::sigPub2DGoal, this, &MainWindow::onSigPub2DGoal);
-    connect(SigManager, &SignalManager::sigCursorPose, this, &MainWindow::onSigCursorPose);
+    connect(SigManager, &SignalManager::sigRecvChannelData, this, &MapWidget::onSigRecvChannelData, Qt::BlockingQueuedConnection);
+    connect(SigManager, &SignalManager::sigSendNavGoal, this, &MapWidget::onSigSendNavGoal);
+    connect(SigManager, &SignalManager::sigPub2DPose, this, &MapWidget::onSigPub2DPose);
+    connect(SigManager, &SignalManager::sigPub2DGoal, this, &MapWidget::onSigPub2DGoal);
+    connect(SigManager, &SignalManager::sigCursorPose, this, &MapWidget::onSigCursorPose);
 }
 
-void MainWindow::SlotRecvImage(const std::string &location, std::shared_ptr<cv::Mat> data)
+void MapWidget::SlotRecvImage(const std::string &location, std::shared_ptr<cv::Mat> data)
 {
-    if (image_frame_map_.count(location))
+    if (m_image_frame_map.count(location))
     {
         QImage image(data->data, data->cols, data->rows, data->step[0], QImage::Format_RGB888);
-        image_frame_map_[location]->setImage(image);
+        m_image_frame_map[location]->setImage(image);
     }
 }
 
 // 发送 ROS2 数据的接口
-void MainWindow::SendChannelMsg(const MsgId &id, const std::any &data)
+void MapWidget::SendChannelMsg(const MsgId &id, const std::any &data)
 {
-    // ChannelManager::instance()->SendMessage(id, data);
+    ChannelManager::instance()->SendMessage(id, data);
 }
 
-void MainWindow::closeChannel()
+void MapWidget::SaveState()
 {
-    // ChannelManager::instance()->CloseChannel();
-}
 
-void MainWindow::closeEvent(QCloseEvent *event)
-{
-    disconnect(SigManager, &SignalManager::sigRecvChannelData, this, &MainWindow::onSigRecvChannelData);
-    SaveState();
-    dock_manager_->deleteLater();
-    QMainWindow::closeEvent(event);
-    LOG_INFO("micao app close!");
-}
-
-void MainWindow::SaveState()
-{
-    QSettings settings("state.ini", QSettings::IniFormat);
-    settings.setValue("mainWindow/Geometry", this->saveGeometry());
-    settings.setValue("mainWindow/State", this->saveState());
-    dock_manager_->addPerspective("history");
-    dock_manager_->savePerspectives(settings);
 }
 
 // 恢复主窗口（包括窗口大小、位置、布局和自定义界面状态）**到上一次关闭时保存的样子
-void MainWindow::RestoreState()
+void MapWidget::RestoreState()
 {
-    QSettings settings("state.ini", QSettings::IniFormat);
-    this->restoreGeometry(settings.value("mainWindow/Geometry").toByteArray());
-    this->restoreState(settings.value("mainWindow/State").toByteArray());
-    dock_manager_->loadPerspectives(settings);
-    dock_manager_->openPerspective("history");
+
 }
 
-void MainWindow::updateOdomInfo(RobotState state)
+void MapWidget::updateOdomInfo(RobotState state)
 {
     // 转向灯
     //   if (state.w > 0.1) {
@@ -658,18 +604,18 @@ void MainWindow::updateOdomInfo(RobotState state)
     //         QPixmap::fromImage(QImage("://images/turnRight_l.png")));
     //   }
     // 仪表盘
-    speed_dash_board_->set_speed(abs(state.vx * 100));
+    m_speed_dash_board->set_speed(abs(state.vx * 100));
     if (state.vx > 0.001)
     {
-        speed_dash_board_->set_gear(DashBoard::kGear_D);
+        m_speed_dash_board->set_gear(DashBoard::kGear_D);
     }
     else if (state.vx < -0.001)
     {
-        speed_dash_board_->set_gear(DashBoard::kGear_R);
+        m_speed_dash_board->set_gear(DashBoard::kGear_R);
     }
     else
     {
-        speed_dash_board_->set_gear(DashBoard::kGear_N);
+        m_speed_dash_board->set_gear(DashBoard::kGear_N);
     }
     //   QString number = QString::number(abs(state.vx * 100)).mid(0, 2);
     //   if (number[1] == ".") {
@@ -682,10 +628,10 @@ void MainWindow::updateOdomInfo(RobotState state)
     //           myscene->render(&painter);   //关键函数
 }
 
-void MainWindow::SlotSetBatteryStatus(double percent, double voltage)
+void MapWidget::SlotSetBatteryStatus(double percent, double voltage)
 {
-    battery_bar_->setValue(percent);
-    label_power_->setText(QString::number(voltage, 'f', 2) + "V");
+    m_battery_bar->setValue(percent);
+    m_label_power->setText(QString::number(voltage, 'f', 2) + "V");
 }
 
 
@@ -694,25 +640,25 @@ void MainWindow::SlotSetBatteryStatus(double percent, double voltage)
 /********************************************槽函数********************************************/
 
 // 发送目标点位的槽函数
-void MainWindow::onSigSendNavGoal(const std::any &data)
+void MapWidget::onSigSendNavGoal(const std::any &data)
 {
     SendChannelMsg(MsgId::kSetNavGoalPose, data);
 }
 
 // 发送重定位的槽函数
-void MainWindow::onSigPub2DPose(const RobotPose &pose)
+void MapWidget::onSigPub2DPose(const RobotPose &pose)
 {
     SendChannelMsg(MsgId::kSetRelocPose, pose);
 }
 
 // 发送目标点位的槽函数
-void MainWindow::onSigPub2DGoal(const RobotPose &pose)
+void MapWidget::onSigPub2DGoal(const RobotPose &pose)
 {
     SendChannelMsg(MsgId::kSetNavGoalPose, pose);
 }
 
 // 对接收到的 ROS2 数据进行分发
-void MainWindow::onSigRecvChannelData(const MsgId &id, const std::any &data)
+void MapWidget::onSigRecvChannelData(const MsgId &id, const std::any &data)
 {
     switch (id)
     {
@@ -723,7 +669,7 @@ void MainWindow::onSigRecvChannelData(const MsgId &id, const std::any &data)
     case MsgId::kRobotPose:
     {
         // 坐标变化
-        nav_goal_table_view_->UpdateRobotPose(std::any_cast<RobotPose>(data));
+        m_nav_goal_table_view->UpdateRobotPose(std::any_cast<RobotPose>(data));
         break;
     }
     case MsgId::kBatteryState:
@@ -743,18 +689,19 @@ void MainWindow::onSigRecvChannelData(const MsgId &id, const std::any &data)
     default:
         break;
     }
-    display_manager_->UpdateTopicData(id, data);
+    m_display_manager->UpdateTopicData(id, data);
 }
 
 // 接收当前光标的坐标
-void MainWindow::onSigCursorPose(const std::string &display_name, QPointF pos)
+void MapWidget::onSigCursorPose(const std::string &display_name, QPointF pos)
 {
     if(display_name != DISPLAY_MAP)
     {
         return;
     }
 
-    basic::Point mapPos = display_manager_->mapPose2Word(basic::Point(pos.x(), pos.y()));
-    label_pos_map_->setText("( x:" + QString::number(mapPos.x).mid(0, 4) + " y:" + QString::number(mapPos.y).mid(0, 4) + ") ");
-    label_pos_scene_->setText("(x:" + QString::number(pos.x()).mid(0, 4) + " y:" + QString::number(pos.y()).mid(0, 4) + ")");
+    basic::Point mapPos = m_display_manager->mapPose2Word(basic::Point(pos.x(), pos.y()));
+    m_label_pos_map->setText("( x:" + QString::number(mapPos.x).mid(0, 4) + " y:" + QString::number(mapPos.y).mid(0, 4) + ") ");
+    m_label_pos_scene->setText("(x:" + QString::number(pos.x()).mid(0, 4) + " y:" + QString::number(pos.y()).mid(0, 4) + ")");
 }
+

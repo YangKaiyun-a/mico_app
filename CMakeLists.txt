@@ -43,7 +43,7 @@ file(GLOB PRO_SOURCES_DIR
 )
 
 add_subdirectory(Controller)
-add_subdirectory(CustomControls)
+add_subdirectory(Map)
 add_subdirectory(Config)
 add_subdirectory(Basic)
 add_subdirectory(Logger)
@@ -66,7 +66,7 @@ target_link_libraries(${PROJECT_NAME}
       json_struct
       ${OpenCV_LIBS}
       Controller
-      CustomControls
+      Map
       Config
       Basic
       Logger

@@ -24,7 +24,6 @@
 #include "DockAreaWidget.h"
 #include "DockManager.h"
 #include "DockWidget.h"
-#include "manager/channel_manager.h"
 #include "config_manager.h"
 #include "display/manager/display_manager.h"
 #include "point_type.h"
