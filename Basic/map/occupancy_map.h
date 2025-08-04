@@ -31,7 +31,7 @@
 #include <iostream>
 #include "yaml-cpp/yaml.h"
 #include <SDL/SDL_image.h>
-#include "../Logger/logger.h"
+#include "logger.h"
 
 
 #define OCC_GRID_UNKNOWN 0     //未知領域

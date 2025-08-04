@@ -7,6 +7,16 @@ namespace Ui {
 class MainWidget;
 }
 
+enum FUNCTION_INDEX
+{
+    HOME,
+    TASK,
+    MAP,
+    RECORD,
+    ACCOUNT,
+    DEBUG
+};
+
 class MainWidget : public QWidget
 {
     Q_OBJECT
@@ -14,6 +24,8 @@ class MainWidget : public QWidget
 public:
     explicit MainWidget(QWidget *parent = nullptr);
     ~MainWidget();
+    void init();
+    void initStackWidget();
 
 private:
     Ui::MainWidget *ui;

@@ -42,13 +42,15 @@ file(GLOB PRO_SOURCES_DIR
     "${CMAKE_CURRENT_SOURCE_DIR}/*.ui"
 )
 
-add_subdirectory(Controller)
+
 add_subdirectory(Map)
 add_subdirectory(Config)
 add_subdirectory(Basic)
-add_subdirectory(Logger)
 add_subdirectory(Channel)
-
+add_subdirectory(Task)
+add_subdirectory(Logger)
+add_subdirectory(AccountManagement)
+add_subdirectory(Debug)
 
 add_executable(${PROJECT_NAME}
       ${PRO_SOURCES_DIR}
@@ -65,10 +67,12 @@ target_link_libraries(${PROJECT_NAME}
       dockwidget::dockwidget
       json_struct
       ${OpenCV_LIBS}
-      Controller
       Map
       Config
       Basic
-      Logger
       Channel
+      Task
+      Logger
+      AccountManagement
+      Debug
 )
