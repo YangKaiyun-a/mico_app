@@ -31,6 +31,21 @@ MapWidget::~MapWidget()
 
 void MapWidget::init()
 {
+    Q_INIT_RESOURCE(images);
+    Q_INIT_RESOURCE(media);
+
+    qRegisterMetaType<std::string>("std::string");
+    qRegisterMetaType<RobotPose>("RobotPose");
+    qRegisterMetaType<RobotSpeed>("RobotSpeed");
+    qRegisterMetaType<RobotState>("RobotState");
+    qRegisterMetaType<OccupancyMap>("OccupancyMap");
+    qRegisterMetaType<LaserScan>("LaserScan");
+    qRegisterMetaType<RobotPath>("RobotPath");
+    qRegisterMetaType<MsgId>("MsgId");
+    qRegisterMetaType<std::any>("std::any");
+    qRegisterMetaType<TopologyMap>("TopologyMap");
+    qRegisterMetaType<TopologyMap::PointInfo>("TopologyMap::PointInfo");
+
     initUI();
 }
 

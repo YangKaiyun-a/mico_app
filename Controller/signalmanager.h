@@ -30,6 +30,7 @@ signals:
     void sigCursorPose(const std::string &display_name, QPointF pose);
     void sigRobotPoseChanged(const basic::RobotPose &pose);             ///< 重定位坐标发生改变
     void sigTargetChanged(const basic::RobotPose &pose);                ///< 目标点坐标发生改变
+    void sigLogin(bool);                                                ///< 用户登录
 
 private:
     static SignalManager* m_signalManager;
