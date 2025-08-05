@@ -60,7 +60,8 @@ void MapWidget::initUI()
     CDockManager::setConfigFlag(CDockManager::ShowTabTextOnlyForActiveTab, true);
     CDockManager::setAutoHideConfigFlags(CDockManager::DefaultAutoHideConfig);
 
-    m_dock_manager = new CDockManager(this);
+    m_dock_manager = new CDockManager(ui->moduleWidget);
+
     QVBoxLayout *center_layout = new QVBoxLayout();    //垂直
     QHBoxLayout *center_h_layout = new QHBoxLayout();  //水平
 

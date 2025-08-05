@@ -89,6 +89,19 @@ StatusMonitorWidget QLabel
 }
 
 
+/*************************************机器人状态监控页面样式***********************************/
+RobotStatusWidget QWidget#moduleWidget
+{
+    background-color: #FFFFFF;
+}
+
+
+/*************************************首页硬件状态页面样式***********************************/
+HomeWidget QWidget#deviceWidget
+{
+    background-color: #FFFFFF;
+}
+
 
 
 

@@ -8,6 +8,7 @@
 #include "debugwidget.h"
 #include "define.h"
 
+
 MainWidget::MainWidget(QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::MainWidget)

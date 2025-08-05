@@ -1,6 +1,6 @@
 #include "homewidget.h"
 #include "ui_homewidget.h"
-
+#include "robotstatuswidget.h"
 
 #include <QGridLayout>
 
@@ -38,6 +38,7 @@ void HomeWidget::initUI()
 void HomeWidget::initTaskWidget()
 {
     QGridLayout *gridLayout = new QGridLayout();
+    gridLayout->setContentsMargins(0, 0, 0, 0);
 
     for(int row = 0; row < 2; ++row)
     {
@@ -73,7 +74,11 @@ void HomeWidget::initTaskWidget()
 
 void HomeWidget::initRobotWidget()
 {
+    RobotStatusWidget *robotWgt = new RobotStatusWidget();
+    ui->horizontalLayout_2->addWidget(robotWgt);
 
+    ui->horizontalLayout_2->setStretch(0, 1);
+    ui->horizontalLayout_2->setStretch(1, 1);
 }
 
 void HomeWidget::initDeviceWidget()
