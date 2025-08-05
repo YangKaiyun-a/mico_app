@@ -10,7 +10,6 @@
 #include "define.h"
 #include "signalmanager.h"
 #include "manager/channel_manager.h"
-// #include "config_manager.h"
 
 #include <QVBoxLayout>
 #include <QHBoxLayout>

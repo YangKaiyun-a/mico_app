@@ -6,13 +6,67 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>697</width>
+    <height>456</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
+  <layout class="QHBoxLayout" name="horizontalLayout">
+   <property name="spacing">
+    <number>0</number>
+   </property>
+   <property name="leftMargin">
+    <number>15</number>
+   </property>
+   <property name="topMargin">
+    <number>15</number>
+   </property>
+   <property name="rightMargin">
+    <number>15</number>
+   </property>
+   <property name="bottomMargin">
+    <number>15</number>
+   </property>
+   <item>
+    <widget class="QWidget" name="moduleWidget" native="true">
+     <layout class="QVBoxLayout" name="verticalLayout" stretch="1,1">
+      <property name="spacing">
+       <number>15</number>
+      </property>
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="1,1">
+        <property name="spacing">
+         <number>15</number>
+        </property>
+        <item>
+         <widget class="QWidget" name="taskWidget" native="true"/>
+        </item>
+        <item>
+         <widget class="QWidget" name="robotWidget" native="true"/>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QWidget" name="deviceWidget" native="true"/>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
  </widget>
  <resources/>
  <connections/>

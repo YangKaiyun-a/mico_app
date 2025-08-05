@@ -60,7 +60,7 @@ public slots:
 
 private:
     Ui::MapWidget *ui;
-    ads::CDockManager *m_dock_manager = nullptr;
+    ads::CDockManager *m_dock_manager = nullptr;                   ///< 管理所有浮动窗口
     DashBoard *m_speed_dash_board = nullptr;                       ///< 速度仪表盘
     ads::CDockAreaWidget *m_statusDockArea = nullptr;
     ads::CDockWidget *m_timelineDockWidget = nullptr;

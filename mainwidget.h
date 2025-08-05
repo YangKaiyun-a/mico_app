@@ -7,15 +7,7 @@ namespace Ui {
 class MainWidget;
 }
 
-enum FUNCTION_INDEX
-{
-    HOME,
-    TASK,
-    MAP,
-    RECORD,
-    ACCOUNT,
-    DEBUG
-};
+
 
 class MainWidget : public QWidget
 {
@@ -26,6 +18,19 @@ public:
     ~MainWidget();
     void init();
     void initStackWidget();
+
+private slots:
+    void on_btnFirst_clicked();
+
+    void on_btnTaskList_clicked();
+
+    void on_btnMap_clicked();
+
+    void on_btnLogger_clicked();
+
+    void on_btnUsers_clicked();
+
+    void on_btnDebug_clicked();
 
 private:
     Ui::MainWidget *ui;

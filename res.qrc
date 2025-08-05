@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file>winJk.qss</file>
+    </qresource>
+</RCC>

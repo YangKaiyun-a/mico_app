@@ -1,0 +1,95 @@
+/*************************************所有字体样式***********************************/
+*
+{
+    font: normal normal 14px "Microsoft YaHei";
+    color:#363636;
+}
+
+
+/*************************************基本按钮样式***********************************/
+QPushButton
+{
+    font-family: "HarmonyOS Sans SC";
+    font-size: 16px;
+    color: #363636;
+    border-radius: 6px;
+    background-color: #ffffff;
+}
+
+QPushButton:checked
+{
+    color:#ffffff;
+    background-color: #221F1F;
+}
+
+
+/*************************************加粗黑体 QLable 样式***********************************/
+QLabel#labBold
+{
+    font-family: "HarmonyOS Sans SC";
+    font-size: 48px;
+    font-weight: bold;
+    color: #221F1F;
+}
+
+
+/*************************************所有QLineEdit样式***********************************/
+QLineEdit
+{
+    font: normal normal 14px "Microsoft YaHei";
+    color: #646464;
+}
+
+
+/*************************************登录按钮样式***********************************/
+QPushButton#LoginBtn
+{
+    border-radius: 4px;
+    color: #FFFFFF;
+    background-color: #221F1F;
+}
+
+
+/*************************************顶部菜单栏样式***********************************/
+QWidget#topWidget
+{
+    background-color: #FFFFFF;
+}
+
+
+/*************************************左侧菜单栏样式***********************************/
+QWidget#leftBarWidget
+{
+    background-color: #FFFFFF;
+}
+
+
+/*************************************当前任监控器背景样式***********************************/
+CurrentTaskWidget QWidget#mainWidget
+{
+    background-color: #221F1F;
+}
+
+/*************************************当前任监控器文字样式***********************************/
+CurrentTaskWidget QLabel
+{
+    color: #FFFFFF;
+}
+
+/*************************************任务状态监控器背景样式***********************************/
+StatusMonitorWidget QWidget#mainWidget
+{
+    background-color: #FFFFFF;
+}
+
+/*************************************任务状态监控器文字样式***********************************/
+StatusMonitorWidget QLabel
+{
+    color: #221F1F;
+}
+
+
+
+
+
+

@@ -40,6 +40,7 @@ file(GLOB PRO_SOURCES_DIR
     "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/*.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/*.ui"
+    "${CMAKE_CURRENT_SOURCE_DIR}/*.qrc"
 )
 
 
@@ -51,6 +52,8 @@ add_subdirectory(Task)
 add_subdirectory(Logger)
 add_subdirectory(AccountManagement)
 add_subdirectory(Debug)
+add_subdirectory(CustomControls)
+
 
 add_executable(${PROJECT_NAME}
       ${PRO_SOURCES_DIR}
@@ -75,4 +78,5 @@ target_link_libraries(${PROJECT_NAME}
       Logger
       AccountManagement
       Debug
+      CustomControls
 )

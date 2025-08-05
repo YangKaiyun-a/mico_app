@@ -18,7 +18,8 @@ LoginWidget::~LoginWidget()
 
 void LoginWidget::init()
 {
-
+    ui->label_3->setObjectName("labBold");
+    ui->label->setObjectName("labBold");
 }
 
 void LoginWidget::on_LoginBtn_clicked()
