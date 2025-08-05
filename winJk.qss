@@ -64,17 +64,18 @@ QWidget#leftBarWidget
 }
 
 
-/*************************************当前任监控器背景样式***********************************/
+/*************************************当前任监控器样式***********************************/
 CurrentTaskWidget QWidget#mainWidget
 {
+
     background-color: #221F1F;
 }
 
-/*************************************当前任监控器文字样式***********************************/
 CurrentTaskWidget QLabel
 {
     color: #FFFFFF;
 }
+
 
 /*************************************任务状态监控器背景样式***********************************/
 StatusMonitorWidget QWidget#mainWidget
@@ -82,7 +83,6 @@ StatusMonitorWidget QWidget#mainWidget
     background-color: #FFFFFF;
 }
 
-/*************************************任务状态监控器文字样式***********************************/
 StatusMonitorWidget QLabel
 {
     color: #221F1F;
