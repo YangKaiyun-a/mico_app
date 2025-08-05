@@ -12,7 +12,7 @@ target_link_libraries(Basic INTERFACE
     yaml-cpp::yaml-cpp
     SDL
     SDL_image
-    Logger
+    Config
 )
 
 # 让使用者可以直接 include

@@ -39,7 +39,6 @@ target_link_libraries(Channel PUBLIC
     pthread
     dl
     Config
-    Logger
 )
 
 # 让使用者可以直接 include
