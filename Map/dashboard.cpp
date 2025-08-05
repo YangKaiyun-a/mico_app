@@ -67,6 +67,7 @@ void DashBoard::paintEvent(QPaintEvent* event)
     draw_oil_meter(painter);
 }
 
+// 绘制仪表盘
 void DashBoard::draw_tachometer(QPainter& painter)
 {
     static QColor normal_color(18, 11, 10, 245);

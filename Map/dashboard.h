@@ -35,11 +35,11 @@ protected:
     void paintEvent(QPaintEvent* event);
 
 private:
-    void draw_tachometer(QPainter& painter);   // 转速表
-    void draw_speedometer(QPainter& painter);  // 迈速表
-    void draw_gear(QPainter& painter);         // 挡位
-    void draw_thermometer(QPainter& painter);  // 水箱温度计
-    void draw_oil_meter(QPainter& painter);    // 油表
+    void draw_tachometer(QPainter& painter);   ///< 转速表
+    void draw_speedometer(QPainter& painter);  ///< 迈速表
+    void draw_gear(QPainter& painter);         ///< 挡位
+    void draw_thermometer(QPainter& painter);  ///< 水箱温度计
+    void draw_oil_meter(QPainter& painter);    ///< 油表
 
 private:
     Gear _gear{kGear_N};

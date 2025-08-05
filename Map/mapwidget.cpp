@@ -188,7 +188,6 @@ void MapWidget::initUI()
         ""));
 
     m_battery_bar->setAlignment(Qt::AlignBottom | Qt::AlignHCenter);
-
     horizontalLayout_tools->addWidget(m_battery_bar);
 
     QLabel *label_11 = new QLabel();
@@ -207,6 +206,7 @@ void MapWidget::initUI()
 
     horizontalLayout_tools->addWidget(m_label_power);
     SlotSetBatteryStatus(0, 0);
+
 
 
     /***************************编辑地图工具栏***************************/
@@ -253,46 +253,6 @@ void MapWidget::initUI()
     add_point_btn_icon.addFile(QString::fromUtf8(":/images/point_btn.svg"), QSize(), QIcon::Normal, QIcon::Off);
     add_point_btn->setIcon(add_point_btn_icon);
     layout_tools_edit_map->addWidget(add_point_btn);
-
-    // 连接工位点按钮（未启用）
-    QToolButton *add_topology_path_btn = new QToolButton();
-    add_topology_path_btn->setStyleSheet(
-        "QToolButton {"
-        "   border: none;"
-        "   background-color: transparent;"
-        "}"
-        "QToolButton:pressed {"
-        "   background-color: lightblue;"
-        "}");
-    add_topology_path_btn->setToolTip("连接工位点");
-    add_topology_path_btn->setCursor(Qt::PointingHandCursor);
-    add_topology_path_btn->setIconSize(QSize(32, 32));
-
-    QIcon add_topology_path_btn_icon;
-    add_topology_path_btn_icon.addFile(QString::fromUtf8(":/images/topo_link_btn.svg"), QSize(), QIcon::Normal, QIcon::Off);
-    add_topology_path_btn->setIcon(add_topology_path_btn_icon);
-    layout_tools_edit_map->addWidget(add_topology_path_btn);
-    add_topology_path_btn->setEnabled(false);
-
-    // 添加区域按钮
-    QToolButton *add_region_btn = new QToolButton();
-    add_region_btn->setStyleSheet(
-        "QToolButton {"
-        "   border: none;"
-        "   background-color: transparent;"
-        "}"
-        "QToolButton:pressed {"
-        "   background-color: lightblue;"
-        "}");
-    add_region_btn->setToolTip("添加区域");
-    add_region_btn->setCursor(Qt::PointingHandCursor);
-    add_region_btn->setIconSize(QSize(32, 32));
-
-    QIcon add_region_btn_icon;
-    add_region_btn_icon.addFile(QString::fromUtf8(":/images/region_btn.svg"), QSize(), QIcon::Normal, QIcon::Off);
-    add_region_btn->setIcon(add_region_btn_icon);
-    add_region_btn->setEnabled(false);
-    layout_tools_edit_map->addWidget(add_region_btn);
 
     // 分隔
     QFrame *separator = new QFrame();
@@ -406,55 +366,7 @@ void MapWidget::initUI()
     m_center_docker_area->setAllowedAreas(DockWidgetArea::OuterDockAreas);
 
 
-    /***************************速度仪表盘***************************/
-    ads::CDockWidget *DashBoardDockWidget = new ads::CDockWidget("DashBoard");
-    QWidget *speed_dashboard_widget = new QWidget();
-    DashBoardDockWidget->setWidget(speed_dashboard_widget);
-    m_speed_dash_board = new DashBoard(speed_dashboard_widget);
-    auto dashboard_area = m_dock_manager->addDockWidget(ads::DockWidgetArea::LeftDockWidgetArea, DashBoardDockWidget, m_center_docker_area);
-
-
-    /***************************速度控制***************************/
-    m_speed_ctrl_widget = new SpeedCtrlWidget();
-    connect(m_speed_ctrl_widget, &SpeedCtrlWidget::signalControlSpeed, [this](const RobotSpeed &speed) {
-        SendChannelMsg(MsgId::kSetRobotSpeed, speed);
-    });
-    ads::CDockWidget *SpeedCtrlDockWidget = new ads::CDockWidget("SpeedCtrl");
-    SpeedCtrlDockWidget->setWidget(m_speed_ctrl_widget);
-    auto speed_ctrl_area = m_dock_manager->addDockWidget(ads::DockWidgetArea::BottomDockWidgetArea, SpeedCtrlDockWidget, dashboard_area);
-
-
-    /***************************导航任务列表***************************/
-    QWidget *task_list_widget = new QWidget();
-    m_nav_goal_table_view = new NavGoalTableView();
-    QVBoxLayout *horizontalLayout_13 = new QVBoxLayout();
-    horizontalLayout_13->addWidget(m_nav_goal_table_view);
-    task_list_widget->setLayout(horizontalLayout_13);
-    ads::CDockWidget *nav_goal_list_dock_widget = new ads::CDockWidget("Task");
-    QPushButton *btn_add_one_goal = new QPushButton("Add Point");
-    QHBoxLayout *horizontalLayout_15 = new QHBoxLayout();
-    QPushButton *btn_start_task_chain = new QPushButton("Start Task Chain");
-    QCheckBox *loop_task_checkbox = new QCheckBox("Loop Task");
-    QHBoxLayout *horizontalLayout_14 = new QHBoxLayout();
-    horizontalLayout_15->addWidget(btn_add_one_goal);
-    horizontalLayout_14->addWidget(btn_start_task_chain);
-    horizontalLayout_14->addWidget(loop_task_checkbox);
-    QPushButton *btn_load_task_chain = new QPushButton("Load Task Chain");
-    QPushButton *btn_save_task_chain = new QPushButton("Save Task Chain");
-    QHBoxLayout *horizontalLayout_16 = new QHBoxLayout();
-    horizontalLayout_16->addWidget(btn_load_task_chain);
-    horizontalLayout_16->addWidget(btn_save_task_chain);
-
-    horizontalLayout_13->addLayout(horizontalLayout_15);
-    horizontalLayout_13->addLayout(horizontalLayout_14);
-    horizontalLayout_13->addLayout(horizontalLayout_16);
-    nav_goal_list_dock_widget->setWidget(task_list_widget);
-    nav_goal_list_dock_widget->setMinimumSizeHintMode(CDockWidget::MinimumSizeHintFromDockWidget);
-    nav_goal_list_dock_widget->setMinimumSize(200, 150);
-    nav_goal_list_dock_widget->setMaximumSize(480, 9999);
-    m_dock_manager->addDockWidget(ads::DockWidgetArea::RightDockWidgetArea, nav_goal_list_dock_widget, m_center_docker_area);
-    nav_goal_list_dock_widget->toggleView(false);
-
+    /***************************相机窗口***************************/
     for (auto one_image : Config::ConfigManager::Instacnce()->GetRootConfig().images)
     {
         LOG_INFO("init image window location:" << one_image.location << " topic:" << one_image.topic);
@@ -465,43 +377,9 @@ void MapWidget::initUI()
         dock_widget->toggleView(true);
     }
 
+
     /******************************连接******************************/
 
-    connect(btn_load_task_chain, &QPushButton::clicked, this, [=]() {
-        QString fileName = QFileDialog::getOpenFileName(nullptr, "Open JSON file", "", "JSON files (*.json)");
-        if (!fileName.isEmpty())
-        {
-            qDebug() << "Selected file:" << fileName;
-            m_nav_goal_table_view->LoadTaskChain(fileName.toStdString());
-        }
-    });
-    connect(btn_save_task_chain, &QPushButton::clicked, this, [=]() {
-        QString fileName = QFileDialog::getSaveFileName(nullptr, "Save JSON file", "", "JSON files (*.json)");
-        if (!fileName.isEmpty())
-        {
-            qDebug() << "Selected file:" << fileName;
-            if (!fileName.endsWith(".json"))
-            {
-                fileName += ".json";
-                m_nav_goal_table_view->SaveTaskChain(fileName.toStdString());
-            }
-        }
-    });
-    connect(btn_add_one_goal, &QPushButton::clicked, this, [=]() {
-        m_nav_goal_table_view->AddItem();
-    });
-    connect(btn_start_task_chain, &QPushButton::clicked, this, [=]() {
-        if (btn_start_task_chain->text() == "Start Task Chain")
-        {
-            btn_start_task_chain->setText("Stop Task Chain");
-            m_nav_goal_table_view->StartTaskChain(loop_task_checkbox->isChecked());
-        }
-        else
-        {
-            btn_start_task_chain->setText("Start Task Chain");
-            m_nav_goal_table_view->StopTaskChain();
-        }
-    });
     connect(reloc_btn, &QToolButton::clicked, this, [=]() {
         m_display_manager->StartReloc();
     });
@@ -562,33 +440,14 @@ void MapWidget::initUI()
     connect(draw_line_btn, &QToolButton::clicked, this, [=]() {
         m_display_manager->SetEditMapMode(Display::MapEditMode::kDrawLine);
     });
-    connect(add_region_btn, &QToolButton::clicked, this, [=]() {
-        m_display_manager->SetEditMapMode(Display::MapEditMode::kRegion);
-    });
     connect(draw_pen_btn, &QToolButton::clicked, this, [=]() {
         m_display_manager->SetEditMapMode(Display::MapEditMode::kDrawWithPen);
-    });
-    connect(add_topology_path_btn, &QToolButton::clicked, this, [=]() {
-        m_display_manager->SetEditMapMode(Display::MapEditMode::kLinkTopology);
-    });
-    connect(SigManager, &SignalManager::sigTaskFinish, this, [=]() {
-        LOG_INFO("task finish!");
-        btn_start_task_chain->setText("Start Task Chain");
     });
     connect(SigManager, &SignalManager::sigRecvChannelData, this, &MapWidget::onSigRecvChannelData, Qt::BlockingQueuedConnection);
     connect(SigManager, &SignalManager::sigSendNavGoal, this, &MapWidget::onSigSendNavGoal);
     connect(SigManager, &SignalManager::sigPub2DPose, this, &MapWidget::onSigPub2DPose);
     connect(SigManager, &SignalManager::sigPub2DGoal, this, &MapWidget::onSigPub2DGoal);
     connect(SigManager, &SignalManager::sigCursorPose, this, &MapWidget::onSigCursorPose);
-}
-
-void MapWidget::SlotRecvImage(const std::string &location, std::shared_ptr<cv::Mat> data)
-{
-    if (m_image_frame_map.count(location))
-    {
-        QImage image(data->data, data->cols, data->rows, data->step[0], QImage::Format_RGB888);
-        m_image_frame_map[location]->setImage(image);
-    }
 }
 
 // 发送 ROS2 数据的接口
@@ -608,51 +467,6 @@ void MapWidget::RestoreState()
 
 }
 
-void MapWidget::updateOdomInfo(RobotState state)
-{
-    // 转向灯
-    //   if (state.w > 0.1) {
-    //     ui->label_turnLeft->setPixmap(
-    //         QPixmap::fromImage(QImage("://images/turnLeft_hl.png")));
-    //   } else if (state.w < -0.1) {
-    //     ui->label_turnRight->setPixmap(
-    //         QPixmap::fromImage(QImage("://images/turnRight_hl.png")));
-    //   } else {
-    //     ui->label_turnLeft->setPixmap(
-    //         QPixmap::fromImage(QImage("://images/turnLeft_l.png")));
-    //     ui->label_turnRight->setPixmap(
-    //         QPixmap::fromImage(QImage("://images/turnRight_l.png")));
-    //   }
-    // 仪表盘
-    m_speed_dash_board->set_speed(abs(state.vx * 100));
-    if (state.vx > 0.001)
-    {
-        m_speed_dash_board->set_gear(DashBoard::kGear_D);
-    }
-    else if (state.vx < -0.001)
-    {
-        m_speed_dash_board->set_gear(DashBoard::kGear_R);
-    }
-    else
-    {
-        m_speed_dash_board->set_gear(DashBoard::kGear_N);
-    }
-    //   QString number = QString::number(abs(state.vx * 100)).mid(0, 2);
-    //   if (number[1] == ".") {
-    //     number = number.mid(0, 1);
-    //   }
-    //  ui->label_speed->setText(number);
-    //  ui->mapViz->grab().save("/home/chengyangkj/test.jpg");
-    //  QImage image(mysize,QImage::Format_RGB32);
-    //           QPainter painter(&image);
-    //           myscene->render(&painter);   //关键函数
-}
-
-void MapWidget::SlotSetBatteryStatus(double percent, double voltage)
-{
-    m_battery_bar->setValue(percent);
-    m_label_power->setText(QString::number(voltage, 'f', 2) + "V");
-}
 
 
 
@@ -688,8 +502,7 @@ void MapWidget::onSigRecvChannelData(const MsgId &id, const std::any &data)
         break;
     case MsgId::kRobotPose:
     {
-        // 坐标变化
-        m_nav_goal_table_view->UpdateRobotPose(std::any_cast<RobotPose>(data));
+        // 坐标变
         break;
     }
     case MsgId::kBatteryState:
@@ -725,3 +538,25 @@ void MapWidget::onSigCursorPose(const std::string &display_name, QPointF pos)
     m_label_pos_scene->setText("(x:" + QString::number(pos.x()).mid(0, 4) + " y:" + QString::number(pos.y()).mid(0, 4) + ")");
 }
 
+void MapWidget::updateOdomInfo(RobotState state)
+{
+
+    // qDebug() << "速度：" << abs(state.vx * 100);
+
+}
+
+void MapWidget::SlotSetBatteryStatus(double percent, double voltage)
+{
+    m_battery_bar->setValue(percent);
+    m_label_power->setText(QString::number(voltage, 'f', 2) + "V");
+}
+
+// 接收相机数据
+void MapWidget::SlotRecvImage(const std::string &location, std::shared_ptr<cv::Mat> data)
+{
+    if (m_image_frame_map.count(location))
+    {
+        QImage image(data->data, data->cols, data->rows, data->step[0], QImage::Format_RGB888);
+        m_image_frame_map[location]->setImage(image);
+    }
+}
