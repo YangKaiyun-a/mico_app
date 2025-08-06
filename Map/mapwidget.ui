@@ -24,10 +24,10 @@
     <number>15</number>
    </property>
    <property name="rightMargin">
-    <number>0</number>
+    <number>15</number>
    </property>
    <property name="bottomMargin">
-    <number>0</number>
+    <number>15</number>
    </property>
    <item>
     <widget class="QWidget" name="moduleWidget" native="true">
@@ -60,6 +60,9 @@
           <number>0</number>
          </property>
          <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
           <number>0</number>
          </property>
          <item>
