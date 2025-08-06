@@ -18,10 +18,10 @@
     <number>0</number>
    </property>
    <property name="leftMargin">
-    <number>0</number>
+    <number>15</number>
    </property>
    <property name="topMargin">
-    <number>0</number>
+    <number>15</number>
    </property>
    <property name="rightMargin">
     <number>0</number>
@@ -30,7 +30,63 @@
     <number>0</number>
    </property>
    <item>
-    <widget class="QWidget" name="moduleWidget" native="true"/>
+    <widget class="QWidget" name="moduleWidget" native="true">
+     <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="5,1">
+      <property name="spacing">
+       <number>15</number>
+      </property>
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <item>
+       <widget class="QWidget" name="mapWidget" native="true">
+        <layout class="QHBoxLayout" name="horizontalLayout_3">
+         <property name="spacing">
+          <number>0</number>
+         </property>
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="QTabWidget" name="tabWidget">
+           <property name="currentIndex">
+            <number>0</number>
+           </property>
+           <widget class="QWidget" name="slamTabWidget">
+            <attribute name="title">
+             <string>SLAM 地图</string>
+            </attribute>
+           </widget>
+           <widget class="QWidget" name="cameraTabWidget">
+            <attribute name="title">
+             <string>相机视角</string>
+            </attribute>
+           </widget>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QWidget" name="processBarWidget" native="true"/>
+      </item>
+     </layout>
+    </widget>
    </item>
   </layout>
  </widget>

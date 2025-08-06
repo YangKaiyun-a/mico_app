@@ -103,6 +103,12 @@ HomeWidget QWidget#deviceWidget
 }
 
 
+/*************************************地图模块页面样式***********************************/
+MapWidget QWidget#mapWidget, MapWidget QWidget#processBarWidget
+{
+    background-color: #FFFFFF;
+}
+
 
 
 

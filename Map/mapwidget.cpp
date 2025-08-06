@@ -60,12 +60,13 @@ void MapWidget::initUI()
     CDockManager::setConfigFlag(CDockManager::ShowTabTextOnlyForActiveTab, true);
     CDockManager::setAutoHideConfigFlags(CDockManager::DefaultAutoHideConfig);
 
-    QHBoxLayout *mainLayout = new QHBoxLayout();
-    mainLayout->setContentsMargins(0, 0, 0, 0);
-    ui->moduleWidget->setLayout(mainLayout);
+    // slam 地图
+    QHBoxLayout *slamTabWidgetLayout = new QHBoxLayout();
+    slamTabWidgetLayout->setContentsMargins(0, 0, 0, 0);
+    ui->slamTabWidget->setLayout(slamTabWidgetLayout);
 
     m_dock_manager = new CDockManager();
-    mainLayout->addWidget(m_dock_manager);
+    slamTabWidgetLayout->addWidget(m_dock_manager);
 
     QVBoxLayout *center_layout = new QVBoxLayout();    //垂直
     QHBoxLayout *center_h_layout = new QHBoxLayout();  //水平
@@ -367,15 +368,15 @@ void MapWidget::initUI()
 
 
     /***************************相机窗口***************************/
-    for (auto one_image : Config::ConfigManager::Instacnce()->GetRootConfig().images)
-    {
-        LOG_INFO("init image window location:" << one_image.location << " topic:" << one_image.topic);
-        m_image_frame_map[one_image.location] = new RatioLayoutedFrame();
-        ads::CDockWidget *dock_widget = new ads::CDockWidget(std::string("image/" + one_image.location).c_str());
-        dock_widget->setWidget(m_image_frame_map[one_image.location]);
-        m_dock_manager->addDockWidget(ads::DockWidgetArea::RightDockWidgetArea, dock_widget, m_center_docker_area);
-        dock_widget->toggleView(true);
-    }
+    // for (auto one_image : Config::ConfigManager::Instacnce()->GetRootConfig().images)
+    // {
+    //     LOG_INFO("init image window location:" << one_image.location << " topic:" << one_image.topic);
+    //     m_image_frame_map[one_image.location] = new RatioLayoutedFrame();
+    //     ads::CDockWidget *dock_widget = new ads::CDockWidget(std::string("image/" + one_image.location).c_str());
+    //     dock_widget->setWidget(m_image_frame_map[one_image.location]);
+    //     m_dock_manager->addDockWidget(ads::DockWidgetArea::RightDockWidgetArea, dock_widget, m_center_docker_area);
+    //     dock_widget->toggleView(true);
+    // }
 
 
     /******************************连接******************************/
