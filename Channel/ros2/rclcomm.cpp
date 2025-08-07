@@ -10,29 +10,11 @@
 #include <fstream>
 #include "config_manager.h"
 #include "logger.h"
+#include "define.h"
 
 rclcomm::rclcomm()
 {
-    SET_DEFAULT_TOPIC_NAME("NavGoal", "/goal_pose")                     // 导航目标点
-    SET_DEFAULT_TOPIC_NAME("Reloc", "/initialpose")                     // 机器人重新定位初始位姿（重定位）
-    SET_DEFAULT_TOPIC_NAME("Map", "/map")                               // 全局静态地图数据（通常是栅格地图）
-    SET_DEFAULT_TOPIC_NAME("LocalCostMap", "/local_costmap/costmap")    // 局部代价地图，反映机器人当前位置周围的障碍物分布
-    SET_DEFAULT_TOPIC_NAME("GlobalCostMap", "/global_costmap/costmap")  // 全局代价地图，反映整个环境的可通行区域和障碍物分布
-    SET_DEFAULT_TOPIC_NAME("LaserScan", "/scan")                        // 激光雷达扫描数据
-    SET_DEFAULT_TOPIC_NAME("GlobalPlan", "/plan")                       // 全局路径，从当前位置到目标点的最优路径
-    SET_DEFAULT_TOPIC_NAME("LocalPlan", "/local_plan")                  // 局部路径，结合实时障碍物/动态目标，计算的短时可行路线
-    SET_DEFAULT_TOPIC_NAME("Odometry", "/odom")                         // 里程计数据，通常包括机器人当前位置、速度、姿态
-    SET_DEFAULT_TOPIC_NAME("Speed", "/cmd_vel")                         // 控制机器人运动的目标线速度和角速度
-    SET_DEFAULT_TOPIC_NAME("Battery", "/battery")                       // 机器人当前电量、电压、健康状况
 
-    if (Config::ConfigManager::Instacnce()->GetRootConfig().images.empty())
-    {
-        Config::ConfigManager::Instacnce()->GetRootConfig().images.push_back(
-            Config::ImageDisplayConfig{.location = "front",
-                                       .topic = "/camera/front/image_raw",
-                                       .enable = true});
-    }
-    Config::ConfigManager::Instacnce()->StoreConfig();
 }
 
 bool rclcomm::Start()
@@ -52,69 +34,69 @@ bool rclcomm::Start()
     sub_laser_obt.callback_group = callback_group_laser;
 
     // 发布导航目标点
-    nav_goal_publisher_ = node->create_publisher<geometry_msgs::msg::PoseStamped>(GET_TOPIC_NAME("NavGoal"), 10);
+    nav_goal_publisher_ = node->create_publisher<geometry_msgs::msg::PoseStamped>(GOAL_POSE, 10);
     // 发布机器人初始位姿
-    reloc_pose_publisher_ = node->create_publisher<geometry_msgs::msg::PoseWithCovarianceStamped>(GET_TOPIC_NAME("Reloc"), 10);
+    reloc_pose_publisher_ = node->create_publisher<geometry_msgs::msg::PoseWithCovarianceStamped>(INITIAL_POSE, 10);
     // 发布速度
-    speed_publisher_ = node->create_publisher<geometry_msgs::msg::Twist>(GET_TOPIC_NAME("Speed"), 10);
+    speed_publisher_ = node->create_publisher<geometry_msgs::msg::Twist>(SPEED, 10);
     // 订阅全局静态地图数据
     map_subscriber_ = node->create_subscription<nav_msgs::msg::OccupancyGrid>(
-        GET_TOPIC_NAME("Map"),
+        GLOBAL_MAP,
         rclcpp::QoS(rclcpp::KeepLast(1)).reliable().transient_local(),
         std::bind(&rclcomm::map_callback, this, std::placeholders::_1),
         sub1_obt
         );
     // 订阅局部代价地图数据
     local_cost_map_subscriber_ = node->create_subscription<nav_msgs::msg::OccupancyGrid>(
-        GET_TOPIC_NAME("LocalCostMap"),
+        LOCAL_COST_MAP,
         rclcpp::QoS(rclcpp::KeepLast(1)).reliable().transient_local(),
         std::bind(&rclcomm::localCostMapCallback, this, std::placeholders::_1),
         sub1_obt
         );
     // 订阅全局代价地图
     global_cost_map_subscriber_ = node->create_subscription<nav_msgs::msg::OccupancyGrid>(
-        GET_TOPIC_NAME("GlobalCostMap"),
+        GLOBAL_COST_MAP,
         rclcpp::QoS(rclcpp::KeepLast(1)).reliable().transient_local(),
         std::bind(&rclcomm::globalCostMapCallback, this, std::placeholders::_1),
         sub1_obt
         );
     // 订阅激光雷达扫描数据
     laser_scan_subscriber_ = node->create_subscription<sensor_msgs::msg::LaserScan>(
-        GET_TOPIC_NAME("LaserScan"),
+        LASER_SCAN,
         20,
         std::bind(&rclcomm::laser_callback, this, std::placeholders::_1),
         sub_laser_obt
         );
     // 订阅当前电量
     battery_state_subscriber_ = node->create_subscription<sensor_msgs::msg::BatteryState>(
-        GET_TOPIC_NAME("Battery"),
+        BATTERY,
         1,
         std::bind(&rclcomm::BatteryCallback, this, std::placeholders::_1),
         sub1_obt
         );
     // 订阅全局路径
     global_path_subscriber_ = node->create_subscription<nav_msgs::msg::Path>(
-        GET_TOPIC_NAME("GlobalPlan"),
+        GLOBAL_PLAN,
         20,
         std::bind(&rclcomm::path_callback, this, std::placeholders::_1),
         sub1_obt
         );
     // 订阅局部路径
     local_path_subscriber_ = node->create_subscription<nav_msgs::msg::Path>(
-        GET_TOPIC_NAME("LocalPlan"),
+        LOCAL_PLAN,
         20,
         std::bind(&rclcomm::local_path_callback, this, std::placeholders::_1),
         sub1_obt
         );
     // 订阅里程计数据
     odometry_subscriber_ = node->create_subscription<nav_msgs::msg::Odometry>(
-        GET_TOPIC_NAME("Odometry"),
+        ODOM,
         20,
         std::bind(&rclcomm::odom_callback, this, std::placeholders::_1),
         sub1_obt
         );
 
-    // 处理图像数据 sensor_msgs::msg::Image
+    // 初始化相机数据订阅器
     for (auto one_image_display : Config::ConfigManager::Instacnce()->GetRootConfig().images)
     {
         LOG_INFO("image location:" << one_image_display.location << "topic:" << one_image_display.topic);
@@ -496,7 +478,7 @@ basic::RobotPose rclcomm::getTransform(std::string from, std::string to)
         ret.theta = yaw;
 
     } catch (tf2::TransformException &ex) {
-        // LOG_ERROR("getTransform error from:" << from << " to:" << to << " error:" << ex.what());
+        LOG_ERROR("getTransform error from:" << from << " to:" << to << " error:" << ex.what());
     }
     return ret;
 }

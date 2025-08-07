@@ -90,40 +90,6 @@ bool ConfigManager::StoreConfig()
     return true;
 }
 
-// 根据 display_name 获取 topic，失败则返回空
-std::string ConfigManager::GetTopicName(const std::string &display_name)
-{
-    auto iter = std::find_if(config_root_.display_config.begin(), config_root_.display_config.end(), [&display_name](const auto &item) {
-        return item.display_name == display_name;
-    });
-
-    if (iter == config_root_.display_config.end())
-    {
-        return "";
-    }
-    return iter->topic;
-}
-
-// 为 display_name 设置默认的 topic
-void ConfigManager::SetDefaultTopicName(const std::string &display_name, const std::string &topic_name)
-{
-    //  查找是否已存在对应 frame 的配置
-    auto iter = std::find_if(config_root_.display_config.begin(), config_root_.display_config.end(), [&display_name](const auto &item) {
-        return item.display_name == display_name;
-    });
-
-    // 如果不存在就新增一项
-    if (iter == config_root_.display_config.end())
-    {
-        config_root_.display_config.push_back(DisplayConfig(display_name, topic_name, true));
-    }
-    else if (iter->topic == "")
-    {
-        iter->topic = topic_name;
-    }
-    StoreConfig();
-}
-
 bool ConfigManager::ReadTopologyMap(const std::string &map_path, TopologyMap &map)
 {
     std::lock_guard<std::mutex> lock(mutex_);

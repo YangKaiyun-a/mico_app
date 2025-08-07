@@ -25,10 +25,13 @@ target_include_directories(
 )
 
 ament_target_dependencies(${TARGET_NAME} PUBLIC rclcpp  Boost nav_msgs tf2 tf2_geometry_msgs  tf2_ros sensor_msgs tf2_kdl cv_bridge )
-target_link_libraries(${TARGET_NAME} PUBLIC
-    Basic
-    Config
-    Logger
+target_link_libraries(${TARGET_NAME}
+    PRIVATE Qt5::Core
+
+    PUBLIC
+        Basic
+        Config
+        Logger
 )
 set_target_properties(${TARGET_NAME} PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"

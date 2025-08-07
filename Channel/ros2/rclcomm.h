@@ -70,7 +70,7 @@ private:
     rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr odometry_subscriber_;
     rclcpp::Subscription<nav_msgs ::msg::Path>::SharedPtr local_path_subscriber_;
     rclcpp::Subscription<nav_msgs::msg::Path>::SharedPtr global_path_subscriber_;
-    std::vector<rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr> image_subscriber_list_;
+    std::vector<rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr> image_subscriber_list_;   ///< 存储相机数据订阅器
     std::unique_ptr<tf2_ros::Buffer> tf_buffer_;
     std::shared_ptr<tf2_ros::TransformListener> transform_listener_;
     std::shared_ptr<rclcpp::Node> node;

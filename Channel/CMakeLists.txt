@@ -34,11 +34,14 @@ add_library(Channel STATIC
     ${INCLUDE_FILE}
 )
 
-target_link_libraries(Channel PUBLIC
-    Boost::filesystem
-    pthread
-    dl
-    Config
+target_link_libraries(Channel
+    PRIVATE Qt5::Core
+
+    PUBLIC
+        Boost::filesystem
+        pthread
+        dl
+        Config
 )
 
 # 让使用者可以直接 include
