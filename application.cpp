@@ -2,6 +2,7 @@
 
 #include "application.h"
 #include "signalmanager.h"
+#include "dbmanager.h"
 #include "channel_manager.h"
 #include "define.h"
 
@@ -36,6 +37,8 @@ Application *Application::instance(int &argc, char **argv)
 void Application::init()
 {
     SigManager;
+
+    DBManager;
 
     // 开启 ROS2
     ChannelManager::instance();

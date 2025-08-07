@@ -6,7 +6,7 @@
 
 /***************************宏**************************/
 #define SigManager SignalManager::instance()
-
+#define DBManager DBManager::instance()
 
 
 

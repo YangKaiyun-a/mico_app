@@ -31,7 +31,7 @@ target_link_libraries(Map
     PRIVATE Qt5::Svg
     Eigen3::Eigen
     dockwidget::dockwidget
-    json_struct
+
     ${OpenCV_LIBS}
     Basic
     Config

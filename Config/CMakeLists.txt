@@ -13,10 +13,10 @@ add_library(Config SHARED
 )
 
 target_link_libraries(Config
+    PRIVATE Qt5::Core
     ${Boost_LIBRARIES}
-    Qt5::Core
     Basic
-    json_struct::json_struct
+    PUBLIC json_struct::json_struct
     yaml-cpp::yaml-cpp
 )
 
