@@ -42,8 +42,6 @@ public:
     void init();
     void initUI();
     void SendChannelMsg(const MsgId &id, const std::any &data);                         ///< 发送 ROS2 数据
-    void SaveState();                                                                   ///< 保存当前窗口配置
-    void RestoreState();                                                                ///< 恢复上次保存的窗口配置
 
 public slots:
     void onSigCursorPose(const std::string &display_name, QPointF pos);                 ///< 接收当前光标的坐标

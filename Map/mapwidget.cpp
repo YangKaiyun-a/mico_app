@@ -457,16 +457,6 @@ void MapWidget::SendChannelMsg(const MsgId &id, const std::any &data)
     ChannelManager::instance()->SendMessage(id, data);
 }
 
-void MapWidget::SaveState()
-{
-
-}
-
-// 恢复主窗口（包括窗口大小、位置、布局和自定义界面状态）**到上一次关闭时保存的样子
-void MapWidget::RestoreState()
-{
-
-}
 
 
 

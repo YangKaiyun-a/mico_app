@@ -4,6 +4,7 @@
 
 namespace Config {
 
+// 存储 display_name 与 topic 对应关系
 struct DisplayConfig {
     std::string display_name;
     std::string topic;

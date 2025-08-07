@@ -3,10 +3,43 @@
 #include <boost/dll.hpp>
 #include <fstream>
 
-#include "boost/filesystem.hpp"
 
 namespace Config {
 
+ConfigManager *ConfigManager::Instacnce()
+{
+    static ConfigManager config;
+    return &config;
+}
+
+ConfigManager::ConfigManager()
+{
+    Init("./config.json");
+}
+
+ConfigManager::~ConfigManager()
+{
+    std::string pretty_json = JS::serializeStruct(config_root_);
+
+    // 每次关闭软件时，保存一次配置文件
+    writeStringToFile(config_path_, pretty_json);
+}
+
+void ConfigManager::Init(const std::string &config_path)
+{
+    config_path_ = config_path;
+
+    // 配置不存在 写入默认配置
+    if (!boost::filesystem::exists(config_path_))
+    {
+        std::string pretty_json = JS::serializeStruct(config_root_);
+        writeStringToFile(config_path_, pretty_json);
+    }
+
+    ReadRootConfig();
+}
+
+// 写配置文件
 bool ConfigManager::writeStringToFile(const std::string &filePath, const std::string &content)
 {
     boost::filesystem::path path(filePath);
@@ -29,39 +62,7 @@ bool ConfigManager::writeStringToFile(const std::string &filePath, const std::st
     }
 }
 
-ConfigManager *ConfigManager::Instacnce()
-{
-    static ConfigManager config;
-    return &config;
-}
-
-// #define CHECK_DEFALUT
-ConfigManager::ConfigManager(/* args */)
-{
-    Init(config_path_);
-}
-
-void ConfigManager::Init(const std::string &config_path)
-{
-    config_path_ = config_path;
-
-    // 配置不存在 写入默认配置
-    if (!boost::filesystem::exists(config_path_))
-    {
-        std::string pretty_json = JS::serializeStruct(config_root_);
-        writeStringToFile(config_path_, pretty_json);
-    }
-
-    ReadRootConfig();
-}
-
-ConfigManager::~ConfigManager()
-{
-    std::string pretty_json = JS::serializeStruct(config_root_);
-    std::cout << "write json" << std::endl;
-    writeStringToFile(config_path_, pretty_json);
-}
-
+// 解析配置文件到 config_root_
 bool ConfigManager::ReadRootConfig()
 {
     std::lock_guard<std::mutex> lock(mutex_);
@@ -89,10 +90,11 @@ bool ConfigManager::StoreConfig()
     return true;
 }
 
-std::string ConfigManager::GetTopicName(const std::string &frame_name)
+// 根据 display_name 获取 topic，失败则返回空
+std::string ConfigManager::GetTopicName(const std::string &display_name)
 {
-    auto iter = std::find_if(config_root_.display_config.begin(), config_root_.display_config.end(), [&frame_name](const auto &item) {
-        return item.display_name == frame_name;
+    auto iter = std::find_if(config_root_.display_config.begin(), config_root_.display_config.end(), [&display_name](const auto &item) {
+        return item.display_name == display_name;
     });
 
     if (iter == config_root_.display_config.end())
@@ -102,18 +104,18 @@ std::string ConfigManager::GetTopicName(const std::string &frame_name)
     return iter->topic;
 }
 
-// 为一个名为 frame_name 的显示配置项设置默认的 topic（主题）名称
-void ConfigManager::SetDefaultTopicName(const std::string &frame_name, const std::string &topic_name)
+// 为 display_name 设置默认的 topic
+void ConfigManager::SetDefaultTopicName(const std::string &display_name, const std::string &topic_name)
 {
     //  查找是否已存在对应 frame 的配置
-    auto iter = std::find_if(config_root_.display_config.begin(), config_root_.display_config.end(), [&frame_name](const auto &item) {
-        return item.display_name == frame_name;
+    auto iter = std::find_if(config_root_.display_config.begin(), config_root_.display_config.end(), [&display_name](const auto &item) {
+        return item.display_name == display_name;
     });
 
     // 如果不存在就新增一项
     if (iter == config_root_.display_config.end())
     {
-        config_root_.display_config.push_back(DisplayConfig(frame_name, topic_name, true));
+        config_root_.display_config.push_back(DisplayConfig(display_name, topic_name, true));
     }
     else if (iter->topic == "")
     {
