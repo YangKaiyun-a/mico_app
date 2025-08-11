@@ -1,13 +1,10 @@
-#ifndef DEFINE_H
-#define DEFINE_H
+#ifndef GLOBAL_H
+#define GLOBAL_H
+
+#include <map>
+#include "json_struct/json_struct.h"
 
 #include <QObject>
-
-
-/***************************宏**************************/
-#define SigManager SignalManager::instance()
-#define DBManager DBManager::instance()
-
 
 
 
@@ -38,8 +35,48 @@ public:
         FINISH,
         FAILED
     };
-
 };
+
+
+
+
+/***************************结构体******************************/
+
+struct TopologyMapConfig {
+    std::string map_name = "./default_topology_map.json";
+    JS_OBJ(map_name);
+};
+
+struct ImageDisplayConfig {
+    std::string location;
+    std::string topic;
+    bool enable = true;
+
+    JS_OBJ(location, topic, enable);
+};
+
+struct ShapePoint {
+    double x;
+    double y;
+    JS_OBJ(x, y);
+};
+
+struct RobotShapedConfig {
+    std::vector<ShapePoint> shaped_points;
+    bool is_ellipse{false};
+    std::string color{"0x00000FF"};
+    float opacity{0.5};
+    JS_OBJ(shaped_points, is_ellipse, color, opacity);
+};
+
+
+struct ConfigRoot {
+    TopologyMapConfig topology_map_config;
+    std::vector<ImageDisplayConfig> images;
+    RobotShapedConfig robot_shape_config;
+    JS_OBJ(images, topology_map_config, robot_shape_config);
+};
+
 
 
 
@@ -78,4 +115,4 @@ public:
 // 机器人当前电量、电压、健康状况
 #define BATTERY "/battery"
 
-#endif // DEFINE_H
+#endif // GLOBAL_H

@@ -35,4 +35,6 @@ private:
     static SignalManager* m_signalManager;
 };
 
+#define SigManager SignalManager::instance()
+
 #endif // SIGNALMANAGER_H

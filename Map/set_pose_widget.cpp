@@ -1,5 +1,4 @@
 #include "set_pose_widget.h"
-#include "define.h"
 #include "signalmanager.h"
 
 

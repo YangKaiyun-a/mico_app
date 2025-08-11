@@ -7,7 +7,6 @@
 #include "DockComponentsFactory.h"
 #include "Eigen/Dense"
 #include "FloatingDockContainer.h"
-#include "define.h"
 #include "signalmanager.h"
 #include "manager/channel_manager.h"
 
@@ -368,7 +367,7 @@ void MapWidget::initUI()
 
 
     /***************************相机窗口***************************/
-    // for (auto one_image : Config::ConfigManager::Instacnce()->GetRootConfig().images)
+    // for (auto one_image : ConfigManager->GetRootConfig().images)
     // {
     //     LOG_INFO("init image window location:" << one_image.location << " topic:" << one_image.topic);
     //     m_image_frame_map[one_image.location] = new RatioLayoutedFrame();

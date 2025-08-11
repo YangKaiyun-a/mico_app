@@ -7,6 +7,8 @@ set(CMAKE_CXX_STANDARD 17)
 file(GLOB_RECURSE SOURCE_FILE  CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR} *.cpp *.cc)
 file(GLOB_RECURSE INCLUDE_FILE CONFIGURE_DEPENDS  ${CMAKE_CURRENT_SOURCE_DIR} *.h *.hpp)
 
+find_package(Qt5 REQUIRED COMPONENTS Core)
+
 add_library(Config SHARED
     ${SOURCE_FILE}
     ${INCLUDE_FILE}
@@ -14,11 +16,13 @@ add_library(Config SHARED
 
 target_link_libraries(Config
     PRIVATE Qt5::Core
+    PRIVATE Qt5::Sql
     ${Boost_LIBRARIES}
     Basic
     PUBLIC json_struct::json_struct
     yaml-cpp::yaml-cpp
 )
+target_link_libraries(Config PRIVATE Qt5::Core)
 
 target_include_directories(Config PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}

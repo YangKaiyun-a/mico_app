@@ -2,7 +2,7 @@
 #define HOMEWIDGET_H
 #include "statusmonitorwidget.h"
 #include "currenttaskwidget.h"
-#include "define.h"
+#include "global.h"
 
 #include <QWidget>
 #include <QMap>

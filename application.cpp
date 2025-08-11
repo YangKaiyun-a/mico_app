@@ -4,7 +4,7 @@
 #include "signalmanager.h"
 #include "dbmanager.h"
 #include "channel_manager.h"
-#include "define.h"
+#include "settingfilecreate.h"
 
 
 Application* Application::m_singlenApplication = nullptr;
@@ -36,9 +36,11 @@ Application *Application::instance(int &argc, char **argv)
 
 void Application::init()
 {
+    settingManager;
+
     SigManager;
 
-    DBManager;
+    DbManager;
 
     // 开启 ROS2
     ChannelManager::instance();

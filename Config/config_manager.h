@@ -1,9 +1,7 @@
 #pragma once
 #include <mutex>
-#include "config_define.h"
 #include "topology_map.h"
-
-namespace Config {
+#include "global.h"
 
 class ConfigManager {
 
@@ -29,6 +27,7 @@ private:
     std::string config_path_;       ///< 配置文件路径
     ConfigRoot config_root_;        ///< json 根节点
     std::mutex mutex_;
+    static ConfigManager* m_configManager;
 };
 
-}  // namespace Config
+#define CfgManager ConfigManager::Instacnce()

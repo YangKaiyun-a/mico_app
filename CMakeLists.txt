@@ -18,7 +18,7 @@ if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
 endif()
 
 # 添加 QT5 库
-find_package(Qt5 REQUIRED COMPONENTS Core Gui Widgets Concurrent Svg)
+find_package(Qt5 REQUIRED COMPONENTS Core Gui Widgets Concurrent Svg Sql)
 # 添加第三方库
 include(GetJsonStruct)
 include(GetDockWidget)
@@ -66,6 +66,7 @@ target_link_libraries(${PROJECT_NAME}
       Qt5::Widgets
       Qt5::Concurrent
       Qt5::Svg
+      Qt5::Sql
       Eigen3::Eigen
       dockwidget::dockwidget
       json_struct

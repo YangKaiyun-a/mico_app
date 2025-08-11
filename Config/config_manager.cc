@@ -3,13 +3,16 @@
 #include <boost/dll.hpp>
 #include <fstream>
 
-
-namespace Config {
+ConfigManager *ConfigManager::m_configManager =  nullptr;
 
 ConfigManager *ConfigManager::Instacnce()
 {
-    static ConfigManager config;
-    return &config;
+    if(nullptr == m_configManager)
+    {
+        m_configManager = new ConfigManager();
+    }
+
+    return m_configManager;
 }
 
 ConfigManager::ConfigManager()
@@ -144,5 +147,3 @@ bool ConfigManager::WriteTopologyMap(const std::string &map_path, const Topology
     std::string pretty_json = JS::serializeStruct(topology_map);
     return writeStringToFile(fullPath, pretty_json);
 }
-
-}  // namespace Config

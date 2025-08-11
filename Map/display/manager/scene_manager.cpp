@@ -6,7 +6,6 @@
 #include "display_factory.h"
 #include "display_manager.h"
 #include "../point_shape.h"
-#include "define.h"
 #include "signalmanager.h"
 
 namespace Display {
@@ -53,13 +52,13 @@ void SceneManager::Init(QGraphicsView *view_ptr, DisplayManager *manager)
 // 打开配置文件中保存的地图
 void SceneManager::LoadTopologyMap()
 {
-    OpenTopologyMap(Config::ConfigManager::Instacnce()->GetRootConfig().topology_map_config.map_name);
+    OpenTopologyMap(CfgManager->GetRootConfig().topology_map_config.map_name);
 }
 
 // 打开地图，并将点位存储到 topology_map_
 void SceneManager::OpenTopologyMap(const std::string &file_path)
 {
-    //删除原有点
+    // 清空 topology_map_
     for (auto point : topology_map_.points)
     {
         auto display = FactoryDisplay::Instance()->GetDisplay(point.name);
@@ -69,8 +68,8 @@ void SceneManager::OpenTopologyMap(const std::string &file_path)
         delete display;
     }
 
-    Config::ConfigManager::Instacnce()->ReadTopologyMap(file_path, topology_map_);
-
+    // 更新 topology_map_
+    CfgManager->ReadTopologyMap(file_path, topology_map_);
     for (auto &point : topology_map_.points)
     {
         auto goal_point = (new PointShape(PointShape::ePointType::kNavGoal, DISPLAY_GOAL, point.name, 8, DISPLAY_MAP));
@@ -162,7 +161,7 @@ void SceneManager::SetPointMoveEnable(bool is_enable)
 
 void SceneManager::saveTopologyMap()
 {
-    Config::ConfigManager::Instacnce()->WriteTopologyMap(Config::ConfigManager::Instacnce()->GetRootConfig().topology_map_config.map_name, topology_map_);
+    CfgManager->WriteTopologyMap(CfgManager->GetRootConfig().topology_map_config.map_name, topology_map_);
     LOG_INFO("save topology map");
     Q_EMIT SigManager->sigTopologyMapUpdate(topology_map_);
 }
@@ -295,7 +294,7 @@ void SceneManager::drawPoint(const QPointF &pose)
 
 void SceneManager::SaveTopologyMap(const std::string &file_path)
 {
-    Config::ConfigManager::Instacnce()->WriteTopologyMap(file_path + ".topology", topology_map_);
+    CfgManager->WriteTopologyMap(file_path + ".topology", topology_map_);
     saveTopologyMap();
 }
 

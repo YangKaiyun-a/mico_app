@@ -11,7 +11,6 @@
 #include "algorithm.h"
 #include "display/manager/scene_manager.h"
 #include "logger.h"
-#include "define.h"
 #include "signalmanager.h"
 
 

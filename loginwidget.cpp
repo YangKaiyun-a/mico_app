@@ -1,6 +1,5 @@
 #include "loginwidget.h"
 #include "ui_loginwidget.h"
-#include "define.h"
 #include "signalmanager.h"
 
 LoginWidget::LoginWidget(QWidget *parent)

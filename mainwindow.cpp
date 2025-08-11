@@ -1,6 +1,5 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "define.h"
 #include "signalmanager.h"
 #include "logger.h"
 

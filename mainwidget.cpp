@@ -6,7 +6,7 @@
 #include "loggerwidget.h"
 #include "accountwidget.h"
 #include "debugwidget.h"
-#include "define.h"
+#include "global.h"
 
 
 MainWidget::MainWidget(QWidget *parent)

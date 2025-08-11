@@ -9,78 +9,70 @@
 #include "display/robot_shape.h"
 #include "algorithm.h"
 
+
 namespace Display {
 
 RobotShape::RobotShape(const std::string &display_type, const int &z_value, std::string parent_name)
     : VirtualDisplay(display_type, z_value, parent_name)
 {
-    //如果配置文件为空初始化配置文件
-    if (Config::ConfigManager::Instacnce()->GetRootConfig().robot_shape_config.shaped_points.empty())
-    {
-        Config::ConfigManager::Instacnce()->GetRootConfig().robot_shape_config.shaped_points = {
-            Config::Point{0.5, 0.5},
-            Config::Point{0.5, -0.5},
-            Config::Point{-0.5, -0.5},
-            Config::Point{-0.5, 0.5}
-        };
-    }
+    // 从数据库中获取机器人形状
+    // color_ = QColor(QString::fromStdString(ConfigManager->GetRootConfig().robot_shape_config.color).toUInt(nullptr, 16));
+    // opacity_ = ConfigManager->GetRootConfig().robot_shape_config.opacity;
 
-    color_ = QColor(QString::fromStdString(Config::ConfigManager::Instacnce()->GetRootConfig().robot_shape_config.color).toUInt(nullptr, 16));
-    opacity_ = Config::ConfigManager::Instacnce()->GetRootConfig().robot_shape_config.opacity;
+    // int index = 0;
+    // int max_x = 0;
+    // int max_y = 0;
+    // int min_x = 9999;
+    // int min_y = 9999;
 
-    int index = 0;
-    int max_x = 0;
-    int max_y = 0;
-    int min_x = 9999;
-    int min_y = 9999;
-    if (Config::ConfigManager::Instacnce()->GetRootConfig().robot_shape_config.is_ellipse)
-    {
-        for (auto point : Config::ConfigManager::Instacnce()->GetRootConfig().robot_shape_config.shaped_points)
-        {
-            double scene_x, scene_y;
-            map_data_.xy2ScenePose(point.x, point.y, scene_x, scene_y);
+    // if (ConfigManager->GetRootConfig().robot_shape_config.is_ellipse)
+    // {
+    //     for (auto point : ConfigManager->GetRootConfig().robot_shape_config.shaped_points)
+    //     {
+    //         double scene_x, scene_y;
+    //         map_data_.xy2ScenePose(point.x, point.y, scene_x, scene_y);
 
-            if (scene_x > max_x)
-                max_x = scene_x;
-            if (scene_y > max_y)
-                max_y = scene_y;
-            if (scene_x < min_x)
-                min_x = scene_x;
-            if (scene_y < min_y)
-                min_y = scene_y;
-        }
-        path_.addEllipse(QRectF(min_x, min_y, max_x - min_x, max_y - min_y));  // 参数分别为圆心坐标和宽高
-    }
-    else
-    {
-        for (auto point : Config::ConfigManager::Instacnce()->GetRootConfig().robot_shape_config.shaped_points)
-        {
-            double scene_x, scene_y;
-            map_data_.xy2ScenePose(point.x, point.y, scene_x, scene_y);
-            if (index == 0)
-            {
-                path_.moveTo(scene_x, scene_y);
-            }
-            else
-            {
-                path_.lineTo(scene_x, scene_y);
-            }
+    //         if (scene_x > max_x)
+    //             max_x = scene_x;
+    //         if (scene_y > max_y)
+    //             max_y = scene_y;
+    //         if (scene_x < min_x)
+    //             min_x = scene_x;
+    //         if (scene_y < min_y)
+    //             min_y = scene_y;
+    //     }
+    //     path_.addEllipse(QRectF(min_x, min_y, max_x - min_x, max_y - min_y));  // 参数分别为圆心坐标和宽高
+    // }
+    // else
+    // {
+    //     for (auto point : ConfigManager->GetRootConfig().robot_shape_config.shaped_points)
+    //     {
+    //         double scene_x, scene_y;
+    //         map_data_.xy2ScenePose(point.x, point.y, scene_x, scene_y);
+    //         if (index == 0)
+    //         {
+    //             path_.moveTo(scene_x, scene_y);
+    //         }
+    //         else
+    //         {
+    //             path_.lineTo(scene_x, scene_y);
+    //         }
 
-            if (scene_x > max_x)
-                max_x = scene_x;
-            if (scene_y > max_y)
-                max_y = scene_y;
-            if (scene_x < min_x)
-                min_x = scene_x;
-            if (scene_y < min_y)
-                min_y = scene_y;
+    //         if (scene_x > max_x)
+    //             max_x = scene_x;
+    //         if (scene_y > max_y)
+    //             max_y = scene_y;
+    //         if (scene_x < min_x)
+    //             min_x = scene_x;
+    //         if (scene_y < min_y)
+    //             min_y = scene_y;
 
-            index++;
-        }
-        path_.closeSubpath();  // 闭合路径
-    }
+    //         index++;
+    //     }
+    //     path_.closeSubpath();  // 闭合路径
+    // }
 
-    SetBoundingRect(QRectF(min_x, min_y, max_x - min_x, max_y - min_y));
+    //SetBoundingRect(QRectF(min_x, min_y, max_x - min_x, max_y - min_y));
 }
 
 void RobotShape::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)

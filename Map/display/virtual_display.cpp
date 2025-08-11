@@ -1,6 +1,5 @@
 #include "algorithm.h"
 #include "display/manager/display_factory.h"
-#include "define.h"
 #include "signalmanager.h"
 
 namespace Display {

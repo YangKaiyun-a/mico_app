@@ -1,5 +1,4 @@
 #include "nav_goal_widget.h"
-#include "define.h"
 #include "signalmanager.h"
 
 #include <QDoubleSpinBox>
