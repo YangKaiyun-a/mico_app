@@ -50,6 +50,7 @@ void SceneManager::Init(QGraphicsView *view_ptr, DisplayManager *manager)
     line_cursor_ = QCursor(line_image, 0, line_image.height());
 }
 
+// 打开配置文件中保存的地图
 void SceneManager::LoadTopologyMap()
 {
     OpenTopologyMap(Config::ConfigManager::Instacnce()->GetRootConfig().topology_map_config.map_name);

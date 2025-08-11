@@ -96,7 +96,7 @@ bool rclcomm::Start()
         sub1_obt
         );
 
-    // 初始化相机数据订阅器
+    // 从配置文件中读取相机配置，并初始化相机数据订阅器
     for (auto one_image_display : Config::ConfigManager::Instacnce()->GetRootConfig().images)
     {
         LOG_INFO("image location:" << one_image_display.location << "topic:" << one_image_display.topic);

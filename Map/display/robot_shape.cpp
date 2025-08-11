@@ -14,7 +14,7 @@ namespace Display {
 RobotShape::RobotShape(const std::string &display_type, const int &z_value, std::string parent_name)
     : VirtualDisplay(display_type, z_value, parent_name)
 {
-
+    //如果配置文件为空初始化配置文件
     if (Config::ConfigManager::Instacnce()->GetRootConfig().robot_shape_config.shaped_points.empty())
     {
         Config::ConfigManager::Instacnce()->GetRootConfig().robot_shape_config.shaped_points = {

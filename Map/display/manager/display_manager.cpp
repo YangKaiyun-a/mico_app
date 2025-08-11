@@ -106,6 +106,8 @@ bool DisplayManager::UpdateDisplay(const std::string &display_type, const std::a
         {
             display->UpdateMap(map_data_);
         }
+
+        // 只有初次启动时会加载默认地图，这个功能不确定要不要
         if (!init_flag_)
         {
             scene_manager_ptr_->LoadTopologyMap();

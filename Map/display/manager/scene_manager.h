@@ -18,9 +18,9 @@ private:
     QGraphicsView *view_ptr_;
     Display::VirtualDisplay *curr_handle_display_{nullptr};
     DisplayManager *display_manager_;
-    NavGoalWidget *nav_goal_widget_;    // 设置目标点位页面
+    NavGoalWidget *nav_goal_widget_;    ///< 设置目标点位页面
 
-    TopologyMap topology_map_;
+    TopologyMap topology_map_;          ///< 存储地图数据
     MapEditMode current_mode_;
     bool right_pressed_{false};
     bool left_pressed_{false};
