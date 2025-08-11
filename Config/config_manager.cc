@@ -1,5 +1,6 @@
 #include "config_manager.h"
 #include <QFile>
+#include <QDebug>
 #include <boost/dll.hpp>
 #include <fstream>
 
@@ -146,4 +147,53 @@ bool ConfigManager::WriteTopologyMap(const std::string &map_path, const Topology
     }
     std::string pretty_json = JS::serializeStruct(topology_map);
     return writeStringToFile(fullPath, pretty_json);
+}
+
+// 更新机器人形状
+bool ConfigManager::updateRobotShapedConfig(int robotId, const QString &config)
+{
+    if(config.isEmpty())
+    {
+        qWarning() << "机器人形状数据为空";
+    }
+
+    // QString -> std::string
+    std::string json = config.toStdString();
+    JS::ParseContext parseContext(json);
+
+    // 解析到临时变量中
+    RobotShapedConfig tmpRobotShapedConfig;
+    if (parseContext.parseTo(tmpRobotShapedConfig) != JS::Error::NoError)
+    {
+        std::string errorStr = parseContext.makeErrorString();
+        fprintf(stderr, "Error parsing config.json error: %s\n", errorStr.c_str());
+        std::exit(1);
+    }
+
+    // 添加到 QMap
+    auto it = m_robotShapedConfigMap.find(robotId);
+    if (it != m_robotShapedConfigMap.end())
+    {
+        it.value() = std::move(tmpRobotShapedConfig);
+    }
+    else
+    {
+        m_robotShapedConfigMap.insert(robotId, std::move(tmpRobotShapedConfig));
+    }
+
+    return true;
+}
+
+// 获取机器人形状
+RobotShapedConfig ConfigManager::getRobotShapedConfig(int robotId)
+{
+    if(!m_robotShapedConfigMap.contains(robotId))
+    {
+        qWarning() << robotId << "号机器人不存在，形状获取失败";
+        return RobotShapedConfig();
+    }
+    else
+    {
+        return m_robotShapedConfigMap.value(robotId);
+    }
 }

@@ -54,8 +54,8 @@ void DisplayManager::InitUi()
     new DisplayPath(DISPLAY_GLOBAL_PATH, 6, DISPLAY_MAP);
     // 绘制局部路径
     new DisplayPath(DISPLAY_LOCAL_PATH, 6, DISPLAY_MAP);
-    // 绘制机器人形状（默认为正方形）
-    new RobotShape(DISPLAY_SHAPE, 8, DISPLAY_MAP);
+    // 绘制机器人形状（默认为正方形，id 为 1）
+    new RobotShape(DISPLAY_SHAPE, 8, 1, DISPLAY_MAP);
 
     SetDisplayConfig(DISPLAY_GLOBAL_PATH + "/Color", Color(0, 0, 255));
     SetDisplayConfig(DISPLAY_LOCAL_PATH + "/Color", Color(0, 255, 0));

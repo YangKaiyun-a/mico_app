@@ -12,7 +12,9 @@ public:
     static DBManager *instance();
     void init();
     bool connect();
-    QSqlDatabase getDatabaseConnection(const QString& name);
+    QSqlDatabase getDatabaseConnection();            ///< 根据 线程 获取连接名
+    QString getRobotShapeConfig(int id);             ///< 获取机器人形状
+
 
 private:
     explicit DBManager(QObject *parent = nullptr);

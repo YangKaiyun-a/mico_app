@@ -13,14 +13,15 @@
 #include <QColor>
 #include <QGraphicsItem>
 #include <QGraphicsSceneWheelEvent>
-#include "config_manager.h"
+
 #include "virtual_display.h"
+
 namespace Display {
 
 class RobotShape : public VirtualDisplay
 {
 public:
-    RobotShape(const std::string &display_type, const int &z_value, std::string parent_name = "");
+    RobotShape(const std::string &display_type, const int &z_value, int robotId, std::string parent_name = "");
     ~RobotShape();
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = nullptr) override;
     bool UpdateData(const std::any &data) override;
@@ -33,6 +34,7 @@ private:
     RobotPose robot_pose_{0, 0, 0};
     QColor color_{0x1E90FF};
     float opacity_{0.5};
+    int m_robotId = 0;      ///< 机器人 id
 };
 
 }  // namespace Display

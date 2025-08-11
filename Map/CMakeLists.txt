@@ -29,9 +29,9 @@ target_link_libraries(Map
     PRIVATE Qt5::Widgets
     PRIVATE Qt5::Concurrent
     PRIVATE Qt5::Svg
+    PRIVATE Qt5::Sql
     Eigen3::Eigen
     dockwidget::dockwidget
-
     ${OpenCV_LIBS}
     Basic
     Config

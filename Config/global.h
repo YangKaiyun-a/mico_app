@@ -61,9 +61,10 @@ struct ShapePoint {
     JS_OBJ(x, y);
 };
 
+// 机器人形状
 struct RobotShapedConfig {
     std::vector<ShapePoint> shaped_points;
-    bool is_ellipse{false};
+    bool is_ellipse = false;
     std::string color{"0x00000FF"};
     float opacity{0.5};
     JS_OBJ(shaped_points, is_ellipse, color, opacity);
