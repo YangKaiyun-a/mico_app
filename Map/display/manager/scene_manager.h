@@ -35,22 +35,23 @@ private:
 
 public slots:
     void SetEditMapMode(MapEditMode mode);
-    void SaveTopologyMap(const std::string &file_path);
+
 
 public:
     SceneManager(QObject *parent = nullptr);
     virtual ~SceneManager();
     void Init(QGraphicsView *view_ptr, DisplayManager *manager);
     void AddOneNavPoint();
-    void LoadTopologyMap();
-    void OpenTopologyMap(const std::string &file_path);
+    void LoadTopologyMap();                                             ///< 启动软件时加载配置文件的点位数据（暂未启用）
+    void OpenTopologyMap(const std::string &file_path);                 ///< 读取点位数据到 topology_map_
+    void SaveTopologyMap(const std::string &file_path);                 ///< 保存点位数据
+    void updateDefaultTopologyMap();                                    ///< 更改配置文件中的点位数据
 
 private:
     void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
     void mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent) override;
     void wheelEvent(QGraphicsSceneWheelEvent *event) override;
-    void saveTopologyMap();
     void blindNavGoalWidget(Display::VirtualDisplay *);
     void updateNavGoalWidgetPose( Display::VirtualDisplay *, bool is_move = true);
     std::string generatePointName(const std::string &prefix);

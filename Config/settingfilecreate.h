@@ -20,9 +20,6 @@ public:
     void CreateSettingFile();
     void SettingInit();
     QVariant sysValue(const QString& group, const QString& key, const QVariant& defaultValue = QVariant());
-    bool ReadTopologyMap(const QString &map_path, TopologyMap &map);                            ///< 读取地图
-    bool WriteTopologyMap(const QString &map_path, const TopologyMap &topology_map);            ///< 保存地图
-
 
 private:
     static SettingFileCreate* m_settingFileCreate;

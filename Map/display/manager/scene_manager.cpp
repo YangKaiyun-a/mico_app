@@ -7,6 +7,7 @@
 #include "display_manager.h"
 #include "../point_shape.h"
 #include "signalmanager.h"
+#include "settingfilecreate.h"
 
 namespace Display {
 
@@ -49,13 +50,15 @@ void SceneManager::Init(QGraphicsView *view_ptr, DisplayManager *manager)
     line_cursor_ = QCursor(line_image, 0, line_image.height());
 }
 
-// 打开配置文件中保存的地图
+// 启动软件时加载配置文件的点位信息
 void SceneManager::LoadTopologyMap()
 {
-    OpenTopologyMap(CfgManager->GetRootConfig().topology_map_config.map_name);
+    // QString path = settingManager->sysValue("default_map", "path").toString();
+    // std::string pathstr = path.toStdString();
+    // OpenTopologyMap(pathstr);
 }
 
-// 打开地图，并将点位存储到 topology_map_
+// 将点位存储到 topology_map_
 void SceneManager::OpenTopologyMap(const std::string &file_path)
 {
     // 清空 topology_map_
@@ -76,7 +79,6 @@ void SceneManager::OpenTopologyMap(const std::string &file_path)
 
         goal_point->SetRotateEnable(true)->SetMoveEnable(false)->setVisible(true);
         goal_point->UpdateDisplay(display_manager_->wordPose2Map(point.ToRobotPose()));
-        // std::cout << "Load Point:" << point.name << endl;
     }
 
     LOG_INFO("加载地图成功！");
@@ -96,7 +98,7 @@ void SceneManager::SetEditMapMode(MapEditMode mode)
             FactoryDisplay::Instance()->GetDisplay(DISPLAY_LOCAL_COST_MAP)->setVisible(true);
             FactoryDisplay::Instance()->GetDisplay(DISPLAY_GLOBAL_COST_MAP)->setVisible(true);
             FactoryDisplay::Instance()->GetDisplay(DISPLAY_MAP)->SetMoveEnable(true);
-            saveTopologyMap();
+            updateDefaultTopologyMap();
             view_ptr_->setCursor(Qt::ArrowCursor);
             break;
         }
@@ -159,10 +161,13 @@ void SceneManager::SetPointMoveEnable(bool is_enable)
     }
 }
 
-void SceneManager::saveTopologyMap()
+// 更改配置文件中的点位数据
+void SceneManager::updateDefaultTopologyMap()
 {
-    CfgManager->WriteTopologyMap(CfgManager->GetRootConfig().topology_map_config.map_name, topology_map_);
-    LOG_INFO("save topology map");
+    QString path = settingManager->sysValue("default_map", "path").toString();
+    std::string pathstr = path.toStdString();
+
+    CfgManager->WriteTopologyMap(pathstr, topology_map_);
     Q_EMIT SigManager->sigTopologyMapUpdate(topology_map_);
 }
 
@@ -292,10 +297,12 @@ void SceneManager::drawPoint(const QPointF &pose)
     map_ptr->DrawPoint(pose_map);
 }
 
+
+// 保存点位数据
 void SceneManager::SaveTopologyMap(const std::string &file_path)
 {
     CfgManager->WriteTopologyMap(file_path + ".topology", topology_map_);
-    saveTopologyMap();
+    // updateDefaultTopologyMap();
 }
 
 void SceneManager::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)

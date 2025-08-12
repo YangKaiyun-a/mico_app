@@ -18,30 +18,14 @@ ConfigManager *ConfigManager::Instacnce()
 
 ConfigManager::ConfigManager()
 {
-    Init("./config.json");
+
 }
 
 ConfigManager::~ConfigManager()
 {
-    std::string pretty_json = JS::serializeStruct(config_root_);
 
-    // 每次关闭软件时，保存一次配置文件
-    writeStringToFile(config_path_, pretty_json);
 }
 
-void ConfigManager::Init(const std::string &config_path)
-{
-    config_path_ = config_path;
-
-    // 配置不存在 写入默认配置
-    if (!boost::filesystem::exists(config_path_))
-    {
-        std::string pretty_json = JS::serializeStruct(config_root_);
-        writeStringToFile(config_path_, pretty_json);
-    }
-
-    ReadRootConfig();
-}
 
 // 写配置文件
 bool ConfigManager::writeStringToFile(const std::string &filePath, const std::string &content)
@@ -66,34 +50,7 @@ bool ConfigManager::writeStringToFile(const std::string &filePath, const std::st
     }
 }
 
-// 解析配置文件到 config_root_
-bool ConfigManager::ReadRootConfig()
-{
-    std::lock_guard<std::mutex> lock(mutex_);
-    std::ifstream file(config_path_);
-    std::string json((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
-    file.close();
-    JS::ParseContext parseContext(json);
-
-    // JS::ParseContext has the member
-    if (parseContext.parseTo(config_root_) != JS::Error::NoError)
-    {
-        std::string errorStr = parseContext.makeErrorString();
-        fprintf(stderr, "Error parsing config.json error: %s\n", errorStr.c_str());
-        std::exit(1);
-    }
-    return true;
-}
-
-// 保存当前配置到文件
-bool ConfigManager::StoreConfig()
-{
-    std::lock_guard<std::mutex> lock(mutex_);
-    std::string pretty_json = JS::serializeStruct(config_root_);
-    writeStringToFile(config_path_, pretty_json);
-    return true;
-}
-
+// 读取地图中的点位信息
 bool ConfigManager::ReadTopologyMap(const std::string &map_path, TopologyMap &map)
 {
     std::lock_guard<std::mutex> lock(mutex_);
@@ -127,6 +84,7 @@ bool ConfigManager::ReadTopologyMap(const std::string &map_path, TopologyMap &ma
     return true;
 }
 
+// 保存地图点位信息到指定路径
 bool ConfigManager::WriteTopologyMap(const std::string &map_path, const TopologyMap &topology_map)
 {
     std::lock_guard<std::mutex> lock(mutex_);

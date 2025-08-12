@@ -109,7 +109,7 @@ bool DisplayManager::UpdateDisplay(const std::string &display_type, const std::a
         // 只有初次启动时会加载默认地图，这个功能不确定要不要
         if (!init_flag_)
         {
-            scene_manager_ptr_->LoadTopologyMap();
+            // scene_manager_ptr_->LoadTopologyMap();
             init_flag_ = true;
         }
 
@@ -396,16 +396,19 @@ void DisplayManager::UpdateMap(OccupancyMap &)
     emit signalPubMap(map_data_);
 }
 
+// 保存地图按钮调用
 void DisplayManager::SaveMap(const std::string &save_path)
 {
-    LOG_INFO("start save topology map")
+    // 保存点位数据
     scene_manager_ptr_->SaveTopologyMap(save_path);
-    LOG_INFO("start save occ map")
+
+    // 保存图像数
     auto display_map_ = static_cast<DisplayOccMap *>(FactoryDisplay::Instance()->GetDisplay(DISPLAY_MAP));
     auto map = display_map_->GetOccupancyMap();
     map.Save(save_path);
 }
 
+// 打开地图按钮调用
 void DisplayManager::OpenMap(const std::string &path)
 {
     boost::filesystem::path filepath(path);
@@ -415,13 +418,13 @@ void DisplayManager::OpenMap(const std::string &path)
 
     // 获取文件名（不包括后缀）
     std::string filenameWithoutExtension = filepath.stem().string();
-    LOG_INFO("Filename without extension: " << filenameWithoutExtension);
     // 获取后缀名
     std::string extension = filepath.extension().string();
     LOG_INFO("Extension: " << extension);
 
     if (extension == ".topology")
     {
+        // 获取点位信息
         scene_manager_ptr_->OpenTopologyMap(path);
     }
     else if (extension == ".yaml")

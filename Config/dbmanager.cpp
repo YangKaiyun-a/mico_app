@@ -56,17 +56,17 @@ QSqlDatabase DBManager::getDatabaseConnection()
 
     if(!QSqlDatabase::contains(connectionName))
     {
-        if(!SettingFileCreate::instance()->sysValue("database", "db_connected").toBool())
+        if(!settingManager->sysValue("database", "db_connected").toBool())
         {
             return QSqlDatabase();
         }
 
         QSqlDatabase db = QSqlDatabase::addDatabase("QPSQL", connectionName);
-        db.setHostName(SettingFileCreate::instance()->sysValue("database", "db_Host").toString());
-        db.setPort(SettingFileCreate::instance()->sysValue("database", "db_Port").toInt());
-        db.setDatabaseName(SettingFileCreate::instance()->sysValue("database", "db_Name").toString());
-        db.setUserName(SettingFileCreate::instance()->sysValue("database", "db_User").toString());
-        db.setPassword(SettingFileCreate::instance()->sysValue("database", "db_PWD").toString());
+        db.setHostName(settingManager->sysValue("database", "db_Host").toString());
+        db.setPort(settingManager->sysValue("database", "db_Port").toInt());
+        db.setDatabaseName(settingManager->sysValue("database", "db_Name").toString());
+        db.setUserName(settingManager->sysValue("database", "db_User").toString());
+        db.setPassword(settingManager->sysValue("database", "db_PWD").toString());
         return db;
     }
 

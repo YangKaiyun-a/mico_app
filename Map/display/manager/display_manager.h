@@ -75,11 +75,11 @@ public slots:
     void SetEditMapMode(MapEditMode mode);
     void AddOneNavPoint();
     void slotRobotScenePoseChanged(const RobotPose &pose);
-    void onSigRobotPoseChanged(const RobotPose &pose);                   ///< 机器人坐标发生变化的槽函数
+    void onSigRobotPoseChanged(const RobotPose &pose);                      ///< 机器人坐标发生变化的槽函数
     void UpdateTopicData(const MsgId &id, const std::any &data);
     void FocusDisplay(const std::string &display_type);
-    void SaveMap(const std::string &save_path);
-    void OpenMap(const std::string &save_path);
+    void SaveMap(const std::string &save_path);                             ///< 保存地图按钮调用
+    void OpenMap(const std::string &save_path);                             ///< 打开地图按钮调用
     void SetScaleBig();
     void SetScaleSmall();
 

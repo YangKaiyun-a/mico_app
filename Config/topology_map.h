@@ -5,6 +5,7 @@
 JS_ENUM(PointType, NavGoal);
 JS_ENUM_DECLARE_STRING_PARSER(PointType)
 
+// 地图名称与点位信息
 struct TopologyMap
 {
     struct PointInfo
