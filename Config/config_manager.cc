@@ -21,6 +21,16 @@ ConfigManager::ConfigManager()
 
 }
 
+QMap<int, MotorStatus> ConfigManager::motorStatusMap() const
+{
+    return m_motorStatusMap;
+}
+
+void ConfigManager::setMotorStatusMap(const QMap<int, MotorStatus> &newMotorStatusMap)
+{
+    m_motorStatusMap = newMotorStatusMap;
+}
+
 ConfigManager::~ConfigManager()
 {
 

@@ -1,5 +1,6 @@
 #include "dbmanager.h"
 #include "settingfilecreate.h"
+#include "config_manager.h"
 
 #include <QThread>
 #include <QDebug>
@@ -74,7 +75,7 @@ QSqlDatabase DBManager::getDatabaseConnection()
 }
 
 // 获取机器人形状
-QString DBManager::getRobotShapeConfig(int id)
+bool DBManager::getRobotShapeConfig(int id)
 {
     QSqlDatabase db = getDatabaseConnection();
     QSqlQuery query(db);
@@ -93,7 +94,46 @@ QString DBManager::getRobotShapeConfig(int id)
     else
     {
         qDebug() << query.lastError();
+        return false;
     }
 
-    return robotShapeConfig;
+
+    if(!CfgManager->updateRobotShapedConfig(id, robotShapeConfig))
+    {
+        return false;
+    }
+
+    return true;
+}
+
+// 获取电机信息
+bool DBManager::getMotorStatus()
+{
+    QSqlDatabase db = getDatabaseConnection();
+    QSqlQuery query(db);
+
+    QMap<int, MotorStatus> motorStatusMap;
+
+    QString str = QString("SELECT motor_name, motor_id FROM public.motor_status");
+
+    if(!query.exec(str))
+    {
+        qDebug() << query.lastError();
+        return false;
+    }
+
+    while (query.next())
+    {
+        QString name  = query.value(0).toString();
+        int motorId   = query.value(1).toInt();
+
+        MotorStatus ms;
+        ms.motor_id  = motorId;
+        ms.motorName = name;
+
+        motorStatusMap.insert(motorId, ms);
+    }
+
+    CfgManager->setMotorStatusMap(motorStatusMap);
+    return true;
 }

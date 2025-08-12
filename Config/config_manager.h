@@ -16,6 +16,8 @@ public:
     bool WriteTopologyMap(const std::string &map_path, const TopologyMap &topology_map);            ///< 保存地图点位信息到指定路径
     bool updateRobotShapedConfig(int robotId, const QString &config);                               ///< 更新机器人形状
     RobotShapedConfig getRobotShapedConfig(int robotId);                                            ///< 获取机器人形状
+    void setMotorStatusMap(const QMap<int, MotorStatus> &newMotorStatusMap);
+    QMap<int, MotorStatus> motorStatusMap() const;
 
 private:
     ConfigManager();
@@ -25,7 +27,8 @@ private:
 private:
     std::mutex mutex_;
     static ConfigManager* m_configManager;
-    QMap<int, RobotShapedConfig> m_robotShapedConfigMap;        ///< 根据 id 存储机器人形状
+    QMap<int, RobotShapedConfig> m_robotShapedConfigMap;        ///< 根据 id 存储机器人形状（唯一一份）
+    QMap<int, MotorStatus> m_motorStatusMap;                    ///< 根据 id 存储电机状态（唯一一份）
 
 };
 

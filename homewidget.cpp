@@ -1,8 +1,10 @@
 #include "homewidget.h"
 #include "ui_homewidget.h"
-#include "robotstatuswidget.h"
+#include "dbmanager.h"
+#include "config_manager.h"
 
 #include <QGridLayout>
+#include <QDebug>
 
 HomeWidget::HomeWidget(QWidget *parent)
     : QWidget(parent)
@@ -74,14 +76,20 @@ void HomeWidget::initTaskWidget()
 
 void HomeWidget::initRobotWidget()
 {
-    RobotStatusWidget *robotWgt = new RobotStatusWidget();
-    ui->horizontalLayout_2->addWidget(robotWgt);
 
-    ui->horizontalLayout_2->setStretch(0, 1);
-    ui->horizontalLayout_2->setStretch(1, 1);
 }
 
 void HomeWidget::initDeviceWidget()
 {
+    if(!DbManager->getMotorStatus())
+    {
+        qDebug() << "获取电机模块失败！";
+    }
 
+    QMap<int, MotorStatus> motorStatusMap = CfgManager->motorStatusMap();
+
+    for(const MotorStatus &motor : motorStatusMap.values())
+    {
+        qDebug() << motor.motorName;
+    }
 }

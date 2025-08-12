@@ -9,9 +9,9 @@ RobotShape::RobotShape(const std::string &display_type, const int &z_value, int 
     : VirtualDisplay(display_type, z_value, parent_name), m_robotId(robotId)
 {
     // 从数据库中获取机器人形状
-    QString config = DbManager->getRobotShapeConfig(m_robotId);
-    if(!CfgManager->updateRobotShapedConfig(m_robotId, config))
+    if(!DbManager->getRobotShapeConfig(m_robotId))
     {
+        qDebug() << "机器人形状初始化失败";
         return;
     }
 

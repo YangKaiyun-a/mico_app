@@ -64,7 +64,7 @@ QWidget#leftBarWidget
 }
 
 
-/*************************************当前任监控器样式***********************************/
+/*************************************当前任务监控器样式***********************************/
 CurrentTaskWidget QWidget#mainWidget
 {
 
@@ -89,15 +89,8 @@ StatusMonitorWidget QLabel
 }
 
 
-/*************************************机器人状态监控页面样式***********************************/
-RobotStatusWidget QWidget#moduleWidget
-{
-    background-color: #FFFFFF;
-}
-
-
-/*************************************首页硬件状态页面样式***********************************/
-HomeWidget QWidget#deviceWidget
+/*************************************首页硬件状态、机器人状态页面样式***********************************/
+HomeWidget QWidget#deviceWidget, QWidget#robotWidget
 {
     background-color: #FFFFFF;
 }

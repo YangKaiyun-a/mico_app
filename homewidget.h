@@ -3,6 +3,7 @@
 #include "statusmonitorwidget.h"
 #include "currenttaskwidget.h"
 #include "global.h"
+#include "motorstatuswidget.h"
 
 #include <QWidget>
 #include <QMap>
@@ -29,6 +30,7 @@ private:
     Ui::HomeWidget *ui;
     CurrentTaskWidget *m_currentTaskWidget = nullptr;
     QMap<ENUM_CLASS::TASK_STATUS, StatusMonitorWidget*> m_taskMonitorMap;
+    QMap<int, MotorStatusWidget*> m_motorStatusMap;
 };
 
 #endif // HOMEWIDGET_H

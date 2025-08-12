@@ -35,6 +35,16 @@ public:
         FINISH,
         FAILED
     };
+
+
+    // 电机状态
+    enum MOTOR_STATUS
+    {
+        NONE = -1,
+        NORMAL,
+        WARNING,
+        ERROR
+    };
 };
 
 
@@ -64,6 +74,13 @@ struct RobotShapedConfig {
     std::string color{"0x00000FF"};
     float opacity{0.5};
     JS_OBJ(shaped_points, is_ellipse, color, opacity);
+};
+
+// 电机状态
+struct MotorStatus {
+    int motor_id = -1;
+    QString motorName = "";
+    ENUM_CLASS::MOTOR_STATUS status = ENUM_CLASS::MOTOR_STATUS::NONE;
 };
 
 
