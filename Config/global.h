@@ -42,10 +42,6 @@ public:
 
 /***************************结构体******************************/
 
-struct TopologyMapConfig {
-    std::string map_name = "./default_topology_map.json";
-    JS_OBJ(map_name);
-};
 
 struct ImageDisplayConfig {
     std::string location;
@@ -70,13 +66,6 @@ struct RobotShapedConfig {
     JS_OBJ(shaped_points, is_ellipse, color, opacity);
 };
 
-
-struct ConfigRoot {
-    TopologyMapConfig topology_map_config;
-    std::vector<ImageDisplayConfig> images;
-    RobotShapedConfig robot_shape_config;
-    JS_OBJ(images, topology_map_config, robot_shape_config);
-};
 
 
 

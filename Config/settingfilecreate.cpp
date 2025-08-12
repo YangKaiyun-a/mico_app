@@ -74,8 +74,8 @@ void SettingFileCreate::CreateSettingFile()
 void SettingFileCreate::SettingInit()
 {
     m_settings->beginGroup("database");
-    m_settings->setValue("db_connected", false);
-    m_settings->setValue("db_Host", "192.168.137.101");
+    m_settings->setValue("db_connected", true);
+    m_settings->setValue("db_Host", "127.0.0.1");
     m_settings->setValue("db_Name", "postgres");
     m_settings->setValue("db_Port", "5432");
     m_settings->setValue("db_User", "postgres");

@@ -23,12 +23,7 @@ private:
     ConfigManager &operator=(const ConfigManager &) = delete;
 
 private:
-    std::string config_path_;       ///< 配置文件路径
-
-
-
-    /**************************/
-     std::mutex mutex_;
+    std::mutex mutex_;
     static ConfigManager* m_configManager;
     QMap<int, RobotShapedConfig> m_robotShapedConfigMap;        ///< 根据 id 存储机器人形状
 
