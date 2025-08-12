@@ -414,13 +414,10 @@ void DisplayManager::OpenMap(const std::string &path)
     boost::filesystem::path filepath(path);
     //文件夹
     std::string directory = filepath.parent_path().string();
-    LOG_INFO("Directory: " << directory);
-
     // 获取文件名（不包括后缀）
     std::string filenameWithoutExtension = filepath.stem().string();
     // 获取后缀名
     std::string extension = filepath.extension().string();
-    LOG_INFO("Extension: " << extension);
 
     if (extension == ".topology")
     {
@@ -442,7 +439,6 @@ void DisplayManager::OpenMap(const std::string &path)
         {
             OccupancyMap map;
             bool ret = map.Load(yaml_path);
-            LOG_INFO("open map ret:" << ret);
             UpdateDisplay(DISPLAY_MAP, map);
         }
         else
