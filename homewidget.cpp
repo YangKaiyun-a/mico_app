@@ -112,7 +112,7 @@ void HomeWidget::initDeviceWidget()
         MotorStatusWidget *wgt = new MotorStatusWidget(motor.motorName, status);
         gridLayout->addWidget(wgt, row, col, 1 ,1);
         ++col;
-        if(col == 6)
+        if(col == 7)
         {
             col = 0;
             row = 1;
