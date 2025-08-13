@@ -26,6 +26,25 @@ QMap<int, MotorStatus> ConfigManager::motorStatusMap() const
     return m_motorStatusMap;
 }
 
+// 电机状态->字符串
+QString ConfigManager::motorStatusToString(ENUM_CLASS::MOTOR_STATUS status)
+{
+    switch(status)
+    {
+    case ENUM_CLASS::MOTOR_STATUS::NONE:
+        return  QStringLiteral("暂未获取");
+    case ENUM_CLASS::MOTOR_STATUS::NORMAL:
+        return  QStringLiteral("正常");
+    case ENUM_CLASS::MOTOR_STATUS::WARNING:
+        return  QStringLiteral("警告");
+    case ENUM_CLASS::MOTOR_STATUS::ERROR:
+        return  QStringLiteral("故障");
+    default:
+        return  QStringLiteral("获取失败");
+    }
+}
+
+
 void ConfigManager::setMotorStatusMap(const QMap<int, MotorStatus> &newMotorStatusMap)
 {
     m_motorStatusMap = newMotorStatusMap;

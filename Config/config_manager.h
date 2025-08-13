@@ -18,6 +18,7 @@ public:
     RobotShapedConfig getRobotShapedConfig(int robotId);                                            ///< 获取机器人形状
     void setMotorStatusMap(const QMap<int, MotorStatus> &newMotorStatusMap);
     QMap<int, MotorStatus> motorStatusMap() const;
+    QString motorStatusToString(ENUM_CLASS::MOTOR_STATUS status);                                   ///< 电机状态->字符串
 
 private:
     ConfigManager();

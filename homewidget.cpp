@@ -86,10 +86,36 @@ void HomeWidget::initDeviceWidget()
         qDebug() << "获取电机模块失败！";
     }
 
+    QGridLayout *gridLayout = new QGridLayout();
+    gridLayout->setContentsMargins(0, 0, 0, 0);
+
+    for(int row = 0; row < 2; ++row)
+    {
+        gridLayout->setRowStretch(row, 1);
+    }
+
+    for(int col = 0; col < 7; ++col)
+    {
+        gridLayout->setColumnStretch(col, 1);
+    }
+
+    ui->deviceWidget->setLayout(gridLayout);
+
+
     QMap<int, MotorStatus> motorStatusMap = CfgManager->motorStatusMap();
 
+    int row = 0, col = 0;
     for(const MotorStatus &motor : motorStatusMap.values())
     {
-        qDebug() << motor.motorName;
+        QString status = CfgManager->motorStatusToString(motor.status);
+
+        MotorStatusWidget *wgt = new MotorStatusWidget(motor.motorName, status);
+        gridLayout->addWidget(wgt, row, col, 1 ,1);
+        ++col;
+        if(col == 6)
+        {
+            col = 0;
+            row = 1;
+        }
     }
 }
