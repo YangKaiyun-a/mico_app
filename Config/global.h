@@ -45,6 +45,13 @@ public:
         WARNING,
         ERROR
     };
+
+    // 日志模块索引
+    enum LOG_INDEX
+    {
+        OPERATION,
+        SYSTEM
+    };
 };
 
 

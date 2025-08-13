@@ -1,5 +1,6 @@
 #ifndef OPERATIONLOGWIDGET_H
 #define OPERATIONLOGWIDGET_H
+#include "operationlogtable.h"
 
 #include <QWidget>
 
@@ -14,9 +15,13 @@ class OperationLogWidget : public QWidget
 public:
     explicit OperationLogWidget(QWidget *parent = nullptr);
     ~OperationLogWidget();
+    void init();
+    void initData();
+    void initUI();
 
 private:
     Ui::OperationLogWidget *ui;
+    QSqlTableModel *m_tabModel = nullptr;   ///< 最底层的 DataBaseTable::m_tableModel
 };
 
 #endif // OPERATIONLOGWIDGET_H

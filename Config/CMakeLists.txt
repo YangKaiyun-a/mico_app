@@ -8,6 +8,7 @@ file(GLOB_RECURSE SOURCE_FILE  CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR} *.c
 file(GLOB_RECURSE INCLUDE_FILE CONFIGURE_DEPENDS  ${CMAKE_CURRENT_SOURCE_DIR} *.h *.hpp)
 
 find_package(Qt5 REQUIRED COMPONENTS Core)
+find_package(Qt5 REQUIRED COMPONENTS Core)
 
 add_library(Config SHARED
     ${SOURCE_FILE}
@@ -22,6 +23,7 @@ target_link_libraries(Config
     PUBLIC json_struct::json_struct
     yaml-cpp::yaml-cpp
 )
+target_link_libraries(Config PRIVATE Qt5::Core)
 target_link_libraries(Config PRIVATE Qt5::Core)
 
 target_include_directories(Config PUBLIC

@@ -8,6 +8,8 @@ file(GLOB_RECURSE SOURCE_FILE  CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR} *.c
 file(GLOB_RECURSE INCLUDE_FILE CONFIGURE_DEPENDS  ${CMAKE_CURRENT_SOURCE_DIR} *.h *.hpp)
 file(GLOB_RECURSE UI_FILE CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}  *.ui)
 
+find_package(Qt5 REQUIRED COMPONENTS Core)
+
 add_library(Logger STATIC
     ${SOURCE_FILE}
     ${INCLUDE_FILE}
@@ -19,8 +21,10 @@ target_link_libraries(Logger
     PRIVATE Qt5::Core
     PRIVATE Qt5::Gui
     PRIVATE Qt5::Widgets
+    PRIVATE Qt5::Sql
     Config
 )
+target_link_libraries(Logger PRIVATE Qt5::Core)
 
 target_include_directories(Logger PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}

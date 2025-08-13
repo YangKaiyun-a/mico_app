@@ -17,6 +17,8 @@ public:
     explicit LoggerWidget(QWidget *parent = nullptr);
     ~LoggerWidget();
     void init();
+    void initData();
+    void initUI();
 
 private:
     Ui::LoggerWidget *ui;
