@@ -7,7 +7,6 @@ set(CMAKE_CXX_STANDARD 17)
 file(GLOB_RECURSE SOURCE_FILE  CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR} *.cpp *.cc)
 file(GLOB_RECURSE INCLUDE_FILE CONFIGURE_DEPENDS  ${CMAKE_CURRENT_SOURCE_DIR} *.h *.hpp)
 file(GLOB_RECURSE UI_FILE CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}  *.ui)
-file(GLOB_RECURSE QRC_FILE  CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}  resource/*.qrc)
 
 add_library(Logger STATIC
     ${SOURCE_FILE}
@@ -20,6 +19,7 @@ target_link_libraries(Logger
     PRIVATE Qt5::Core
     PRIVATE Qt5::Gui
     PRIVATE Qt5::Widgets
+    Config
 )
 
 target_include_directories(Logger PUBLIC

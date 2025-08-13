@@ -103,5 +103,11 @@ MapWidget QWidget#mapWidget, MapWidget QWidget#processBarWidget
 }
 
 
+/*************************************日志模块页面样式***********************************/
+LoggerWidget QWidget#moduleWidget
+{
+    background-color: #FFFFFF;
+}
+
 
 
