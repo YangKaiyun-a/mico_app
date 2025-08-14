@@ -491,7 +491,6 @@ void rclcomm::Process()
         m_executor->spin_some();
         getRobotPose();
     }
-    // std::cout << "loop" << std::endl;
 }
 
 void rclcomm::PubRelocPose(const RobotPose &pose)

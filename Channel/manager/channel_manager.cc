@@ -97,9 +97,10 @@ std::vector<std::string> ChannelManager::DiscoveryAllChannel()
 // 加载指定路径的通道动态库，并调用其 GetChannelInstance 函数获取通道实例
 bool ChannelManager::OpenChannel(const std::string &path) 
 {
-    try {
+    try
+    {
         library_channel_ = new boost::dll::shared_library(path);
-        // 动态链接库加载成功
+
         // 在这里可以使用 QLibrary 提供的函数指针来访问动态链接库中的函数
         typedef VirtualChannelNode *(*GetChannelInstanceFunc)();
         GetChannelInstanceFunc func_get = (GetChannelInstanceFunc)library_channel_->get<VirtualChannelNode *()>("GetChannelInstance");  // 取出该符号

@@ -9,11 +9,9 @@
  */
 #ifndef RCLCOMM_H
 #define RCLCOMM_H
-#include "sensor_msgs/msg/image.hpp"
 
 #include <cv_bridge/cv_bridge.h>
 #include <rclcpp/rclcpp.hpp>
-#include "algorithm.h"
 #include "geometry_msgs/msg/pose_stamped.hpp"
 #include "geometry_msgs/msg/pose_with_covariance_stamped.hpp"
 #include "geometry_msgs/msg/twist.hpp"
@@ -29,6 +27,9 @@
 #include "tf2_ros/buffer.h"
 #include "tf2_ros/transform_listener.h"
 #include "virtual_channel_node.h"
+
+// 自定义接口
+#include "example_interfaces/msg/example_msg.hpp"
 
 class rclcomm : public VirtualChannelNode {
 public:
@@ -68,7 +69,7 @@ private:
     rclcpp::Subscription<sensor_msgs::msg::LaserScan>::SharedPtr laser_scan_subscriber_;
     rclcpp::Subscription<sensor_msgs::msg::BatteryState>::SharedPtr battery_state_subscriber_;
     rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr odometry_subscriber_;
-    rclcpp::Subscription<nav_msgs ::msg::Path>::SharedPtr local_path_subscriber_;
+    rclcpp::Subscription<nav_msgs::msg::Path>::SharedPtr local_path_subscriber_;
     rclcpp::Subscription<nav_msgs::msg::Path>::SharedPtr global_path_subscriber_;
     std::vector<rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr> image_subscriber_list_;   ///< 存储相机数据订阅器
     std::unique_ptr<tf2_ros::Buffer> tf_buffer_;
