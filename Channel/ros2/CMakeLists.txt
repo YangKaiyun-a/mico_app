@@ -13,6 +13,8 @@ find_package(tf2_geometry_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(cv_bridge REQUIRED)
 find_package(Boost REQUIRED COMPONENTS thread)
+
+# 自定义消息接口
 find_package(example_interfaces REQUIRED)
 
 

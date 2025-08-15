@@ -1,7 +1,7 @@
 #include "loggerwidget.h"
 #include "ui_loggerwidget.h"
 #include "global.h"
-#include "operationlogtable.h"
+#include "logtablemanager.h"
 
 LoggerWidget::LoggerWidget(QWidget *parent)
     : QWidget(parent)

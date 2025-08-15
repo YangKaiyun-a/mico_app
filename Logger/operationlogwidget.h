@@ -1,8 +1,8 @@
 #ifndef OPERATIONLOGWIDGET_H
 #define OPERATIONLOGWIDGET_H
-#include "operationlogtable.h"
 
 #include <QWidget>
+#include <QSqlTableModel>
 
 namespace Ui {
 class OperationLogWidget;

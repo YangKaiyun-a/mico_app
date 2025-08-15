@@ -1,5 +1,6 @@
 #include "operationlogwidget.h"
 #include "ui_operationlogwidget.h"
+#include "logtablemanager.h"
 
 OperationLogWidget::OperationLogWidget(QWidget *parent)
     : QWidget(parent)
