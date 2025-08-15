@@ -111,3 +111,11 @@ LoggerWidget QWidget#moduleWidget
 
 
 
+LoggerWidget QWidget#logIndexWidget
+{
+    border: none;
+    border-bottom: 1px solid black;
+}
+
+
+

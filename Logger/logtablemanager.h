@@ -1,4 +1,7 @@
-// 操作日志、系统日志的对外接口
+/* 操作日志、系统日志的对外接口
+ *
+ *
+ */
 
 #ifndef LOGTABLEMANAGER_H
 #define LOGTABLEMANAGER_H

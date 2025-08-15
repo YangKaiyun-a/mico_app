@@ -19,6 +19,12 @@ public:
     void init();
     void initData();
     void initUI();
+    void enterLogBefore();          ///< 进入该页面前的准备事务
+
+private slots:
+    void on_btnOperationLog_clicked();
+
+    void on_btnSystemLog_clicked();
 
 private:
     Ui::LoggerWidget *ui;

@@ -1,3 +1,6 @@
+/*电机状态监控窗口*/
+
+
 #ifndef MOTORSTATUSWIDGET_H
 #define MOTORSTATUSWIDGET_H
 

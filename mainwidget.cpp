@@ -71,6 +71,21 @@ void MainWidget::on_btnMap_clicked()
 void MainWidget::on_btnLogger_clicked()
 {
     ui->stackedWidget->setCurrentIndex(ENUM_CLASS::RECORD);
+
+    int index = static_cast<int>(ENUM_CLASS::RECORD);
+    QWidget *wgt = ui->stackedWidget->widget(index);
+    if(!wgt)
+    {
+        return;
+    }
+
+    LoggerWidget *loggerWgt = static_cast<LoggerWidget*>(wgt);
+    if(!loggerWgt)
+    {
+        return;
+    }
+
+    loggerWgt->enterLogBefore();
 }
 
 

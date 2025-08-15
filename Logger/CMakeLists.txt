@@ -22,8 +22,8 @@ target_link_libraries(Logger
     PRIVATE Qt5::Widgets
     PRIVATE Qt5::Sql
     Config
+    CustomControls
 )
-target_link_libraries(Logger PRIVATE Qt5::Core)
 
 target_include_directories(Logger PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}

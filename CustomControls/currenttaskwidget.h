@@ -1,3 +1,7 @@
+/*当前任务监控窗口*/
+
+
+
 #ifndef CURRENTTASKWIDGET_H
 #define CURRENTTASKWIDGET_H
 

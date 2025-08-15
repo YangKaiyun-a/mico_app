@@ -31,7 +31,7 @@
    </property>
    <item>
     <widget class="QWidget" name="moduleWidget" native="true">
-     <layout class="QVBoxLayout" name="verticalLayout" stretch="1,10">
+     <layout class="QVBoxLayout" name="verticalLayout" stretch="1,14">
       <property name="spacing">
        <number>0</number>
       </property>
@@ -48,10 +48,10 @@
        <number>0</number>
       </property>
       <item>
-       <widget class="QWidget" name="buttonWidget" native="true">
+       <widget class="QWidget" name="logIndexWidget" native="true">
         <layout class="QHBoxLayout" name="horizontalLayout_2">
          <property name="spacing">
-          <number>15</number>
+          <number>25</number>
          </property>
          <property name="leftMargin">
           <number>20</number>
@@ -63,14 +63,14 @@
           <number>0</number>
          </property>
          <item>
-          <widget class="QPushButton" name="pushButton">
+          <widget class="QPushButton" name="btnOperationLog">
            <property name="text">
             <string>操作日志</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="pushButton_2">
+          <widget class="QPushButton" name="btnSystemLog">
            <property name="text">
             <string>系统日志</string>
            </property>
