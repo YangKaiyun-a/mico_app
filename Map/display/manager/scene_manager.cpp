@@ -98,7 +98,7 @@ void SceneManager::SetEditMapMode(MapEditMode mode)
             FactoryDisplay::Instance()->GetDisplay(DISPLAY_LOCAL_COST_MAP)->setVisible(true);
             FactoryDisplay::Instance()->GetDisplay(DISPLAY_GLOBAL_COST_MAP)->setVisible(true);
             FactoryDisplay::Instance()->GetDisplay(DISPLAY_MAP)->SetMoveEnable(true);
-            updateDefaultTopologyMap();
+            // updateDefaultTopologyMap();
             view_ptr_->setCursor(Qt::ArrowCursor);
             break;
         }
