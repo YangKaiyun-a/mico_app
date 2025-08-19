@@ -52,6 +52,13 @@ public:
         OPERATION,
         SYSTEM
     };
+
+    // 任务模块索引
+    enum  TASK_INDEX
+    {
+        TASK_LIST,
+        TASK_FINISHED
+    };
 };
 
 

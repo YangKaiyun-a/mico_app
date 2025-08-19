@@ -1,8 +1,11 @@
 #ifndef TASKWIDGET_H
 #define TASKWIDGET_H
 
+#include "tasklistwidget.h"
+#include "taskfinishedwidget.h"
+
 #include <QWidget>
-#include <QSqlTableModel>
+
 
 namespace Ui {
 class TaskWidget;
@@ -19,12 +22,11 @@ public:
     void initData();
     void initUI();
     void enterLogBefore();                                  ///< 进入该页面前的准备事务
-    void updateTableModel(const QString &strFilter);        ///< 更新数据模型
-    void updateTableWidget(int beginRow, int endRow);       ///< 更新数据视图
 
 private:
     Ui::TaskWidget *ui;
-    QSqlTableModel *m_tableModel = nullptr;   ///< 最底层的 DataBaseTable::m_tableModel
+    TaskListWidget *m_taskListWidget = nullptr;
+    taskFinishedWidget *m_taskFinishedWidget = nullptr;
 };
 
 #endif // TASKWIDGET_H

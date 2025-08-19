@@ -9,8 +9,6 @@ file(GLOB_RECURSE UI_FILE CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}  *.ui)
 file(GLOB_RECURSE INCLUDE_FILE CONFIGURE_DEPENDS  ${CMAKE_CURRENT_SOURCE_DIR}  *.h *.hpp)
 
 
-find_package(Qt5 REQUIRED COMPONENTS Core)
-
 add_library(Task STATIC
     ${SOURCE_FILE}
     ${UI_FILE}
@@ -23,8 +21,8 @@ target_link_libraries(Task
     PRIVATE Qt5::Widgets
     PRIVATE Qt5::Sql
     Config
+    CustomControls
 )
-target_link_libraries(Task PRIVATE Qt5::Core)
 
 # 让使用者可以直接 include
 target_include_directories(Task PUBLIC

@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>TaskWidget</class>
- <widget class="QWidget" name="TaskWidget">
+ <class>TaskListWidget</class>
+ <widget class="QWidget" name="TaskListWidget">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>808</width>
-    <height>463</height>
+    <width>770</width>
+    <height>521</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,23 +18,20 @@
     <number>0</number>
    </property>
    <property name="leftMargin">
-    <number>15</number>
+    <number>0</number>
    </property>
    <property name="topMargin">
-    <number>15</number>
+    <number>0</number>
    </property>
    <property name="rightMargin">
-    <number>15</number>
+    <number>0</number>
    </property>
    <property name="bottomMargin">
-    <number>15</number>
+    <number>0</number>
    </property>
    <item>
     <widget class="QWidget" name="moduleWidget" native="true">
-     <layout class="QVBoxLayout" name="verticalLayout" stretch="1,14">
-      <property name="spacing">
-       <number>0</number>
-      </property>
+     <layout class="QVBoxLayout" name="verticalLayout" stretch="10,1">
       <property name="leftMargin">
        <number>0</number>
       </property>
@@ -48,61 +45,70 @@
        <number>0</number>
       </property>
       <item>
-       <widget class="QWidget" name="taskIndexWidget" native="true">
-        <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <widget class="QTableWidget" name="tableWidget">
+        <attribute name="verticalHeaderVisible">
+         <bool>false</bool>
+        </attribute>
+       </widget>
+      </item>
+      <item>
+       <widget class="QWidget" name="bottomWidget" native="true">
+        <layout class="QHBoxLayout" name="horizontalLayout_3">
          <property name="spacing">
-          <number>25</number>
+          <number>10</number>
          </property>
          <property name="leftMargin">
-          <number>20</number>
+          <number>0</number>
          </property>
          <property name="topMargin">
           <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>15</number>
          </property>
          <property name="bottomMargin">
           <number>0</number>
          </property>
          <item>
-          <widget class="QPushButton" name="btnNewTask">
-           <property name="text">
-            <string>创建任务</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <spacer name="horizontalSpacer">
+          <spacer name="horizontalSpacer_2">
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
            </property>
            <property name="sizeHint" stdset="0">
             <size>
-             <width>575</width>
+             <width>635</width>
              <height>20</height>
             </size>
            </property>
           </spacer>
          </item>
          <item>
-          <widget class="QPushButton" name="btnTaskList">
+          <widget class="QPushButton" name="btnLast">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>0</height>
+            </size>
+           </property>
            <property name="text">
-            <string>执行列表</string>
+            <string>&lt;</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="btnTaskFinished">
+          <widget class="QPushButton" name="btnNext">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>0</height>
+            </size>
+           </property>
            <property name="text">
-            <string>执行历史</string>
+            <string>&gt;</string>
            </property>
           </widget>
          </item>
         </layout>
-       </widget>
-      </item>
-      <item>
-       <widget class="QStackedWidget" name="stackedWidget">
-        <widget class="QWidget" name="page"/>
-        <widget class="QWidget" name="page_2"/>
        </widget>
       </item>
      </layout>

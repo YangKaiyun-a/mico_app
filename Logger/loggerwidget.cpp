@@ -38,6 +38,11 @@ void LoggerWidget::initUI()
 
 void LoggerWidget::enterLogBefore()
 {
+    if(!m_operationWidget)
+    {
+        return;
+    }
+
     m_operationWidget->enterLogBefore();
     ui->btnOperationLog->setChecked(true);
     ui->stackedWidget->setCurrentIndex(ENUM_CLASS::LOG_INDEX::OPERATION);
@@ -45,6 +50,11 @@ void LoggerWidget::enterLogBefore()
 
 void LoggerWidget::on_btnOperationLog_clicked()
 {
+    if(!m_operationWidget)
+    {
+        return;
+    }
+
     m_operationWidget->enterLogBefore();
     ui->stackedWidget->setCurrentIndex(ENUM_CLASS::LOG_INDEX::OPERATION);
 }
@@ -52,6 +62,7 @@ void LoggerWidget::on_btnOperationLog_clicked()
 
 void LoggerWidget::on_btnSystemLog_clicked()
 {
+    // TODO: 增加判空
     ui->stackedWidget->setCurrentIndex(ENUM_CLASS::LOG_INDEX::SYSTEM);
 }
 
