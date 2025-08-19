@@ -391,10 +391,10 @@ void rclcomm::local_path_callback(const nav_msgs::msg::Path::SharedPtr msg)
 void rclcomm::odom_callback(const nav_msgs::msg::Odometry::SharedPtr msg)
 {
     basic::RobotState state;
-    state.vx = (double)msg->twist.twist.linear.x;
+    state.vx = (double)msg->twist.twist.linear.x;   ///< 机器人在 base_link 坐标系下的线速度 (m/s)
     state.vy = (double)msg->twist.twist.linear.y;
-    state.w = (double)msg->twist.twist.angular.z;
-    state.x = (double)msg->pose.pose.position.x;
+    state.w = (double)msg->twist.twist.angular.z;   ///< 机器人在 base_link 坐标系下的角速度 (rad/s)
+    state.x = (double)msg->pose.pose.position.x;    ///< 机器人在 odom 坐标系下的 X、Y、Z 位置
     state.y = (double)msg->pose.pose.position.y;
 
     geometry_msgs::msg::Quaternion msg_quat = msg->pose.pose.orientation;
@@ -478,7 +478,7 @@ basic::RobotPose rclcomm::getTransform(std::string from, std::string to)
         ret.theta = yaw;
 
     } catch (tf2::TransformException &ex) {
-        // LOG_ERROR("getTransform error from:" << from << " to:" << to << " error:" << ex.what());
+        LOG_ERROR("getTransform error from:" << from << " to:" << to << " error:" << ex.what());
     }
     return ret;
 }

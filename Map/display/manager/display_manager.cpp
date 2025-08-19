@@ -116,7 +116,7 @@ bool DisplayManager::UpdateDisplay(const std::string &display_type, const std::a
     }
     else if (display_type == DISPLAY_ROBOT)
     {
-        // 机器人坐标
+        // 机器人坐标变换到 map 坐标系下，/tf
         // 重定位时屏蔽位置更新
         if (!is_reloc_mode_)
         {

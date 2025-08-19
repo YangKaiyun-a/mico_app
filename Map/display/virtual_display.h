@@ -27,6 +27,8 @@
 #include "point_type.h"
 
 using namespace basic;
+
+// 尝试把 data 强制转换为 type 类型，成功时赋值给 res_data
 #define GetAnyData(type, data, res_data)    \
 {                                         \
     try {                                   \

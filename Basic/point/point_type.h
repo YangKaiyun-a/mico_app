@@ -19,9 +19,9 @@ typedef std::vector<Point> RobotPath;
 typedef Eigen::Vector3d Color;
 
 struct RobotSpeed {
-    double vx{0};
-    double vy{0};
-    double w{0};
+    double vx{0};       ///< 机器人在 base_link 坐标系下的线速度 (m/s)
+    double vy{0};       ///< 机器人在 base_link 坐标系下的线速度 (m/s)
+    double w{0};        ///< 机器人在 base_link 坐标系下的角速度 (rad/s)
     RobotSpeed() {}
     RobotSpeed(double vx, double vy, double w) : vx(vx), vy(vy), w(w) {}
 };

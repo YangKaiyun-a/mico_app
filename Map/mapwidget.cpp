@@ -487,12 +487,12 @@ void MapWidget::onSigRecvChannelData(const MsgId &id, const std::any &data)
     switch (id)
     {
     case MsgId::kOdomPose:
-        // 里程计数器
+        // 里程计数器（暂未启用）
         updateOdomInfo(std::any_cast<RobotState>(data));
         break;
     case MsgId::kRobotPose:
     {
-        // 坐标变
+        // 坐标变换
         break;
     }
     case MsgId::kBatteryState:
