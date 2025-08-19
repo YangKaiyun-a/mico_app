@@ -33,7 +33,7 @@ void TaskWidget::initUI()
     m_taskListWidget = new TaskListWidget();
     ui->stackedWidget->insertWidget(ENUM_CLASS::TASK_INDEX::TASK_LIST, m_taskListWidget);
 
-    m_taskFinishedWidget = new taskFinishedWidget();
+    m_taskFinishedWidget = new TaskFinishedWidget();
     ui->stackedWidget->insertWidget(ENUM_CLASS::TASK_INDEX::TASK_FINISHED, m_taskFinishedWidget);
 
     ui->stackedWidget->setCurrentIndex(ENUM_CLASS::TASK_INDEX::TASK_LIST);
@@ -49,5 +49,19 @@ void TaskWidget::enterLogBefore()
     m_taskListWidget->enterLogBefore();
     ui->btnTaskList->setChecked(true);
     ui->stackedWidget->setCurrentIndex(ENUM_CLASS::TASK_INDEX::TASK_LIST);
+}
+
+
+void TaskWidget::on_btnTaskList_clicked()
+{
+    m_taskListWidget->enterLogBefore();
+    ui->stackedWidget->setCurrentIndex(ENUM_CLASS::TASK_INDEX::TASK_LIST);
+}
+
+
+void TaskWidget::on_btnTaskFinished_clicked()
+{
+    m_taskFinishedWidget->enterLogBefore();
+    ui->stackedWidget->setCurrentIndex(ENUM_CLASS::TASK_INDEX::TASK_FINISHED);
 }
 

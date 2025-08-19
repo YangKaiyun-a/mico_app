@@ -23,10 +23,15 @@ public:
     void initUI();
     void enterLogBefore();                                  ///< 进入该页面前的准备事务
 
+private slots:
+    void on_btnTaskList_clicked();
+
+    void on_btnTaskFinished_clicked();
+
 private:
     Ui::TaskWidget *ui;
     TaskListWidget *m_taskListWidget = nullptr;
-    taskFinishedWidget *m_taskFinishedWidget = nullptr;
+    TaskFinishedWidget *m_taskFinishedWidget = nullptr;
 };
 
 #endif // TASKWIDGET_H

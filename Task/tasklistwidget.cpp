@@ -51,7 +51,7 @@ void TaskListWidget::initUI()
 
 void TaskListWidget::enterLogBefore()
 {
-    qDebug() << "刷新任务列表";
+    qDebug() << "刷新历史任务列表";
 
     updateTableModel("");
     updateTableWidget(0, PAGE_NUM);
