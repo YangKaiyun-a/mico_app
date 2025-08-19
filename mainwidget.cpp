@@ -58,6 +58,21 @@ void MainWidget::on_btnFirst_clicked()
 
 void MainWidget::on_btnTaskList_clicked()
 {
+    int index = static_cast<int>(ENUM_CLASS::TASK);
+    QWidget *wgt = ui->stackedWidget->widget(index);
+    if(!wgt)
+    {
+        return;
+    }
+
+    TaskWidget *taskWgt = static_cast<TaskWidget*>(wgt);
+    if(!taskWgt)
+    {
+        return;
+    }
+
+    taskWgt->enterLogBefore();
+
     ui->stackedWidget->setCurrentIndex(ENUM_CLASS::TASK);
 }
 
@@ -70,8 +85,6 @@ void MainWidget::on_btnMap_clicked()
 
 void MainWidget::on_btnLogger_clicked()
 {
-    ui->stackedWidget->setCurrentIndex(ENUM_CLASS::RECORD);
-
     int index = static_cast<int>(ENUM_CLASS::RECORD);
     QWidget *wgt = ui->stackedWidget->widget(index);
     if(!wgt)
@@ -86,6 +99,8 @@ void MainWidget::on_btnLogger_clicked()
     }
 
     loggerWgt->enterLogBefore();
+
+    ui->stackedWidget->setCurrentIndex(ENUM_CLASS::RECORD);
 }
 
 

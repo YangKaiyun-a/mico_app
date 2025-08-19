@@ -30,6 +30,11 @@ LogTableManager *LogTableManager::instance()
 // 获取最底层的 DataBaseTable::m_tableModel
 QSqlTableModel *LogTableManager::tableModel(ENUM_CLASS::LOG_INDEX index)
 {
+    if(!m_operationTable)
+    {
+        return nullptr;
+    }
+
     QSqlTableModel *tableModel = nullptr;
 
     switch(index)

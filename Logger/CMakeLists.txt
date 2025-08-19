@@ -13,7 +13,6 @@ add_library(Logger STATIC
     ${SOURCE_FILE}
     ${INCLUDE_FILE}
     ${UI_FILE}
-    ${QRC_FILE}
 )
 
 target_link_libraries(Logger
