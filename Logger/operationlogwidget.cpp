@@ -3,6 +3,7 @@
 #include "db/logtablemanager.h"
 #include "aligntablewidgetitem.h"
 
+#include <QDateTime>
 
 const int PAGE_NUM = 10;    ///< 一页中显示的记录条数
 
@@ -41,12 +42,6 @@ void OperationLogWidget::initUI()
     ui->tableWidget->setSelectionMode(QAbstractItemView::SingleSelection);
     ui->tableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
     ui->tableWidget->setAlternatingRowColors(true);
-
-    for(int i = 0; i < headers.size(); ++i)
-    {
-        ui->tableWidget->horizontalHeader()->setSectionResizeMode(i, QHeaderView::Fixed);
-    }
-
     ui->tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 }
 
@@ -130,7 +125,7 @@ void OperationLogWidget::updateTableWidget(int beginRow, int endRow)
         ui->tableWidget->setItem(row, 0, new AlignTableWidgetItem(record.value(1).toString()));
         ui->tableWidget->setItem(row, 1, new AlignTableWidgetItem(record.value(2).toString()));
         ui->tableWidget->setItem(row, 2, new AlignTableWidgetItem(record.value(3).toString()));
-        ui->tableWidget->setItem(row, 3, new AlignTableWidgetItem(record.value(4).toString()));
+        ui->tableWidget->setItem(row, 3, new AlignTableWidgetItem(record.value(4).toDateTime().toString("yyyy-MM-dd HH:mm:ss")));
     }
 }
 

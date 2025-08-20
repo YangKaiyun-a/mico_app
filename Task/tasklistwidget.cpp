@@ -44,12 +44,6 @@ void TaskListWidget::initUI()
     ui->tableWidget->setSelectionMode(QAbstractItemView::SingleSelection);
     ui->tableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
     ui->tableWidget->setAlternatingRowColors(true);
-
-    for(int i = 0; i < headers.size(); ++i)
-    {
-        ui->tableWidget->horizontalHeader()->setSectionResizeMode(i, QHeaderView::Fixed);
-    }
-
     ui->tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
     connect(ui->tableWidget, &QTableWidget::cellClicked, this, &TaskListWidget::onCellClicked);
