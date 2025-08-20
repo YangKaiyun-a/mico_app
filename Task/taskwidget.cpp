@@ -54,6 +54,11 @@ void TaskWidget::enterLogBefore()
 
 void TaskWidget::on_btnTaskList_clicked()
 {
+    if(!m_taskListWidget)
+    {
+        return;
+    }
+
     m_taskListWidget->enterLogBefore();
     ui->stackedWidget->setCurrentIndex(ENUM_CLASS::TASK_INDEX::TASK_LIST);
 }
@@ -61,6 +66,11 @@ void TaskWidget::on_btnTaskList_clicked()
 
 void TaskWidget::on_btnTaskFinished_clicked()
 {
+    if(!m_taskFinishedWidget)
+    {
+        return;
+    }
+
     m_taskFinishedWidget->enterLogBefore();
     ui->stackedWidget->setCurrentIndex(ENUM_CLASS::TASK_INDEX::TASK_FINISHED);
 }

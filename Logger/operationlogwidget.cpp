@@ -1,8 +1,7 @@
 #include "operationlogwidget.h"
 #include "ui_operationlogwidget.h"
-#include "logtablemanager.h"
+#include "db/logtablemanager.h"
 #include "aligntablewidgetitem.h"
-
 
 
 const int PAGE_NUM = 10;    ///< 一页中显示的记录条数
@@ -61,6 +60,11 @@ void OperationLogWidget::enterLogBefore()
 
 void OperationLogWidget::updateTableModel(const QString &strFilter)
 {
+    if(!m_tableModel)
+    {
+        return;
+    }
+
     if (!strFilter.isEmpty())
     {
         m_tableModel->setFilter(strFilter);
@@ -79,6 +83,11 @@ void OperationLogWidget::updateTableModel(const QString &strFilter)
 
 void OperationLogWidget::updateTableWidget(int beginRow, int endRow)
 {
+    if(!m_tableModel)
+    {
+        return;
+    }
+
     //清空样本列表
     if (ui->tableWidget->rowCount() != 0)
     {
