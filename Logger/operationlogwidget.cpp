@@ -122,18 +122,9 @@ void OperationLogWidget::updateTableWidget(int beginRow, int endRow)
     {
         record = records.at(records.size() - row - 1);
 
-        ui->tableWidget->setItem(row, 0, new AlignTableWidgetItem(record.value(1).toString()));
-        ui->tableWidget->setItem(row, 1, new AlignTableWidgetItem(record.value(2).toString()));
-        ui->tableWidget->setItem(row, 2, new AlignTableWidgetItem(record.value(3).toString()));
-        ui->tableWidget->setItem(row, 3, new AlignTableWidgetItem(record.value(4).toDateTime().toString("yyyy-MM-dd HH:mm:ss")));
+        ui->tableWidget->setItem(row, 0, new AlignTableWidgetItem(record.value("module").toString()));
+        ui->tableWidget->setItem(row, 1, new AlignTableWidgetItem(record.value("type").toString()));
+        ui->tableWidget->setItem(row, 2, new AlignTableWidgetItem(record.value("operator").toString()));
+        ui->tableWidget->setItem(row, 3, new AlignTableWidgetItem(record.value("date").toDateTime().toString("yyyy-MM-dd HH:mm:ss")));
     }
 }
-
-
-
-
-
-
-
-
-
