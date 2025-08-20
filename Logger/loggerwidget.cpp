@@ -30,7 +30,7 @@ void LoggerWidget::initData()
 
 void LoggerWidget::initUI()
 {
-    m_operationWidget = new OperationLogWidget();
+    m_operationWidget = new OperationLogWidget(this);
     ui->stackedWidget->insertWidget(ENUM_CLASS::LOG_INDEX::OPERATION, m_operationWidget);
 
     ui->stackedWidget->setCurrentIndex(ENUM_CLASS::LOG_INDEX::OPERATION);

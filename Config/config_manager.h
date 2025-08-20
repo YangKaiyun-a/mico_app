@@ -27,7 +27,6 @@ private:
 
 private:
     std::mutex mutex_;
-    static ConfigManager* m_configManager;
     QMap<int, RobotShapedConfig> m_robotShapedConfigMap;        ///< 根据 id 存储机器人形状（唯一一份）
     QMap<int, MotorStatus> m_motorStatusMap;                    ///< 根据 id 存储电机状态（唯一一份）
 

@@ -1,18 +1,18 @@
-#include "tasktable.h"
+#include "taskfinishedtable.h"
 #include "dbmanager.h"
 
-TaskTable::TaskTable(QObject *parent)
+TaskFinishedTable::TaskFinishedTable(QObject *parent)
     : DataBaseTable{parent}
 {
 
 }
 
-TaskTable::~TaskTable()
+TaskFinishedTable::~TaskFinishedTable()
 {
     deleteLater();
 }
 
-void TaskTable::initTableParam()
+void TaskFinishedTable::initTableParam()
 {
     m_tableName = QString("workflow_config");
     m_addRecordCmdHead = QString(
@@ -21,7 +21,7 @@ void TaskTable::initTableParam()
         " VALUES(:workflow_name, :create_time, :create_by, :status, :robot_id)");
 }
 
-void TaskTable::initTableModel()
+void TaskFinishedTable::initTableModel()
 {
     if(m_tableModel != nullptr)
     {

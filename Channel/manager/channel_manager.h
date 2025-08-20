@@ -42,7 +42,4 @@ public:
 
 private:
     explicit ChannelManager();
-
-private:
-    static ChannelManager* m_channelManager;
 };

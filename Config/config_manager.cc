@@ -4,16 +4,11 @@
 #include <boost/dll.hpp>
 #include <fstream>
 
-ConfigManager *ConfigManager::m_configManager =  nullptr;
 
 ConfigManager *ConfigManager::Instacnce()
 {
-    if(nullptr == m_configManager)
-    {
-        m_configManager = new ConfigManager();
-    }
-
-    return m_configManager;
+    static ConfigManager instance;
+    return &instance;
 }
 
 ConfigManager::ConfigManager()

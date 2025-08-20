@@ -1,6 +1,6 @@
 #include "taskwidget.h"
 #include "ui_taskwidget.h"
-#include "tasktablemanager.h"
+#include "db/tasktablemanager.h"
 #include "global.h"
 
 TaskWidget::TaskWidget(QWidget *parent)

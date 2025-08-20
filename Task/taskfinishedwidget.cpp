@@ -1,6 +1,6 @@
 #include "taskfinishedwidget.h"
 #include "ui_taskfinishedwidget.h"
-#include "tasktablemanager.h"
+#include "db/tasktablemanager.h"
 #include "aligntablewidgetitem.h"
 
 const int PAGE_NUM = 10;    ///< 一页中显示的记录条数
@@ -26,7 +26,7 @@ void TaskFinishedWidget::init()
 
 void TaskFinishedWidget::initData()
 {
-    m_tableModel = TaskTableManager::instance()->tableModel();
+    m_tableModel = TaskTableManager::instance()->tableModel(ENUM_CLASS::TASK_INDEX::TASK_FINISHED);
 }
 
 void TaskFinishedWidget::initUI()
@@ -51,14 +51,19 @@ void TaskFinishedWidget::initUI()
 
 void TaskFinishedWidget::enterLogBefore()
 {
-    qDebug() << "刷新任务列表";
+    qDebug() << "刷新历史任务列表";
 
-    updateTableModel("");
+    updateTableModel("status = 3");
     updateTableWidget(0, PAGE_NUM);
 }
 
 void TaskFinishedWidget::updateTableModel(const QString &strFilter)
 {
+    if(!m_tableModel)
+    {
+        return;
+    }
+
     if (!strFilter.isEmpty())
     {
         m_tableModel->setFilter(strFilter);
@@ -77,6 +82,11 @@ void TaskFinishedWidget::updateTableModel(const QString &strFilter)
 
 void TaskFinishedWidget::updateTableWidget(int beginRow, int endRow)
 {
+    if(!m_tableModel)
+    {
+        return;
+    }
+
     //清空样本列表
     if (ui->tableWidget->rowCount() != 0)
     {

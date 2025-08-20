@@ -21,11 +21,6 @@ public:
 private:
     explicit DBManager(QObject *parent = nullptr);
     ~DBManager();
-
-private:
-    static DBManager* m_dbManager;
-
-signals:
 };
 
 #define DbManager DBManager::instance()

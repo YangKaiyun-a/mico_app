@@ -6,8 +6,6 @@
 #include <QDir>
 #include <QDebug>
 
-SettingFileCreate* SettingFileCreate::m_settingFileCreate = nullptr;
-
 SettingFileCreate::SettingFileCreate(QObject *parent)
     : QObject{parent}
 {
@@ -16,12 +14,8 @@ SettingFileCreate::SettingFileCreate(QObject *parent)
 
 SettingFileCreate *SettingFileCreate::instance()
 {
-    if(!m_settingFileCreate)
-    {
-        m_settingFileCreate = new SettingFileCreate();
-    }
-
-    return m_settingFileCreate;
+    static SettingFileCreate instance;
+    return &instance;
 }
 
 void SettingFileCreate::init()

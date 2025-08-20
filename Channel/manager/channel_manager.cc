@@ -4,8 +4,6 @@
 #include <iostream>
 namespace fs = boost::filesystem;
 
-ChannelManager* ChannelManager::m_channelManager = nullptr;
-
 ChannelManager::ChannelManager()
 {
 
@@ -13,11 +11,8 @@ ChannelManager::ChannelManager()
 
 ChannelManager *ChannelManager::instance()
 {
-    if(!m_channelManager)
-    {
-        m_channelManager = new ChannelManager();
-    }
-    return m_channelManager;
+    static ChannelManager instance;
+    return &instance;
 }
 
 ChannelManager::~ChannelManager()

@@ -3,22 +3,22 @@
  * 通过 DataBaseTable::m_tableModel 操作数据库
  */
 
-#ifndef TASKTABLE_H
-#define TASKTABLE_H
+#ifndef TASKLISTTABLE_H
+#define TASKLISTTABLE_H
 
 #include "databasetable.h"
 
 #include <QObject>
 
-class TaskTable : public DataBaseTable
+class TaskListTable : public DataBaseTable
 {
     Q_OBJECT
 public:
-    explicit TaskTable(QObject *parent = nullptr);
-    ~TaskTable();
+    explicit TaskListTable(QObject *parent = nullptr);
+    ~TaskListTable();
 
     void initTableParam() override;
     void initTableModel() override;
 };
 
-#endif // TASKTABLE_H
+#endif // TASKLISTTABLE_H

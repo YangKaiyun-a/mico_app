@@ -1,6 +1,6 @@
 #include "tasklistwidget.h"
 #include "ui_tasklistwidget.h"
-#include "tasktablemanager.h"
+#include "db/tasktablemanager.h"
 #include "aligntablewidgetitem.h"
 
 const int PAGE_NUM = 10;    ///< 一页中显示的记录条数
@@ -26,7 +26,7 @@ void TaskListWidget::init()
 
 void TaskListWidget::initData()
 {
-    m_tableModel = TaskTableManager::instance()->tableModel();
+    m_tableModel = TaskTableManager::instance()->tableModel(ENUM_CLASS::TASK_INDEX::TASK_LIST);
 }
 
 void TaskListWidget::initUI()
@@ -59,6 +59,11 @@ void TaskListWidget::enterLogBefore()
 
 void TaskListWidget::updateTableModel(const QString &strFilter)
 {
+    if(!m_tableModel)
+    {
+        return;
+    }
+
     if (!strFilter.isEmpty())
     {
         m_tableModel->setFilter(strFilter);
@@ -77,6 +82,11 @@ void TaskListWidget::updateTableModel(const QString &strFilter)
 
 void TaskListWidget::updateTableWidget(int beginRow, int endRow)
 {
+    if(!m_tableModel)
+    {
+        return;
+    }
+
     //清空样本列表
     if (ui->tableWidget->rowCount() != 0)
     {

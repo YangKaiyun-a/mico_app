@@ -22,7 +22,6 @@ public:
     QVariant sysValue(const QString& group, const QString& key, const QVariant& defaultValue = QVariant());
 
 private:
-    static SettingFileCreate* m_settingFileCreate;
     QDir m_configDir;                                   ///< config的目录
     QString m_configFile;                               ///< config的文件路径
     QSettings *m_settings = nullptr;
