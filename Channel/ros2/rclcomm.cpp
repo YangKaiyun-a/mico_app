@@ -478,7 +478,7 @@ basic::RobotPose rclcomm::getTransform(std::string from, std::string to)
         ret.theta = yaw;
 
     } catch (tf2::TransformException &ex) {
-        LOG_ERROR("getTransform error from:" << from << " to:" << to << " error:" << ex.what());
+        // LOG_ERROR("getTransform error from:" << from << " to:" << to << " error:" << ex.what());
     }
     return ret;
 }

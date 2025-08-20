@@ -59,6 +59,13 @@ public:
         TASK_LIST,
         TASK_FINISHED
     };
+
+    // 界面按钮标记枚举
+    enum TASK_BUTTON_TYPE{
+        START,
+        PAUSE,
+        STOP
+    };
 };
 
 

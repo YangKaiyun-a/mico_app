@@ -2,6 +2,10 @@
 #include "ui_tasklistwidget.h"
 #include "db/tasktablemanager.h"
 #include "aligntablewidgetitem.h"
+#include "operatebtnwidget.h"
+#include "config_manager.h"
+
+#include <QDateTime>
 
 const int PAGE_NUM = 10;    ///< 一页中显示的记录条数
 
@@ -32,7 +36,7 @@ void TaskListWidget::initData()
 void TaskListWidget::initUI()
 {
     QStringList headers;
-    headers << "流程名称" << "创建时间" << "创建者" << "状态" << "执行机器人";
+    headers << "流程名称" << "创建时间" << "创建者" << "状态" << "执行机器人" << "操作";
 
     ui->tableWidget->setColumnCount(headers.size());
     ui->tableWidget->setHorizontalHeaderLabels(headers);
@@ -47,6 +51,8 @@ void TaskListWidget::initUI()
     }
 
     ui->tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+
+    connect(ui->tableWidget, &QTableWidget::cellClicked, this, &TaskListWidget::onCellClicked);
 }
 
 void TaskListWidget::enterLogBefore()
@@ -126,11 +132,38 @@ void TaskListWidget::updateTableWidget(int beginRow, int endRow)
     {
         record = records.at(records.size() - row - 1);
 
-        ui->tableWidget->setItem(row, 0, new AlignTableWidgetItem(record.value(1).toString()));
-        ui->tableWidget->setItem(row, 1, new AlignTableWidgetItem(record.value(2).toString()));
-        ui->tableWidget->setItem(row, 2, new AlignTableWidgetItem(record.value(3).toString()));
-        ui->tableWidget->setItem(row, 3, new AlignTableWidgetItem(record.value(4).toString()));
-        ui->tableWidget->setItem(row, 4, new AlignTableWidgetItem(record.value(5).toString()));
+        ui->tableWidget->setItem(row, 0, new AlignTableWidgetItem(record.value("workflow_name").toString()));
+        ui->tableWidget->setItem(row, 1, new AlignTableWidgetItem(record.value("create_time").toDateTime().toString("yyyy-MM-dd HH:mm:ss")));
+        ui->tableWidget->setItem(row, 2, new AlignTableWidgetItem(record.value("create_by").toString()));
+        ui->tableWidget->setItem(row, 3, new AlignTableWidgetItem(CfgManager->taskStatusToString(record.value("status").toInt())));
+        ui->tableWidget->setItem(row, 4, new AlignTableWidgetItem(record.value("robot_id").toString()));
+        ui->tableWidget->setCellWidget(row, 5, new OperateBtnWidget(record.value("workflow_name").toString()));
     }
+}
+
+void TaskListWidget::onCellClicked(int row, int column)
+{
+    OperateBtnWidget *wgt = static_cast<OperateBtnWidget*>(ui->tableWidget->cellWidget(row, column));
+
+    if (nullptr == wgt)
+    {
+        return;
+    }
+
+    ENUM_CLASS::TASK_BUTTON_TYPE type = wgt->currentBtnType();
+    QString workflowName = wgt->workflowName();
+
+    if(type == ENUM_CLASS::TASK_BUTTON_TYPE::START)
+    {
+        // TODO: 区分开始和继续
+
+        qDebug() << "开始执行任务：" << workflowName;
+    }
+    else if(type == ENUM_CLASS::TASK_BUTTON_TYPE::STOP)
+    {
+        qDebug() << "停止任务：" << workflowName;
+    }
+
+
 }
 

@@ -22,6 +22,9 @@ public:
     void updateTableModel(const QString &strFilter);        ///< 更新数据模型
     void updateTableWidget(int beginRow, int endRow);       ///< 更新数据视图
 
+private slots:
+    void onCellClicked(int row, int column);
+
 private:
     Ui::TaskListWidget *ui;
     QSqlTableModel *m_tableModel = nullptr;   ///< 最底层的 DataBaseTable::m_tableModel

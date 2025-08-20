@@ -39,6 +39,24 @@ QString ConfigManager::motorStatusToString(ENUM_CLASS::MOTOR_STATUS status)
     }
 }
 
+// 任务状态->字符串
+QString ConfigManager::taskStatusToString(int status)
+{
+    switch(status)
+    {
+    case ENUM_CLASS::TASK_STATUS::WAITING:
+        return  QStringLiteral("待执行");
+    case ENUM_CLASS::TASK_STATUS::EXECUTING:
+        return  QStringLiteral("执行中");
+    case ENUM_CLASS::TASK_STATUS::FINISH:
+        return  QStringLiteral("已完成");
+    case ENUM_CLASS::TASK_STATUS::FAILED:
+        return  QStringLiteral("失败");
+    default:
+        return  QStringLiteral("获取失败");
+    }
+}
+
 
 void ConfigManager::setMotorStatusMap(const QMap<int, MotorStatus> &newMotorStatusMap)
 {

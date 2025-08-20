@@ -3,9 +3,6 @@ cmake_minimum_required(VERSION 3.14)
 project(CustomControls LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTOUIC ON)
-set(CMAKE_AUTORCC ON)
 
 
 file(GLOB_RECURSE SOURCE_FILE  CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR} *.cpp *.cc)
@@ -23,6 +20,7 @@ target_link_libraries(CustomControls
     PRIVATE Qt5::Core
     PRIVATE Qt5::Gui
     PRIVATE Qt5::Widgets
+    Config
 )
 
 # 让使用者可以直接 include

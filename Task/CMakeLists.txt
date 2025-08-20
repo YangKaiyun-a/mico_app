@@ -19,6 +19,7 @@ target_link_libraries(Task
     PRIVATE Qt5::Gui
     PRIVATE Qt5::Widgets
     PRIVATE Qt5::Sql
+    Basic
     Config
     CustomControls
 )
