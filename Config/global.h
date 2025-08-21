@@ -26,16 +26,15 @@ public:
         DEBUG
     };
 
-
     // 任务状态
     enum TASK_STATUS
     {
+        UNINITIAL,
         WAITING,
         EXECUTING,
         FINISH,
         FAILED
     };
-
 
     // 电机状态
     enum MOTOR_STATUS
@@ -60,7 +59,7 @@ public:
         TASK_FINISHED
     };
 
-    // 界面按钮标记枚举
+    // 任务按钮标记枚举
     enum TASK_BUTTON_TYPE{
         NOT_CLICKED,
         START,
