@@ -18,7 +18,7 @@ public:
     ~OperateBtnWidget();
     void init();
 
-    ENUM_CLASS::TASK_BUTTON_TYPE currentBtnType() const;
+    ENUM_CLASS::TASK_BUTTON_TYPE currentBtnType();
 
     QString workflowName() const;
 
@@ -27,7 +27,7 @@ protected:
 
 private:
     Ui::OperateBtnWidget *ui;
-    ENUM_CLASS::TASK_BUTTON_TYPE m_currentBtnType;                   ///< 当前按钮状态
+    ENUM_CLASS::TASK_BUTTON_TYPE m_currentBtnType = ENUM_CLASS::TASK_BUTTON_TYPE::NOT_CLICKED;          ///< 当前点击的按钮类别
     QString m_workflowName = "";
 };
 

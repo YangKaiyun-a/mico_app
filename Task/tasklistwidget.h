@@ -23,7 +23,7 @@ public:
     void updateTableWidget(int beginRow, int endRow);       ///< 更新数据视图
 
 private slots:
-    void onCellClicked(int row, int column);
+    void on_tableWidget_cellClicked(int row, int column);
 
 private:
     Ui::TaskListWidget *ui;

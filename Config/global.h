@@ -62,6 +62,7 @@ public:
 
     // 界面按钮标记枚举
     enum TASK_BUTTON_TYPE{
+        NOT_CLICKED,
         START,
         PAUSE,
         STOP

@@ -45,8 +45,6 @@ void TaskListWidget::initUI()
     ui->tableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
     ui->tableWidget->setAlternatingRowColors(true);
     ui->tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-
-    connect(ui->tableWidget, &QTableWidget::cellClicked, this, &TaskListWidget::onCellClicked);
 }
 
 void TaskListWidget::enterLogBefore()
@@ -135,7 +133,7 @@ void TaskListWidget::updateTableWidget(int beginRow, int endRow)
     }
 }
 
-void TaskListWidget::onCellClicked(int row, int column)
+void TaskListWidget::on_tableWidget_cellClicked(int row, int column)
 {
     OperateBtnWidget *wgt = static_cast<OperateBtnWidget*>(ui->tableWidget->cellWidget(row, column));
 
@@ -157,7 +155,5 @@ void TaskListWidget::onCellClicked(int row, int column)
     {
         qDebug() << "停止任务：" << workflowName;
     }
-
-
 }
 

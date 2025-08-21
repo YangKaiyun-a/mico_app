@@ -8,6 +8,7 @@ OperateBtnWidget::OperateBtnWidget(const QString &workflowName, QWidget *parent)
     , ui(new Ui::OperateBtnWidget)
 {
     ui->setupUi(this);
+    init();
 }
 
 OperateBtnWidget::~OperateBtnWidget()
@@ -54,7 +55,10 @@ QString OperateBtnWidget::workflowName() const
     return m_workflowName;
 }
 
-ENUM_CLASS::TASK_BUTTON_TYPE OperateBtnWidget::currentBtnType() const
+ENUM_CLASS::TASK_BUTTON_TYPE OperateBtnWidget::currentBtnType()
 {
-    return m_currentBtnType;
+    ENUM_CLASS::TASK_BUTTON_TYPE type = m_currentBtnType;
+    m_currentBtnType = ENUM_CLASS::TASK_BUTTON_TYPE::NOT_CLICKED;
+
+    return type;
 }
