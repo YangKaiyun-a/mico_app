@@ -5,6 +5,7 @@
 #include "dbmanager.h"
 #include "channel_manager.h"
 #include "settingfilecreate.h"
+#include "threadpoolmanager.h"
 
 
 Application* Application::m_singlenApplication = nullptr;
@@ -51,4 +52,5 @@ void Application::init()
         }));
     }
 
+    ThreadPoolManager::instance();
 }

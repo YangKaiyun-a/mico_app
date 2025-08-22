@@ -22,6 +22,7 @@ target_link_libraries(Task
     Basic
     Config
     CustomControls
+    Controller
 )
 
 # 让使用者可以直接 include

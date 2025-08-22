@@ -4,6 +4,7 @@
 #include "aligntablewidgetitem.h"
 #include "operatebtnwidget.h"
 #include "config_manager.h"
+#include "threadpoolmanager.h"
 
 #include <QDateTime>
 
@@ -148,8 +149,18 @@ void TaskListWidget::on_tableWidget_cellClicked(int row, int column)
     if(type == ENUM_CLASS::TASK_BUTTON_TYPE::START)
     {
         // TODO: 区分开始和继续
-
         qDebug() << "开始执行任务：" << workflowName;
+
+
+
+        ThreadPoolManager::instance()->startFunction(
+            [](TaskRunnable* self){
+                qDebug() << "11122333";
+            },
+            10,
+            "MyTaskId"
+            );
+
     }
     else if(type == ENUM_CLASS::TASK_BUTTON_TYPE::STOP)
     {

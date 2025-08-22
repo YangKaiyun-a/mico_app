@@ -48,7 +48,7 @@ add_subdirectory(Logger)
 add_subdirectory(AccountManagement)
 add_subdirectory(Debug)
 add_subdirectory(CustomControls)
-
+add_subdirectory(Controller)
 
 add_executable(${PROJECT_NAME}
       ${PRO_SOURCES_DIR}
@@ -75,4 +75,5 @@ target_link_libraries(${PROJECT_NAME}
       AccountManagement
       Debug
       CustomControls
+      Controller
 )
