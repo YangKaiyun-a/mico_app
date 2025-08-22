@@ -5,6 +5,7 @@
 #include "operatebtnwidget.h"
 #include "config_manager.h"
 #include "threadpoolmanager.h"
+#include "task_utils.h"
 
 #include <QDateTime>
 
@@ -154,9 +155,7 @@ void TaskListWidget::on_tableWidget_cellClicked(int row, int column)
 
 
         ThreadPoolManager::instance()->startFunction(
-            [](TaskRunnable* self){
-                qDebug() << "11122333";
-            },
+            &TaskUtils::exec,
             10,
             "MyTaskId"
             );
